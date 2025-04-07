@@ -565,6 +565,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  paginated_text:
+    dependency: "direct main"
+    description:
+      name: paginated_text
+      sha256: "9abb25148390f17001f6f21b8b89928fb7dff2bd511e3c49767a20568a55a626"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.5"
   path:
     dependency: transitive
     description:
