@@ -31,3 +31,5 @@ class RemoveSelectedSongsEvent extends SongsListComponentEvent {}
 class ReloadListEvent extends SongsListComponentEvent {
   ReloadListEvent();
 }
+
+class ClearSelectedSongs extends SongsListComponentEvent {}
