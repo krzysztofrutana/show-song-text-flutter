@@ -59,6 +59,17 @@ class SongsListComponentBloc
           box.delete(element);
         }
       }
+
+      if (event is ClearSelectedSongs) {
+        var allsongs = Hive.box<Song>('songs').values.toList();
+
+        for (var song in allsongs) {
+          if (state.selectedSongs.any((id) => id == song.uuid)) {
+            song.selected = false;
+          }
+        }
+        emit(state.copyWith(selectedSongs: []));
+      }
     });
   }
 }

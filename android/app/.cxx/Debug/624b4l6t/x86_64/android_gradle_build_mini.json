@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/krutana/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/krutana/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/media/krutana/E2A8D143A8D116BF/Users/kris2/Desktop/Projekty/Flutter/pomocnik_wokalisty/android/app/.cxx/Debug/624b4l6t/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/krutana/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/media/krutana/E2A8D143A8D116BF/Users/kris2/Desktop/Projekty/Flutter/pomocnik_wokalisty/android/app/.cxx/Debug/624b4l6t/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

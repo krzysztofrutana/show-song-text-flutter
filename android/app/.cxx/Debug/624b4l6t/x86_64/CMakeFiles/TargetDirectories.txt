@@ -1,0 +1,2 @@
+/media/krutana/E2A8D143A8D116BF/Users/kris2/Desktop/Projekty/Flutter/pomocnik_wokalisty/android/app/.cxx/Debug/624b4l6t/x86_64/CMakeFiles/edit_cache.dir
+/media/krutana/E2A8D143A8D116BF/Users/kris2/Desktop/Projekty/Flutter/pomocnik_wokalisty/android/app/.cxx/Debug/624b4l6t/x86_64/CMakeFiles/rebuild_cache.dir

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/edit/bloc/edit_playlist_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
+import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
+import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/songs_add.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/songs_list_component.dart';
@@ -89,6 +95,46 @@ class _SongsListState extends State<SongsList> {
                       onPressed: () =>
                           _showCreatePlaylistModal(internalContext),
                     ),
+                  ),
+                  Expanded(
+                    child: MaterialButton(
+                      height: 70,
+                      child: const Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ImageIcon(
+                              AssetImage('assets/images/icons/playlist.png')),
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [Text('Dodaj do'), Text('playlisty')],
+                          )
+                        ],
+                      ),
+                      onPressed: () =>
+                          _showAddSelectedToExistPlaylistModal(internalContext),
+                    ),
+                  ),
+                  Expanded(
+                    child: MaterialButton(
+                      height: 70,
+                      child: const Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ImageIcon(AssetImage(
+                              'assets/images/icons/presentation.png')),
+                          SizedBox(width: 8),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [Text('Prezentacja')],
+                          )
+                        ],
+                      ),
+                      onPressed: () =>
+                          _runPresentationForSelected(internalContext),
+                    ),
                   )
                 ],
               ),
@@ -165,6 +211,7 @@ class _SongsListState extends State<SongsList> {
                   parentContext
                       .read<SongsListComponentBloc>()
                       .add(ReloadListEvent());
+
                   Navigator.of(context).pop();
                 },
               ),
@@ -251,9 +298,15 @@ class _SongsListState extends State<SongsList> {
                 onPressed: () {
                   parentContext.read<AddPlaylistBloc>().add(AddPlaylistSave());
                   parentContext.read<AddPlaylistBloc>().add(AddPlaylistReset());
+
+                  parentContext
+                      .read<SongsListComponentBloc>()
+                      .add(ClearSelectedSongs());
+
                   parentContext
                       .read<SongsListComponentBloc>()
                       .add(ChooseSongChangeEvent(value: false));
+
                   Navigator.of(context).pop();
                 },
               ),
@@ -262,5 +315,98 @@ class _SongsListState extends State<SongsList> {
         },
       );
     }
+  }
+
+  Future<void> _showAddSelectedToExistPlaylistModal(
+      BuildContext parentContext) async {
+    var selectedSongs =
+        parentContext.read<SongsListComponentBloc>().state.selectedSongs;
+
+    var playlists = Hive.box<Playlist>('playlists');
+
+    parentContext
+        .read<AddPlaylistBloc>()
+        .add(PlaylistSetSelectedSongs(selectedSongs));
+
+    if (selectedSongs.isEmpty) {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Brak zaznaczonych utworów',
+              style: TextStyle(fontSize: 20),
+            ),
+            content: const SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('By dodać do playlisty należy wybrać utwory'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Ok'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            title: const Text('Dodawanie do playlisty'),
+            children: _getPlaylistsOptions(
+                playlists.values, selectedSongs, parentContext, context),
+          );
+        },
+      );
+    }
+  }
+
+  List<SimpleDialogOption> _getPlaylistsOptions(
+      Iterable<Playlist> playlists,
+      List<String> selectedSongs,
+      BuildContext parentContext,
+      BuildContext context) {
+    return playlists
+        .map((playlist) => SimpleDialogOption(
+            child: Text(playlist.name),
+            onPressed: () {
+              parentContext.read<EditPlaylistBloc>().add(
+                  AddSelectedSongsToPlaylist(playlist.uuid, selectedSongs));
+              parentContext
+                  .read<SongsListComponentBloc>()
+                  .add(ClearSelectedSongs());
+              parentContext
+                  .read<SongsListComponentBloc>()
+                  .add(ChooseSongChangeEvent(value: false));
+
+              Navigator.of(context).pop();
+            }))
+        .toList();
+  }
+
+  void _runPresentationForSelected(BuildContext parentContext) async {
+    var selectedSongs =
+        parentContext.read<SongsListComponentBloc>().state.selectedSongs;
+
+    var box = Hive.box<Song>('songs');
+    var songs =
+        box.values.where((song) => selectedSongs.contains(song.uuid)).toList();
+
+    parentContext
+        .read<PresentatationBloc>()
+        .add(SongsPresentation(songs: songs));
+
+    Navigator.of(parentContext).push(
+      MaterialPageRoute(
+        builder: (parentContext) => PresentationView(),
+      ),
+    );
   }
 }

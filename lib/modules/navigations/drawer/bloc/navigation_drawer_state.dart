@@ -6,7 +6,6 @@ class NavigationDrawerState {
   const NavigationDrawerState(this.navigationPage);
 }
 
-
 enum NavigationPage {
   header,
   songs_list,
@@ -15,5 +14,6 @@ enum NavigationPage {
   playlist_list,
   playlist_add,
   playlist_edit,
-  settings
+  server_settings,
+  client_mode
 }

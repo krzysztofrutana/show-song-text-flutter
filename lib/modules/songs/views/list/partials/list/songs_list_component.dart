@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/edit/songs_edit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
 
 class SongsListComponent extends StatefulWidget {
@@ -69,6 +70,8 @@ class _SongsListComponentState extends State<SongsListComponent> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                       color: Colors.black),
+                                  onTap: () =>
+                                      _redirectToSongsEdit(context, song),
                                   onLongPress: () => context
                                       .read<SongsListComponentBloc>()
                                       .add(ChooseSongChangeEvent(value: true)),
@@ -92,6 +95,14 @@ class _SongsListComponentState extends State<SongsListComponent> {
 
     return song.selected = newValue ?? false;
   }
+
+  void _redirectToSongsEdit(BuildContext context, Song song) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => SongsEdit(songId: song.uuid),
+      ),
+    );
+  }
 }
 
 Widget searchAppBar(BuildContext context) {
@@ -113,7 +124,6 @@ Widget searchAppBar(BuildContext context) {
 }
 
 class SongListController {
-  //We need a buildContext to interact with our bloc
   final BuildContext context;
 
   late List<Song> allData;

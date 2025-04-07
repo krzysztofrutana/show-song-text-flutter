@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/navigation_drawer.dart';
-import 'package:pomocnik_wokalisty/modules/playlists/list/playlists_list.dart';
-import 'package:pomocnik_wokalisty/modules/settings/views/settings_edit.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/list/playlists_list_view.dart';
+import 'package:pomocnik_wokalisty/modules/presentation_settings/views/presentation_settings_view.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/songs_add.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/songs_list_view.dart';
 
@@ -41,8 +41,8 @@ String _getTextForItem(NavigationPage navigationPage) {
       return "Dodaj listę";
     case NavigationPage.playlist_edit:
       return "Edytuj listę";
-    case NavigationPage.settings:
-      return "Ustawienia";
+    case NavigationPage.server_settings:
+      return "Ustawienia prezentacji";
     default:
       return '-';
   }
@@ -56,8 +56,8 @@ Widget? _bodyForState(NavigationDrawerState state) {
       return SongsAdd();
     case NavigationPage.playlist_list:
       return const PlaylistsList();
-    case NavigationPage.settings:
-      return const SettingsEdit();
+    case NavigationPage.server_settings:
+      return PresentationSettings();
     default:
       return null;
   }
