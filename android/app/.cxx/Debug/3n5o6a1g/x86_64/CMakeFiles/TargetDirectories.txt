@@ -1,0 +1,2 @@
+/home/krutana/Pulpit/pomocnik_wokalisty/android/app/.cxx/Debug/3n5o6a1g/x86_64/CMakeFiles/edit_cache.dir
+/home/krutana/Pulpit/pomocnik_wokalisty/android/app/.cxx/Debug/3n5o6a1g/x86_64/CMakeFiles/rebuild_cache.dir

@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,7 +18,7 @@ class AddPlaylistBloc extends Bloc<AddPlaylistEvent, AddPlaylistState> {
       }
 
       if (event is AddPlaylistSave) {
-        var box = Hive.box<Playlist>('playlists');
+        var box = DataCollections.playlists();
         box.put(state.playlist.uuid, state.playlist);
       }
 

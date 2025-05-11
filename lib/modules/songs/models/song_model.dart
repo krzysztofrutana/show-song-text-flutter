@@ -16,15 +16,11 @@ class Song {
   @HiveField(3)
   String text;
 
-  @HiveField(4)
-  String key;
-
   bool selected = false;
 
   Song(
       {required this.uuid,
       required this.title,
       required this.author,
-      required this.text,
-      required this.key});
+      required this.text});
 }

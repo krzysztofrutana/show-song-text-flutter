@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/playlists_list_component.dart';
@@ -289,7 +290,7 @@ class _PlaylistsListState extends State<PlaylistsList> {
           .state
           .selectedPlaylists;
 
-      var playlist = Hive.box<Playlist>('playlists').get(selectedPlaylists[0]);
+      var playlist = DataCollections.playlists().get(selectedPlaylists[0]);
 
       if (playlist == null) {
         return showDialog<void>(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/helpers/EventsHub.dart';
+import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 import 'package:pomocnik_wokalisty/modules/presentation_settings/cubic/presentation_settings_cubic.dart';
-import 'package:pomocnik_wokalisty/modules/presentation_settings/helpers/PresentationSettingsValidator.dart';
+import 'package:pomocnik_wokalisty/modules/presentation_settings/helpers/presentation_settings_validator.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubic/server_cubic/server_cubit.dart';
 
 class PresentationSettings extends StatefulWidget

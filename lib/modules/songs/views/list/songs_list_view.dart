@@ -1,6 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/bloc/edit_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
@@ -128,7 +130,15 @@ class _SongsListState extends State<SongsList> {
                           SizedBox(width: 8),
                           Column(
                             mainAxisSize: MainAxisSize.min,
-                            children: [Text('Prezentacja')],
+                            children: [
+                              AutoSizeText(
+                                'Prezentacja',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black,
+                                    decoration: TextDecoration.none),
+                              ),
+                            ],
                           )
                         ],
                       ),
@@ -322,7 +332,7 @@ class _SongsListState extends State<SongsList> {
     var selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
 
-    var playlists = Hive.box<Playlist>('playlists');
+    var playlists = DataCollections.playlists();
 
     parentContext
         .read<AddPlaylistBloc>()
@@ -395,7 +405,7 @@ class _SongsListState extends State<SongsList> {
     var selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
 
-    var box = Hive.box<Song>('songs');
+    var box = DataCollections.songs();
     var songs =
         box.values.where((song) => selectedSongs.contains(song.uuid)).toList();
 

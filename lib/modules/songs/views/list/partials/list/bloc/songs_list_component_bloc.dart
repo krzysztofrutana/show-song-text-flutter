@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 
 part 'songs_list_component_event.dart';
@@ -11,7 +12,7 @@ class SongsListComponentBloc
   SongsListComponentBloc() : super(SongsListComponentInitialState()) {
     on<SongsListComponentEvent>((event, emit) {
       if (event is ReloadListEvent) {
-        var allsongs = Hive.box<Song>('songs').values.toList();
+        var allsongs = DataCollections.songs().values.toList();
 
         if (state.selectedSongs.isNotEmpty) {
           for (var song in allsongs) {
@@ -53,7 +54,7 @@ class SongsListComponentBloc
       }
 
       if (event is RemoveSelectedSongsEvent) {
-        var box = Hive.box<Song>('songs');
+        var box = DataCollections.songs();
         for (var i = 0; i < state.selectedSongs.length; i++) {
           var element = state.selectedSongs[i];
           box.delete(element);
@@ -61,7 +62,7 @@ class SongsListComponentBloc
       }
 
       if (event is ClearSelectedSongs) {
-        var allsongs = Hive.box<Song>('songs').values.toList();
+        var allsongs = DataCollections.songs().values.toList();
 
         for (var song in allsongs) {
           if (state.selectedSongs.any((id) => id == song.uuid)) {

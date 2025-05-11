@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:uuid/uuid.dart';
 
@@ -13,10 +14,8 @@ class SongsAddCubit extends Cubit<SongsAddState> {
       {String uuid = '',
       String title = '',
       String author = '',
-      String key = '',
       String text = ''}) {
-    emit(state.copyWiht(
-        uuid: uuid, title: title, author: author, key: key, text: text));
+    emit(state.copyWiht(uuid: uuid, title: title, author: author, text: text));
   }
 
   void updateTitle(String? title) {
@@ -25,10 +24,6 @@ class SongsAddCubit extends Cubit<SongsAddState> {
 
   void updateAuthor(String? author) {
     emit(state.copyWiht(author: author));
-  }
-
-  void updateKey(String? key) {
-    emit(state.copyWiht(key: key));
   }
 
   void updateText(String? text) {
@@ -44,15 +39,14 @@ class SongsAddCubit extends Cubit<SongsAddState> {
   }
 
   void save() {
-    var box = Hive.box<Song>('songs');
+    var box = DataCollections.songs();
     box.put(
         state.uuid,
         Song(
             uuid: state.uuid,
             title: state.title,
             author: state.author,
-            text: state.text,
-            key: state.key));
+            text: state.text));
 
     emit(SongsAddInitial());
   }

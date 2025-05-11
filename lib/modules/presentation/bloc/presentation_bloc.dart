@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 
@@ -14,12 +14,11 @@ class PresentatationBloc extends Bloc<PresetationEvent, PresentationState> {
       }
 
       if (event is PlaylistPresentation) {
-        var presentation =
-            Hive.box<Playlist>('playlists').get(event.playlist.uuid);
+        var presentation = DataCollections.playlists().get(event.playlist.uuid);
 
         if (presentation == null) return;
 
-        var songsBox = Hive.box<Song>('songs');
+        var songsBox = DataCollections.songs();
         var songs = songsBox.values
             .where((song) => presentation.songsIds.contains(song.uuid))
             .toList();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/modules/client_screen_mode/views/ClientScreenMode.dart';
+import 'package:pomocnik_wokalisty/modules/client_screen_mode/views/client_screen_mode.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 
 class MyNavigationDrawer extends StatelessWidget {

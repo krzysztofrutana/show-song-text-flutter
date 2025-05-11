@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:pomocnik_wokalisty/helpers/EventsHub.dart';
-import 'package:pomocnik_wokalisty/helpers/LocalStorage.dart';
+import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubic/client_screen_mode_cubic.dart';
 import 'package:pomocnik_wokalisty/modules/home.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/bloc/edit_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
-import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
-import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/cubic/songs_add_cubit.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/common/cubic/song_search_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/cubic/songs_edit_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubic/client_cubic/client_cubit.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubic/server_cubic/server_cubit.dart';
 
 void main() async {
-  await Hive.initFlutter();
-
-  Hive.registerAdapter(SongAdapter());
-  Hive.registerAdapter(PlaylistAdapter());
-
-  await Hive.openBox<Song>('songs');
-  await Hive.openBox<Playlist>('playlists');
+  await DataCollections.initCollections();
 
   await LocalStorage.init();
   EventsHub.init();
@@ -91,6 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         BlocProvider(
           create: (context) => ClientScreenModeCubic(),
+        ),
+        BlocProvider(
+          create: (context) => SongSearchCubit(),
         ),
       ],
       child: const MaterialApp(

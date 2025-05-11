@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 
@@ -12,10 +12,9 @@ class PlaylistsListComponent extends StatefulWidget {
 }
 
 class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
-  
   @override
   void initState() {
-    var box = Hive.box<Playlist>('playlists');
+    var box = DataCollections.playlists();
     var allData = box.values.toList();
 
     context
@@ -121,7 +120,7 @@ class PlaylistListController {
 
   late List<Playlist> allData;
   PlaylistListController({required this.context}) {
-    var box = Hive.box<Playlist>('playlists');
+    var box = DataCollections.playlists();
     allData = box.values.toList();
   }
 

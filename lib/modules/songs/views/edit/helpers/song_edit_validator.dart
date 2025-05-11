@@ -1,5 +1,4 @@
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 
 mixin SongEditValidator {
   String? validateAuthor(String? value) {
@@ -10,7 +9,7 @@ mixin SongEditValidator {
   String? validateTitle(String? value, String songId) {
     if (value == null || value.isEmpty) return 'Tytuł jest wymagany';
 
-    var box = Hive.box<Song>('songs');
+    var box = DataCollections.songs();
     if (box.values.any((s) => s.title == value && s.uuid != songId)) {
       return 'Istnieje już utwór z tym tytułem';
     }

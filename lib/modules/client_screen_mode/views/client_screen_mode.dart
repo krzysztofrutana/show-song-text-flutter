@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -53,20 +51,22 @@ class _ClientScreenModeState extends State<ClientScreenMode> {
 
                     return KeyEventResult.ignored;
                   },
-                  child: Scaffold(
-                    key: key,
-                    // appBar: AppBar(
-                    //   leading: IconButton(
-                    //     icon: const Icon(Icons.arrow_back, color: Colors.black),
-                    //     onPressed: () => Navigator.of(context).pop(),
-                    //   ),
-                    // ),
-                    body: AutoSizeText(
-                      state.text,
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.black,
-                          decoration: TextDecoration.none),
+                  child: SafeArea(
+                    child: Scaffold(
+                      key: key,
+                      // appBar: AppBar(
+                      //   leading: IconButton(
+                      //     icon: const Icon(Icons.arrow_back, color: Colors.black),
+                      //     onPressed: () => Navigator.of(context).pop(),
+                      //   ),
+                      // ),
+                      body: AutoSizeText(
+                        state.text,
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black,
+                            decoration: TextDecoration.none),
+                      ),
                     ),
                   ),
                 ),

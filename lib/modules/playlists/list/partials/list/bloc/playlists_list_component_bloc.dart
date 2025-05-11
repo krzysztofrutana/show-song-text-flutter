@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 
 part 'playlists_list_component_event.dart';
@@ -11,7 +12,7 @@ class PlaylistsListComponentBloc
   PlaylistsListComponentBloc() : super(PlaylistsListComponentInitialState()) {
     on<PlaylistsListComponentEvent>((event, emit) {
       if (event is ReloadListEvent) {
-        var allPlaylists = Hive.box<Playlist>('playlists').values.toList();
+        var allPlaylists = DataCollections.playlists().values.toList();
 
         if (state.selectedPlaylists.isNotEmpty) {
           for (var playlist in allPlaylists) {
@@ -56,7 +57,7 @@ class PlaylistsListComponentBloc
       }
 
       if (event is RemoveSelectedPlaylistsEvent) {
-        var box = Hive.box<Playlist>('playlists');
+        var box = DataCollections.playlists();
         for (var i = 0; i < state.selectedPlaylists.length; i++) {
           var element = state.selectedPlaylists[i];
           box.delete(element);

@@ -22,7 +22,7 @@ class SongsListComponentState {
 final class SongsListComponentInitialState extends SongsListComponentState {
   SongsListComponentInitialState()
       : super(
-            data: Hive.box<Song>('songs').values.toList(),
+            data: DataCollections.songs().values.toList(),
             chooseSongs: false,
             selectedSongs: []);
 }

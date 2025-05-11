@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/helpers/LocalStorage.dart';
+import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'presentation_settings_state.dart';

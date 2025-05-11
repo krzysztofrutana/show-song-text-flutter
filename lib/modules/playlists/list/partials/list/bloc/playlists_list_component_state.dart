@@ -25,7 +25,7 @@ final class PlaylistsListComponentInitialState
     extends PlaylistsListComponentState {
   PlaylistsListComponentInitialState()
       : super(
-            data: Hive.box<Playlist>('playlists').values.toList(),
+            data: DataCollections.playlists().values.toList(),
             choosePlaylists: false,
             selectedPlaylists: []);
 }

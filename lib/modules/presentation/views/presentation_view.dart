@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_debouncer/flutter_debouncer.dart';
 import 'package:paginated_text/paginated_text.dart';
-import 'package:pomocnik_wokalisty/helpers/LocalStorage.dart';
+import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubic/server_cubic/server_cubit.dart';

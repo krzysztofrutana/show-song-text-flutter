@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:network_info_plus/network_info_plus.dart';
-import 'package:pomocnik_wokalisty/helpers/EventsHub.dart';
+import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 
 class Server {
   late ServerSocket server;
@@ -29,9 +29,6 @@ class Server {
   }
 
   void handleConnection(Socket client) {
-    print('Connection from'
-        ' ${client.remoteAddress.address}:${client.remotePort}');
-
     activeClienst.add(client);
     EventsHub.instance.emit('client_connected', client.remoteAddress.address);
 

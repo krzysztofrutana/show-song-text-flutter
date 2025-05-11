@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/songs_edit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
@@ -128,7 +129,7 @@ class SongListController {
 
   late List<Song> allData;
   SongListController({required this.context}) {
-    var box = Hive.box<Song>('songs');
+    var box = DataCollections.songs();
     allData = box.values.toList();
   }
 
