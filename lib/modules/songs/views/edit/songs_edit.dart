@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/helpers/song_add_validator.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/cubic/songs_edit_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/helpers/song_edit_validator.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/edit/partials/playlistsList/song_playlists_list_component.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
 
 class SongsEdit extends StatefulWidget with SongAddValidator {
@@ -31,25 +32,30 @@ class _SongsEditState extends State<SongsEdit> with SongEditValidator {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                title: const Text("Edytuj utwór"),
-                centerTitle: true),
-            floatingActionButton: FloatingActionButton(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                onPressed: () => {
-                      if (_formKey.currentState!.validate())
-                        {_saveSong(context, _songEditCubit)}
-                      else
-                        {
-                          _songEditCubit
-                              .updateAutovalidateMode(AutovalidateMode.always)
-                        }
-                    },
-                child: const Icon(Icons.save)),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              title: const Text("Edytuj utwór"),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  padding: EdgeInsets.all(10),
+                  iconSize: 35,
+                  icon: const Icon(Icons.save),
+                  color: Colors.red,
+                  onPressed: () => {
+                    if (_formKey.currentState!.validate())
+                      {_saveSong(context, _songEditCubit)}
+                    else
+                      {
+                        _songEditCubit
+                            .updateAutovalidateMode(AutovalidateMode.always)
+                      }
+                  },
+                )
+              ],
+            ),
             body: SingleChildScrollView(
               child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -100,6 +106,8 @@ class _SongsEditState extends State<SongsEdit> with SongEditValidator {
                           );
                         },
                       ),
+                      const SizedBox(height: 8.0),
+                      SongPlaylistsListComponent(songId: widget.songId)
                     ],
                   )),
             ));

@@ -6,7 +6,7 @@ part 'navigation_drawer_state.dart';
 class NavigationDrawerBloc
     extends Bloc<NavigationDrawerEvent, NavigationDrawerState> {
   NavigationDrawerBloc()
-      : super(const NavigationDrawerState(NavigationPage.songs_list)) {
+      : super(const NavigationDrawerState(NavigationPage.songsList)) {
     on<NavigationDrawerEvent>((event, emit) {
       if (event is NavigateToEvent) {
         if (state.navigationPage != event.navigateTo) {

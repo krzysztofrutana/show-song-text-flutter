@@ -4,16 +4,11 @@ mixin PlaylistEditValidator {
   String? validateName(String? value, String playlistId) {
     if (value == null || value.isEmpty) return 'Nazwa jest wymagana';
 
-    var box = DataCollections.songs();
-    if (box.values.any((s) => s.title == value && s.uuid != playlistId)) {
-      return 'Istnieje już utwór z tym tytułem';
+    var box = DataCollections.playlists();
+    if (box.values.any((s) => s.name == value && s.uuid != playlistId)) {
+      return 'Istnieje już lista odtwarzania z tą nazwą';
     }
 
-    return null;
-  }
-
-  String? validateText(String? value) {
-    if (value == null || value.isEmpty) return 'Tekst jest wymagany';
     return null;
   }
 }

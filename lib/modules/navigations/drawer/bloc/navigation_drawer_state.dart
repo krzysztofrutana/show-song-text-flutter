@@ -8,12 +8,12 @@ class NavigationDrawerState {
 
 enum NavigationPage {
   header,
-  songs_list,
-  songs_add,
-  songs_edit,
-  playlist_list,
-  playlist_add,
-  playlist_edit,
-  server_settings,
-  client_mode
+  songsList,
+  songsAdd,
+  songsEdit,
+  playlistList,
+  playlistAdd,
+  playlistEdit,
+  serverSettings,
+  clientMode
 }

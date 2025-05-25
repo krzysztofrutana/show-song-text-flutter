@@ -4,7 +4,7 @@ import 'package:pomocnik_wokalisty/helpers/connection_helper.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/cubic/songs_add_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/helpers/song_add_validator.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/cubic/song_search_cubit.dart';
-import 'package:pomocnik_wokalisty/modules/songs/views/common/models/SearchDialogResultModel.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/common/models/search_dialog_result_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/views/dialogs/search_dialog.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/webscraping/models/song_to_find_model.dart';

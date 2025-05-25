@@ -7,7 +7,7 @@ import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubic/client_scree
 import 'package:pomocnik_wokalisty/modules/home.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
-import 'package:pomocnik_wokalisty/modules/playlists/edit/bloc/edit_playlist_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/edit/cubic/playlist_edit_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/cubic/songs_add_cubit.dart';
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
           create: (context) => PlaylistsListComponentBloc(),
         ),
         BlocProvider(
-          create: (context) => EditPlaylistBloc(),
+          create: (context) => PlaylistEditCubit(),
         ),
         BlocProvider(
           create: (context) => ServerCubit(),

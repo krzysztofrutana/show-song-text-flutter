@@ -7,16 +7,16 @@ class MyNavigationDrawer extends StatelessWidget {
   final List<_NavigationItem> _listItems = [
     _NavigationItem(
         true, NavigationPage.header, 'Header', const AssetImage('')),
-    _NavigationItem(false, NavigationPage.songs_list, "Lista utworów",
+    _NavigationItem(false, NavigationPage.songsList, "Lista utworów",
         const AssetImage('assets/images/icons/note.png')),
-    _NavigationItem(false, NavigationPage.playlist_list, "Listy odtwarzania",
+    _NavigationItem(false, NavigationPage.playlistList, "Listy odtwarzania",
         const AssetImage('assets/images/icons/playlist.png')),
     _NavigationItem(
         false,
-        NavigationPage.server_settings,
+        NavigationPage.serverSettings,
         "Ustawienia prezentacji",
         const AssetImage('assets/images/icons/settings.png')),
-    _NavigationItem(false, NavigationPage.client_mode, "Tryb wyświetlacza",
+    _NavigationItem(false, NavigationPage.clientMode, "Tryb wyświetlacza",
         const AssetImage('assets/images/icons/presentation.png')),
   ];
 
@@ -70,7 +70,7 @@ class MyNavigationDrawer extends StatelessWidget {
       );
 
   void _handleItemClick(BuildContext context, NavigationPage item) {
-    if (item == NavigationPage.client_mode) {
+    if (item == NavigationPage.clientMode) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (parentContext) => ClientScreenMode(),

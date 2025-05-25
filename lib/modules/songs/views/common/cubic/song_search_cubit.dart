@@ -9,7 +9,7 @@ class SongSearchCubit extends Cubit<SongSearchState> {
   SongSearchCubit() : super(SongSearchStateInitial());
 
   void initSearch(SongToFindModel songToFind) {
-    emit(state.copyWith(song: songToFind, state: ResultState.searchStarted));
+    emit(state.copyWith(song: songToFind, status: ResultState.searchStarted));
   }
 
   void setChoosenSong(FindedSongModel choosenSong) {
@@ -26,13 +26,13 @@ class SongSearchCubit extends Cubit<SongSearchState> {
       }
 
       emit(state.copyWith(
-          state: ResultState.chooseSongFromList,
+          status: ResultState.chooseSongFromList,
           songsToChoose: searchResult.songsToChoose));
 
       return true;
     } catch (ex) {
       emit(state.copyWith(
-          state: ResultState.unexpectedError,
+          status: ResultState.unexpectedError,
           artistToChoose: [],
           songsToChoose: [],
           choosenArtist: null,
@@ -53,13 +53,13 @@ class SongSearchCubit extends Cubit<SongSearchState> {
       }
 
       emit(state.copyWith(
-          state: ResultState.textFinded,
+          status: ResultState.textFinded,
           songsToChoose: [],
           artistToChoose: [],
           findedText: textResult.text));
     } catch (ex) {
       emit(state.copyWith(
-          state: ResultState.unexpectedError,
+          status: ResultState.unexpectedError,
           artistToChoose: [],
           songsToChoose: [],
           choosenArtist: null,
@@ -86,7 +86,7 @@ class SongSearchCubit extends Cubit<SongSearchState> {
       }
 
       emit(state.copyWith(
-          state: ResultState.textFinded,
+          status: ResultState.textFinded,
           songsToChoose: [],
           artistToChoose: [],
           findedText: textResult.text));
@@ -94,7 +94,7 @@ class SongSearchCubit extends Cubit<SongSearchState> {
       return true;
     } catch (ex) {
       emit(state.copyWith(
-          state: ResultState.unexpectedError,
+          status: ResultState.unexpectedError,
           artistToChoose: [],
           songsToChoose: [],
           choosenArtist: null,
@@ -113,7 +113,7 @@ class SongSearchCubit extends Cubit<SongSearchState> {
     }
 
     emit(state.copyWith(
-        state: ResultState.chooseSongFromList,
+        status: ResultState.chooseSongFromList,
         songsToChoose: searchSongResult.songsToChoose));
 
     return true;
@@ -138,7 +138,7 @@ class SongSearchCubit extends Cubit<SongSearchState> {
 
   void processError(SearchResultModel searchResult) {
     emit(state.copyWith(
-        state: searchResult.state,
+        status: searchResult.state,
         artistToChoose: [],
         songsToChoose: [],
         choosenArtist: null,

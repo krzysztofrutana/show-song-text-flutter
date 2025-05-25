@@ -22,7 +22,7 @@ class SongSearchState {
       {List<FindedSongModel>? songsToChoose,
       List<FindedArtistModel>? artistToChoose,
       SongToFindModel? song,
-      ResultState? state,
+      ResultState? status,
       String? findedText,
       FindedArtistModel? choosenArtist,
       FindedSongModel? choosenSong}) {
@@ -30,7 +30,7 @@ class SongSearchState {
         songsToChoose: songsToChoose ?? this.songsToChoose,
         artistToChoose: artistToChoose ?? this.artistToChoose,
         song: song ?? this.song,
-        status: state ?? this.status,
+        status: status ?? this.status,
         findedText: findedText ?? this.findedText,
         choosenArtist: choosenArtist ?? this.choosenArtist,
         choosenSong: choosenSong ?? this.choosenSong);

@@ -3,7 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/cubic/song_search_cubit.dart';
-import 'package:pomocnik_wokalisty/modules/songs/views/common/models/SearchDialogResultModel.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/common/models/search_dialog_result_model.dart';
 import 'package:pomocnik_wokalisty/webscraping/models/search_result_model.dart';
 import 'package:pomocnik_wokalisty/webscraping/models/song_to_find_model.dart';
 

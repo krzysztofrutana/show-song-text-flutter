@@ -31,3 +31,5 @@ class RemoveSelectedPlaylistsEvent extends PlaylistsListComponentEvent {}
 class ReloadListEvent extends PlaylistsListComponentEvent {
   ReloadListEvent();
 }
+
+class ClearSelectedPlaylists extends PlaylistsListComponentEvent {}

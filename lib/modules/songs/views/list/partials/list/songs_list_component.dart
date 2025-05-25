@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/songs_edit.dart';
@@ -14,6 +13,17 @@ class SongsListComponent extends StatefulWidget {
 }
 
 class _SongsListComponentState extends State<SongsListComponent> {
+  @override
+  void deactivate() {
+    context.read<SongsListComponentBloc>().add(ClearSelectedSongs());
+
+    context
+        .read<SongsListComponentBloc>()
+        .add(ChooseSongChangeEvent(value: false));
+
+    super.deactivate();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SongsListComponentBloc, SongsListComponentState>(

@@ -29,19 +29,19 @@ class _HomeState extends State<Home> {
 
 String _getTextForItem(NavigationPage navigationPage) {
   switch (navigationPage) {
-    case NavigationPage.songs_list:
+    case NavigationPage.songsList:
       return "Lista utworów";
-    case NavigationPage.songs_add:
+    case NavigationPage.songsAdd:
       return "Dodaj utwór";
-    case NavigationPage.songs_edit:
+    case NavigationPage.songsEdit:
       return "Edytuj utwór";
-    case NavigationPage.playlist_list:
+    case NavigationPage.playlistList:
       return "Listy odtwarzania";
-    case NavigationPage.playlist_add:
+    case NavigationPage.playlistAdd:
       return "Dodaj listę";
-    case NavigationPage.playlist_edit:
+    case NavigationPage.playlistEdit:
       return "Edytuj listę";
-    case NavigationPage.server_settings:
+    case NavigationPage.serverSettings:
       return "Ustawienia prezentacji";
     default:
       return '-';
@@ -50,13 +50,13 @@ String _getTextForItem(NavigationPage navigationPage) {
 
 Widget? _bodyForState(NavigationDrawerState state) {
   switch (state.navigationPage) {
-    case NavigationPage.songs_list:
+    case NavigationPage.songsList:
       return const SongsList();
-    case NavigationPage.songs_add:
+    case NavigationPage.songsAdd:
       return SongsAdd();
-    case NavigationPage.playlist_list:
+    case NavigationPage.playlistList:
       return const PlaylistsList();
-    case NavigationPage.server_settings:
+    case NavigationPage.serverSettings:
       return PresentationSettings();
     default:
       return null;

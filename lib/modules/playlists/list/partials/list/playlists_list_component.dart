@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/edit/playlist_edit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 
@@ -22,6 +23,17 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
         .add(FilterPlaylistsListComponentEvent(filteredList: allData));
 
     super.initState();
+  }
+
+  @override
+  void deactivate() {
+    context.read<PlaylistsListComponentBloc>().add(ClearSelectedPlaylists());
+
+    context
+        .read<PlaylistsListComponentBloc>()
+        .add(ChoosePlaylistChangeEvent(value: false));
+
+    super.deactivate();
   }
 
   @override
@@ -70,6 +82,8 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                       color: Colors.black),
+                                  onTap: () => _redirectToPlaylistEdit(
+                                      context, playlist),
                                   onLongPress: () => context
                                       .read<PlaylistsListComponentBloc>()
                                       .add(ChoosePlaylistChangeEvent(
@@ -93,6 +107,14 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
     }
 
     return playlist.selected = newValue ?? false;
+  }
+
+  void _redirectToPlaylistEdit(BuildContext context, Playlist playlist) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PlaylistEdit(playlistId: playlist.uuid),
+      ),
+    );
   }
 }
 

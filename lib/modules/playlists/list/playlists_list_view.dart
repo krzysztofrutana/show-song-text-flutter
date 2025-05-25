@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/playlists_list_component.dart';
-import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
 
@@ -20,7 +18,7 @@ class _PlaylistsListState extends State<PlaylistsList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: const PlaylistsListComponent(),
+        body: PlaylistsListComponent(),
         floatingActionButton: BlocBuilder<PlaylistsListComponentBloc,
                 PlaylistsListComponentState>(
             builder: (context, state) => Visibility(
@@ -37,64 +35,68 @@ class _PlaylistsListState extends State<PlaylistsList> {
         bottomNavigationBar: BlocBuilder<PlaylistsListComponentBloc,
             PlaylistsListComponentState>(
           builder: (internalContext, state) {
-            return Visibility(
-              visible: state.choosePlaylists == true,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: MaterialButton(
-                      height: 70,
-                      child: const Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+            final size = MediaQuery.of(context).size;
+            final iconSize = size.width * 0.07; // icon scale
+            final fontSize = size.width * 0.03; // text scale
+
+            return SizedBox(
+              height: size.height * 0.1,
+              child: Visibility(
+                visible: state.choosePlaylists == true,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    MaterialButton(
+                      minWidth: 0,
+                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.cancel_outlined),
-                          SizedBox(width: 8),
-                          Text('Anuluj')
+                          Icon(Icons.cancel_outlined, size: iconSize),
+                          SizedBox(height: 4),
+                          Text('Anuluj', style: TextStyle(fontSize: fontSize))
                         ],
                       ),
                       onPressed: () => internalContext
                           .read<PlaylistsListComponentBloc>()
                           .add(ChoosePlaylistChangeEvent(value: false)),
                     ),
-                  ),
-                  Expanded(
-                      child: MaterialButton(
-                          height: 70,
-                          child: const Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ImageIcon(
-                                  AssetImage('assets/images/icons/delete.png')),
-                              SizedBox(width: 8),
-                              Text('Usuń')
-                            ],
-                          ),
-                          onPressed: () =>
-                              _showDeleteConfirmModal(internalContext))),
-                  Expanded(
-                    child: MaterialButton(
-                      height: 70,
-                      child: const Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                    MaterialButton(
+                        minWidth: 0,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ImageIcon(
+                              AssetImage('assets/images/icons/delete.png'),
+                              size: iconSize,
+                            ),
+                            SizedBox(height: 4),
+                            Text('Usuń', style: TextStyle(fontSize: fontSize))
+                          ],
+                        ),
+                        onPressed: () =>
+                            _showDeleteConfirmModal(internalContext)),
+                    MaterialButton(
+                      minWidth: 0,
+                      padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ImageIcon(AssetImage(
-                              'assets/images/icons/presentation.png')),
-                          SizedBox(width: 8),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [Text('Prezentacja')],
-                          )
+                          ImageIcon(
+                              AssetImage(
+                                  'assets/images/icons/presentation.png'),
+                              size: iconSize),
+                          SizedBox(height: 4),
+                          Text('Prezentacja',
+                              style: TextStyle(fontSize: fontSize))
                         ],
                       ),
                       onPressed: () =>
                           _runPresentationForSelected(internalContext),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             );
           },
@@ -164,6 +166,7 @@ class _PlaylistsListState extends State<PlaylistsList> {
                   parentContext
                       .read<PlaylistsListComponentBloc>()
                       .add(ReloadListEvent());
+
                   Navigator.of(context).pop();
                 },
               ),
@@ -215,6 +218,10 @@ class _PlaylistsListState extends State<PlaylistsList> {
               onPressed: () {
                 parentContext.read<AddPlaylistBloc>().add(AddPlaylistSave());
                 parentContext.read<AddPlaylistBloc>().add(AddPlaylistReset());
+
+                parentContext
+                    .read<PlaylistsListComponentBloc>()
+                    .add(ReloadListEvent());
 
                 Navigator.of(context).pop();
               },

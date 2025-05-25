@@ -6,9 +6,9 @@ main() {
   blocTest<NavigationDrawerBloc, NavigationDrawerState>(
       'Emits [NavDrawerState] when NavigateTo(NavItem.page_five) is added',
       build: () => NavigationDrawerBloc(),
-      act: (bloc) async => bloc.add(NavigateToEvent(NavigationPage.songs_add)),
+      act: (bloc) async => bloc.add(NavigateToEvent(NavigationPage.songsAdd)),
       expect: () => [isA<NavigationDrawerState>()],
       verify: (bloc) async {
-        expect(bloc.state.navigationPage, NavigationPage.songs_add);
+        expect(bloc.state.navigationPage, NavigationPage.songsAdd);
       });
 }
