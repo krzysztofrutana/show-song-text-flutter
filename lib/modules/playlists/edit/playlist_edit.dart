@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/cubic/playlist_edit_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/helpers/playlist_edit_validator.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/partials/playlist_songs_list_component.dart';
@@ -36,7 +37,8 @@ class _PlaylistEditState extends State<PlaylistEdit>
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              title: const Text("Edytuj listę odtwarzania"),
+              title: Text(
+                  LocalizationManager.instance.appLocalization.editPlaylist),
               centerTitle: true,
               actions: [
                 IconButton(
@@ -76,8 +78,9 @@ class _PlaylistEditState extends State<PlaylistEdit>
                                   validator: (value) => validateName(
                                       value, _playlistEditCubit.state.uuid),
                                   onChanged: _playlistEditCubit.updateName,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Nazwa',
+                                  decoration: InputDecoration(
+                                      labelText: LocalizationManager
+                                          .instance.appLocalization.name,
                                       border: OutlineInputBorder()),
                                 ),
                                 const SizedBox(height: 8.0),

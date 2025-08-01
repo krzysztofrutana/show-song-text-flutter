@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/presentation_settings/cubic/presentation_settings_cubic.dart';
 import 'package:pomocnik_wokalisty/modules/presentation_settings/helpers/presentation_settings_validator.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubic/server_cubic/server_cubit.dart';
@@ -54,7 +55,8 @@ class _PresentationSettingsState extends State<PresentationSettings>
   InputDecorator getFormSection() {
     return InputDecorator(
         decoration: InputDecoration(
-            labelText: "Ekran prezentacji",
+            labelText:
+                LocalizationManager.instance.appLocalization.presentationScreen,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
             contentPadding:
                 EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 50)),
@@ -74,8 +76,9 @@ class _PresentationSettingsState extends State<PresentationSettings>
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     validator: (value) => validateFontSize(value),
                     onChanged: (value) => _onFontSizeChange(value, context),
-                    decoration: const InputDecoration(
-                      labelText: 'Wielkość czcionki',
+                    decoration: InputDecoration(
+                      labelText:
+                          LocalizationManager.instance.appLocalization.fontSize,
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -86,7 +89,8 @@ class _PresentationSettingsState extends State<PresentationSettings>
                     buildWhen: (previous, current) =>
                         double.tryParse(current.fontSize) != null,
                     builder: (context, state) => Text(
-                      "Taka będzie wielkość czcionki",
+                      LocalizationManager
+                          .instance.appLocalization.thisWillBeTheFontSize,
                       style: TextStyle(
                           fontSize: double.parse(
                               _presentationSettingsCubic.state.fontSize)),
@@ -103,7 +107,8 @@ class _PresentationSettingsState extends State<PresentationSettings>
     return BlocBuilder<ServerCubit, ServerStateBase>(
       builder: (context, state) => InputDecorator(
         decoration: InputDecoration(
-            labelText: "Ustawienia serwera",
+            labelText:
+                LocalizationManager.instance.appLocalization.serverSettings,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
             contentPadding:
                 EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 30)),

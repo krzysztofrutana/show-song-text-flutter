@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_debouncer/flutter_debouncer.dart';
+import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:paginated_text/paginated_text.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
@@ -25,6 +26,8 @@ class _PresentationViewState extends State<PresentationView> {
 
   bool _setLastPageFromSong = false;
 
+  DismissDirection _dismissDirection = DismissDirection.none;
+
   @override
   void initState() {
     _currentSong =
@@ -32,6 +35,8 @@ class _PresentationViewState extends State<PresentationView> {
     _allSongsCount = context.read<PresentatationBloc>().state.songs.length;
 
     _controller = _getController(_currentSong.text);
+
+    FullScreen.setFullScreen(true);
 
     super.initState();
 
@@ -45,13 +50,9 @@ class _PresentationViewState extends State<PresentationView> {
       text: text,
       dropCapLines: 0,
       style: TextStyle(
-        color: Colors.black,
-        fontSize: fontSize.toDouble(),
-      ),
-      pageBreakType: PageBreakType.word,
-      breakLines: 1,
-      resizeTolerance: 3,
-      parseInlineMarkdown: true,
+          color: Colors.black, fontSize: fontSize.toDouble(), height: 1.2),
+      pageBreakType: PageBreakType.paragraph,
+      breakLines: 2,
     ));
 
     controller.onPaginate = _onPaginate;
@@ -60,9 +61,16 @@ class _PresentationViewState extends State<PresentationView> {
   }
 
   _onPaginate(PaginatedController controller) {
-    if (_setLastPageFromSong) {
-      controller.setPageIndex(controller.numPages - 1);
-    }
+    setState(() {
+      _controller = controller;
+
+      if (_setLastPageFromSong) {
+        controller.setPageIndex(controller.numPages - 1);
+        _setLastPageFromSong = false;
+      }
+
+      _setDismissDirection();
+    });
 
     _sendTextToClients(context);
   }
@@ -70,6 +78,7 @@ class _PresentationViewState extends State<PresentationView> {
   @override
   void dispose() {
     _controller.dispose();
+    FullScreen.setFullScreen(false);
     super.dispose();
   }
 
@@ -138,112 +147,122 @@ class _PresentationViewState extends State<PresentationView> {
                 ],
               ),
               centerTitle: true),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: PaginatedText(
-              _controller,
-              builder: (context, child) {
-                var fontSize = LocalStorage.instance.getInt('fontSize') ?? 15;
-
-                return DefaultTextStyle(
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: fontSize.toDouble(),
-                  ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SizedBox.expand(
-                          child: Dismissible(
-                              resizeDuration: null,
-                              key: Key(
-                                  '$_currentSongIndex/${_controller.currentPage.pageIndex}'),
-                              onDismissed: (DismissDirection direction) {
-                                // Swiping in left direction.
-                                if (direction == DismissDirection.startToEnd) {
-                                  if (!_controller.isFirst) {
-                                    _handlePreviousPage(context);
-                                  } else if (_controller.isFirst &&
-                                      _allSongsCount > 1 &&
-                                      _currentSongIndex > 0) {
-                                    _handlePreviousSong(context, false);
-                                  }
-                                }
-                                // Swiping in right direction.
-                                if (direction == DismissDirection.endToStart) {
-                                  if (!_controller.isLast) {
-                                    _handleNextPage(context);
-                                  } else if (_controller.isLast &&
-                                      _allSongsCount > 1 &&
-                                      _currentSongIndex < _allSongsCount - 1) {
-                                    _handleNextSong(context);
-                                  }
-                                }
-                              },
-                              child: child),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.first_page),
-                            onPressed:
-                                _allSongsCount > 1 && _currentSongIndex > 0
-                                    ? () => _handlePreviousSong(context, true)
-                                    : null,
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.first_page),
-                                onPressed: () {
-                                  _handleFirstPage(context);
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.navigate_before),
-                                onPressed: () {
-                                  _handlePreviousPage(context);
-                                },
-                              ),
-                              Text(
-                                _controller.numPages > 0
-                                    ? '${_controller.pageNumber}/${_controller.numPages}'
-                                    : '',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
+          body: Column(
+            children: [
+              Expanded(
+                child: SizedBox.expand(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    child: PaginatedText(
+                      _controller,
+                      builder: (context, child) {
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: SizedBox.expand(
+                                child: SafeArea(
+                                  child: Dismissible(
+                                      direction: _dismissDirection,
+                                      resizeDuration: null,
+                                      key: Key(
+                                          '$_currentSongIndex/${_controller.currentPage.pageIndex}'),
+                                      onDismissed:
+                                          (DismissDirection direction) {
+                                        // Swiping in left direction.
+                                        if (direction ==
+                                            DismissDirection.startToEnd) {
+                                          if (!_controller.isFirst) {
+                                            _handlePreviousPage(context);
+                                          } else if (_controller.isFirst &&
+                                              _allSongsCount > 1 &&
+                                              _currentSongIndex > 0) {
+                                            _handlePreviousSong(context, false);
+                                          }
+                                        }
+                                        // Swiping in right direction.
+                                        else if (direction ==
+                                            DismissDirection.endToStart) {
+                                          if (!_controller.isLast) {
+                                            _handleNextPage(context);
+                                          } else if (_controller.isLast &&
+                                              _allSongsCount > 1 &&
+                                              _currentSongIndex <
+                                                  _allSongsCount - 1) {
+                                            _handleNextSong(context);
+                                          }
+                                        } else {
+                                          setState(() {
+                                            _controller = _controller;
+                                          });
+                                        }
+                                      },
+                                      child: child),
                                 ),
                               ),
-                              IconButton(
-                                icon: Icon(Icons.navigate_next),
-                                onPressed: () {
-                                  _handleNextPage(context);
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.last_page),
-                                onPressed: () {
-                                  _handleLastPage(context);
-                                },
-                              ),
-                            ],
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.last_page_sharp),
-                            onPressed: _allSongsCount > 1 &&
-                                    _currentSongIndex < _allSongsCount - 1
-                                ? () => _handleNextSong(context)
-                                : null,
-                          ),
-                        ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.first_page),
+                    onPressed: _allSongsCount > 1 && _currentSongIndex > 0
+                        ? () => _handlePreviousSong(context, true)
+                        : null,
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.first_page),
+                        onPressed: () {
+                          _handleFirstPage(context);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.navigate_before),
+                        onPressed: () {
+                          _handlePreviousPage(context);
+                        },
+                      ),
+                      Text(
+                        _controller.numPages > 0
+                            ? '${_controller.pageNumber}/${_controller.numPages}'
+                            : '',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.navigate_next),
+                        onPressed: () {
+                          _handleNextPage(context);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.last_page),
+                        onPressed: () {
+                          _handleLastPage(context);
+                        },
                       ),
                     ],
                   ),
-                );
-              },
-            ),
+                  IconButton(
+                    icon: Icon(Icons.last_page_sharp),
+                    onPressed: _allSongsCount > 1 &&
+                            _currentSongIndex < _allSongsCount - 1
+                        ? () => _handleNextSong(context)
+                        : null,
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -253,6 +272,7 @@ class _PresentationViewState extends State<PresentationView> {
   void _handleFirstPage(BuildContext context) {
     setState(() {
       _controller.setPageIndex(0);
+      _setDismissDirection();
     });
 
     _sendTextToClients(context);
@@ -261,6 +281,7 @@ class _PresentationViewState extends State<PresentationView> {
   void _handleLastPage(BuildContext context) {
     setState(() {
       _controller.setPageIndex(_controller.numPages - 1);
+      _setDismissDirection();
     });
 
     _sendTextToClients(context);
@@ -270,6 +291,7 @@ class _PresentationViewState extends State<PresentationView> {
     if (!_controller.isFirst) {
       setState(() {
         _controller.previous();
+        _setDismissDirection();
       });
 
       _sendTextToClients(context);
@@ -284,6 +306,8 @@ class _PresentationViewState extends State<PresentationView> {
       _controller = _getController(_currentSong.text);
 
       if (!returnToFirstIndex) _setLastPageFromSong = true;
+
+      _setDismissDirection();
     });
   }
 
@@ -291,6 +315,7 @@ class _PresentationViewState extends State<PresentationView> {
     if (!_controller.isLast) {
       setState(() {
         _controller.next();
+        _setDismissDirection();
       });
       _sendTextToClients(context);
     }
@@ -302,6 +327,7 @@ class _PresentationViewState extends State<PresentationView> {
       _currentSong =
           context.read<PresentatationBloc>().state.songs[_currentSongIndex];
       _controller = _getController(_currentSong.text);
+      _setDismissDirection();
     });
   }
 
@@ -309,5 +335,37 @@ class _PresentationViewState extends State<PresentationView> {
     if (context.read<ServerCubit>().state.server.serverStarted) {
       context.read<ServerCubit>().send(_controller.currentPage.text);
     }
+  }
+
+  void _setDismissDirection() {
+    setState(() {
+      if (_allSongsCount > 1) {
+        if (_currentSongIndex == 0) {
+          if (_controller.isFirst) {
+            _dismissDirection = DismissDirection.endToStart;
+          } else {
+            _dismissDirection = DismissDirection.horizontal;
+          }
+        } else if (_currentSongIndex == _allSongsCount - 1) {
+          if (_controller.isLast) {
+            _dismissDirection = DismissDirection.startToEnd;
+          } else {
+            _dismissDirection = DismissDirection.horizontal;
+          }
+        } else {
+          _dismissDirection = DismissDirection.horizontal;
+        }
+      } else {
+        if (_controller.isFirst && _controller.pages.length == 1) {
+          _dismissDirection = DismissDirection.none;
+        } else if (_controller.isFirst) {
+          _dismissDirection = DismissDirection.endToStart;
+        } else if (_controller.isLast) {
+          _dismissDirection = DismissDirection.startToEnd;
+        } else {
+          _dismissDirection = DismissDirection.horizontal;
+        }
+      }
+    });
   }
 }

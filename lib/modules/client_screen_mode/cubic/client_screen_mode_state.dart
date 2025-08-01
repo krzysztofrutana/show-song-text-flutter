@@ -11,7 +11,9 @@ class ClientScreenModeState {
 }
 
 final class ClientScreenInitialState extends ClientScreenModeState {
-  ClientScreenInitialState() : super(text: "Brak tekstu do wyświetlenia");
+  ClientScreenInitialState()
+      : super(
+            text: LocalizationManager.instance.appLocalization.noTextToDisplay);
 }
 
 final class ClientScreenTextRecived extends ClientScreenModeState {

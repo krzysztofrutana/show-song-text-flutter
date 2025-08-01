@@ -53,6 +53,11 @@ dependencies:
   chaleno: ^0.0.8
   future_progress_dialog: ^0.2.1
   connectivity_plus: ^6.1.3
+  encoder: ^1.0.0
+  flutter_fullscreen: ^1.2.0
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
 dev_dependencies:
   flutter_test:
@@ -97,6 +102,8 @@ flutter:
     - assets/images/icons/settings.png
     - assets/images/icons/unselected_circle.png
     - assets/images/icons/upArrow.png
+
+  generate: true
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

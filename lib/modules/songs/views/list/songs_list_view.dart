@@ -38,8 +38,11 @@ class _SongsListState extends State<SongsList> {
             BlocBuilder<SongsListComponentBloc, SongsListComponentState>(
           builder: (internalContext, state) {
             final size = MediaQuery.of(context).size;
-            final iconSize = size.width * 0.07; // skalowanie ikony
-            final fontSize = size.width * 0.03; // skalowanie tekstu
+            var iconSize = size.width * 0.07; // skalowanie ikony
+            var fontSize = size.width * 0.03; // skalowanie tekstu
+
+            if (iconSize > 20) iconSize = 20;
+            if (fontSize > 14) fontSize = 14;
 
             return Visibility(
               visible: state.chooseSongs == true,
@@ -59,9 +62,15 @@ class _SongsListState extends State<SongsList> {
                           Text('Anuluj', style: TextStyle(fontSize: fontSize))
                         ],
                       ),
-                      onPressed: () => internalContext
-                          .read<SongsListComponentBloc>()
-                          .add(ChooseSongChangeEvent(value: false)),
+                      onPressed: () {
+                        internalContext
+                            .read<SongsListComponentBloc>()
+                            .add(ClearSelectedSongs());
+
+                        internalContext
+                            .read<SongsListComponentBloc>()
+                            .add(ChooseSongChangeEvent(value: false));
+                      },
                     ),
                     MaterialButton(
                         minWidth: 0,

@@ -1,12 +1,16 @@
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 
 mixin PlaylistEditValidator {
   String? validateName(String? value, String playlistId) {
-    if (value == null || value.isEmpty) return 'Nazwa jest wymagana';
+    if (value == null || value.isEmpty) {
+      return LocalizationManager.instance.appLocalization.nameIsRequired;
+    }
 
     var box = DataCollections.playlists();
     if (box.values.any((s) => s.name == value && s.uuid != playlistId)) {
-      return 'Istnieje już lista odtwarzania z tą nazwą';
+      return LocalizationManager
+          .instance.appLocalization.thereIsAlreadyPlaylistWithThisName;
     }
 
     return null;

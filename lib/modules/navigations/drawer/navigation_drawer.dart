@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/views/client_screen_mode.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 
@@ -7,16 +8,25 @@ class MyNavigationDrawer extends StatelessWidget {
   final List<_NavigationItem> _listItems = [
     _NavigationItem(
         true, NavigationPage.header, 'Header', const AssetImage('')),
-    _NavigationItem(false, NavigationPage.songsList, "Lista utworów",
+    _NavigationItem(
+        false,
+        NavigationPage.songsList,
+        LocalizationManager.instance.appLocalization.songsList,
         const AssetImage('assets/images/icons/note.png')),
-    _NavigationItem(false, NavigationPage.playlistList, "Listy odtwarzania",
+    _NavigationItem(
+        false,
+        NavigationPage.playlistList,
+        LocalizationManager.instance.appLocalization.playlists,
         const AssetImage('assets/images/icons/playlist.png')),
     _NavigationItem(
         false,
         NavigationPage.serverSettings,
-        "Ustawienia prezentacji",
+        LocalizationManager.instance.appLocalization.presentationSettings,
         const AssetImage('assets/images/icons/settings.png')),
-    _NavigationItem(false, NavigationPage.clientMode, "Tryb wyświetlacza",
+    _NavigationItem(
+        false,
+        NavigationPage.clientMode,
+        LocalizationManager.instance.appLocalization.clientMode,
         const AssetImage('assets/images/icons/presentation.png')),
   ];
 
@@ -24,7 +34,7 @@ class MyNavigationDrawer extends StatelessWidget {
 
   Widget _buildItem(_NavigationItem data, NavigationDrawerState state) =>
       data.header ? _makeHeaderItem() : _makeListItem(data, state);
-  Widget _makeHeaderItem() => const DrawerHeader(
+  Widget _makeHeaderItem() => DrawerHeader(
         child: Column(
           children: [
             Align(
@@ -37,7 +47,8 @@ class MyNavigationDrawer extends StatelessWidget {
             SizedBox(height: 10),
             Align(
               alignment: Alignment.bottomCenter,
-              child: Text('Pomocnik wokalisty',
+              child: Text(
+                  LocalizationManager.instance.appLocalization.singersAssistant,
                   style:
                       TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold)),
             ),

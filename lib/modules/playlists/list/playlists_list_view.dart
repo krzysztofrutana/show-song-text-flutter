@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/playlists_list_component.dart';
@@ -36,31 +37,41 @@ class _PlaylistsListState extends State<PlaylistsList> {
             PlaylistsListComponentState>(
           builder: (internalContext, state) {
             final size = MediaQuery.of(context).size;
-            final iconSize = size.width * 0.07; // icon scale
-            final fontSize = size.width * 0.03; // text scale
+            var iconSize = size.width * 0.07; // icon scale
+            var fontSize = size.width * 0.03; // text scale
 
-            return SizedBox(
-              height: size.height * 0.1,
-              child: Visibility(
-                visible: state.choosePlaylists == true,
+            if (iconSize > 20) iconSize = 20;
+            if (fontSize > 14) fontSize = 14;
+            return Visibility(
+              visible: state.choosePlaylists == true,
+              child: SizedBox(
+                height: size.height * 0.1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     MaterialButton(
-                      minWidth: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.cancel_outlined, size: iconSize),
-                          SizedBox(height: 4),
-                          Text('Anuluj', style: TextStyle(fontSize: fontSize))
-                        ],
-                      ),
-                      onPressed: () => internalContext
-                          .read<PlaylistsListComponentBloc>()
-                          .add(ChoosePlaylistChangeEvent(value: false)),
-                    ),
+                        minWidth: 0,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.cancel_outlined, size: iconSize),
+                            SizedBox(height: 4),
+                            Text(
+                                LocalizationManager
+                                    .instance.appLocalization.cancel,
+                                style: TextStyle(fontSize: fontSize))
+                          ],
+                        ),
+                        onPressed: () {
+                          internalContext
+                              .read<PlaylistsListComponentBloc>()
+                              .add(ClearSelectedPlaylists());
+
+                          internalContext
+                              .read<PlaylistsListComponentBloc>()
+                              .add(ChoosePlaylistChangeEvent(value: false));
+                        }),
                     MaterialButton(
                         minWidth: 0,
                         padding: EdgeInsets.symmetric(horizontal: 4),
@@ -88,7 +99,9 @@ class _PlaylistsListState extends State<PlaylistsList> {
                                   'assets/images/icons/presentation.png'),
                               size: iconSize),
                           SizedBox(height: 4),
-                          Text('Prezentacja',
+                          Text(
+                              LocalizationManager
+                                  .instance.appLocalization.presentiaton,
                               style: TextStyle(fontSize: fontSize))
                         ],
                       ),
@@ -116,20 +129,23 @@ class _PlaylistsListState extends State<PlaylistsList> {
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text(
-              'Brak zaznaczonych list odtwarzania',
+            title: Text(
+              LocalizationManager.instance.appLocalization.noPlaylistsSelected,
               style: TextStyle(fontSize: 20),
             ),
-            content: const SingleChildScrollView(
+            content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text('Należy zaznaczyć listy do usunięcia'),
+                  Text(
+                    LocalizationManager.instance.appLocalization
+                        .youShouldMarkThePlaylistsToBeDeleted,
+                  ),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Ok'),
+                child: Text(LocalizationManager.instance.appLocalization.ok),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -142,22 +158,26 @@ class _PlaylistsListState extends State<PlaylistsList> {
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Usuwanie list odtwarzania'),
+            title: Text(
+                LocalizationManager.instance.appLocalization.deletingPlaylists),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  const Text('Czy na pewno chcesz usunąć zaznaczone listy?'),
-                  Text('Liczba list: $selectedPlaylistsLength'),
+                  Text(LocalizationManager.instance.appLocalization
+                      .areYouSureYouWantDeletSelectedLists),
+                  Text(LocalizationManager.instance.appLocalization
+                      .numberOfPlaylists(selectedPlaylistsLength)),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Anuluj'),
+                child:
+                    Text(LocalizationManager.instance.appLocalization.cancel),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               TextButton(
-                child: const Text('Tak'),
+                child: Text(LocalizationManager.instance.appLocalization.yes),
                 onPressed: () {
                   parentContext
                       .read<PlaylistsListComponentBloc>()
@@ -183,20 +203,24 @@ class _PlaylistsListState extends State<PlaylistsList> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Dodawanie playlisty'),
+          title:
+              Text(LocalizationManager.instance.appLocalization.addingPlaylist),
           content: SingleChildScrollView(
             child: Column(
               children: [
                 ListBody(
                   children: <Widget>[
                     TextFormField(
-                        decoration: const InputDecoration(
-                          hintText: 'Wprowadź nazwę',
-                          labelText: 'Nazwa',
+                        decoration: InputDecoration(
+                          hintText: LocalizationManager
+                              .instance.appLocalization.enterName,
+                          labelText:
+                              LocalizationManager.instance.appLocalization.name,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Nazwa jest wymagana';
+                            return LocalizationManager
+                                .instance.appLocalization.nameIsRequired;
                           }
                           return null;
                         },
@@ -210,11 +234,11 @@ class _PlaylistsListState extends State<PlaylistsList> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Anuluj'),
+              child: Text(LocalizationManager.instance.appLocalization.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Tak'),
+              child: Text(LocalizationManager.instance.appLocalization.yes),
               onPressed: () {
                 parentContext.read<AddPlaylistBloc>().add(AddPlaylistSave());
                 parentContext.read<AddPlaylistBloc>().add(AddPlaylistReset());
@@ -245,20 +269,21 @@ class _PlaylistsListState extends State<PlaylistsList> {
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text(
-              'Brak zaznaczonych list odtwarzania',
+            title: Text(
+              LocalizationManager.instance.appLocalization.noPlaylistsSelected,
               style: TextStyle(fontSize: 20),
             ),
-            content: const SingleChildScrollView(
+            content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text('Należy zaznaczyć listę do prezentacji '),
+                  Text(LocalizationManager.instance.appLocalization
+                      .pleaseSelectPlaylistForPresentation),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Ok'),
+                child: Text(LocalizationManager.instance.appLocalization.ok),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -271,20 +296,22 @@ class _PlaylistsListState extends State<PlaylistsList> {
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text(
-              'Prezentacja możliwa tylko dla jednej listy',
+            title: Text(
+              LocalizationManager.instance.appLocalization
+                  .presentationIsOnlyPossibleForOneList,
               style: TextStyle(fontSize: 20),
             ),
-            content: const SingleChildScrollView(
+            content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text('Należy zaznaczyć tylko jedną listę do prezentacji'),
+                  Text(LocalizationManager.instance.appLocalization
+                      .pleaseSelectOnlyOneListForPresentation),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Ok'),
+                child: Text(LocalizationManager.instance.appLocalization.ok),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -305,20 +332,21 @@ class _PlaylistsListState extends State<PlaylistsList> {
           barrierDismissible: false, // user must tap button!
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text(
-                'Błąd',
+              title: Text(
+                LocalizationManager.instance.appLocalization.error,
                 style: TextStyle(fontSize: 20),
               ),
-              content: const SingleChildScrollView(
+              content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text('Wystąpił błąd przy pobieraniu informacji o liście'),
+                    Text(LocalizationManager.instance.appLocalization
+                        .anErrorOccurredWhileRetrievingListInformation),
                   ],
                 ),
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Ok'),
+                  child: Text(LocalizationManager.instance.appLocalization.ok),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],

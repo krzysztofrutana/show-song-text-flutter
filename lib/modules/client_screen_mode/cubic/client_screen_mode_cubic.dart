@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 
 part 'client_screen_mode_state.dart';
 

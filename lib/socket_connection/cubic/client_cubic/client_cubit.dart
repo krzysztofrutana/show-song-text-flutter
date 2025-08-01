@@ -15,12 +15,13 @@ class ClientCubit extends Cubit<ClientState> {
     emit(state.copyWith(ip: ip, client: client));
   }
 
-  Future<void> startConnection(Function(Uint8List) onData) async {
+  Future<void> startConnection(
+      Function(Uint8List) onData, Function(dynamic) onError) async {
     if (state.client.isConnected == true) return;
 
     try {
       emit(state.copyWith(connectionStarted: true));
-      await state.client.connect(onData, state.ip);
+      await state.client.connect(onData, onError, state.ip);
       emit(state.copyWith(client: state.client, connectionStarted: false));
     } catch (ex) {
       emit(state.copyWith(client: state.client, connectionStarted: false));

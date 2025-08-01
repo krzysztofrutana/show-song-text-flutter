@@ -8,17 +8,15 @@ class Client {
   bool isConnected = false;
   bool connectionError = false;
 
-  Future<void> connect(Function(Uint8List) onData, String ip) async {
+  Future<void> connect(
+      Function(Uint8List) onData, Function(dynamic) onError, String ip) async {
     connectionError = false;
     try {
       socket = await Socket.connect(ip, 55555, timeout: Duration(seconds: 5));
       socket.listen(
         onData,
-        onError: (error) {
-          print('Error: $error');
-        },
+        onError: onError,
         onDone: () {
-          print('Connection closed by server');
           socket.destroy();
         },
         cancelOnError: false,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fullscreen/flutter_fullscreen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubic/client_screen_mode_cubic.dart';
 import 'package:pomocnik_wokalisty/modules/home.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
@@ -23,18 +26,24 @@ void main() async {
   await LocalStorage.init();
   EventsHub.init();
 
+  WidgetsFlutterBinding.ensureInitialized();
+  await FullScreen.ensureInitialized();
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const appTitle = 'Pomocnik wokalisty';
-
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: appTitle,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
+      ],
+      supportedLocales: [Locale('en'), Locale('pl')],
       home: MyHomePage(),
     );
   }
@@ -50,6 +59,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    LocalizationManager.instance.setLocalization(context);
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -89,9 +99,9 @@ class _MyHomePageState extends State<MyHomePage> {
           create: (context) => SongSearchCubit(),
         ),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Pomocnik wokalisty',
+        title: LocalizationManager.instance.appLocalization.singersAssistant,
         home: Home(),
       ),
     );

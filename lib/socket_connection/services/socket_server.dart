@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:encoder/encoder.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 
@@ -45,7 +46,7 @@ class Server {
 
   void send(String message) {
     for (var client in activeClienst) {
-      client.write(message);
+      client.write(Encoder.encodeString(message));
     }
   }
 

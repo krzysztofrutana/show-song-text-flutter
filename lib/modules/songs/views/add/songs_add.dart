@@ -31,34 +31,33 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                title: const Text("Dodaj utwór"),
-                centerTitle: true),
-            floatingActionButton: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FloatingActionButton(
-                    heroTag: 'searchBtn',
-                    onPressed: () => _onTapSubmit(context),
-                    child: const Icon(Icons.search)),
-                const SizedBox(height: 8.0),
-                FloatingActionButton(
-                    heroTag: 'saveBtn',
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    onPressed: () => {
-                          if (_formKey.currentState!.validate())
-                            {_saveSong(context, _songAddCubit)}
-                          else
-                            {
-                              _songAddCubit.updateAutovalidateMode(
-                                  AutovalidateMode.always)
-                            }
-                        },
-                    child: const Icon(Icons.save)),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              title: const Text("Dodaj utwór"),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                    padding: EdgeInsets.all(10),
+                    iconSize: 35,
+                    icon: const Icon(Icons.search),
+                    onPressed: () => _onSearchClick(context)),
+                IconButton(
+                  padding: EdgeInsets.all(10),
+                  iconSize: 35,
+                  icon: const Icon(Icons.save),
+                  color: Colors.red,
+                  onPressed: () => {
+                    if (_formKey.currentState!.validate())
+                      {_saveSong(context, _songAddCubit)}
+                    else
+                      {
+                        _songAddCubit
+                            .updateAutovalidateMode(AutovalidateMode.always)
+                      }
+                  },
+                )
               ],
             ),
             body: SingleChildScrollView(
@@ -132,7 +131,7 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
     return Navigator.of(context).pop();
   }
 
-  Future<void> _onTapSubmit(BuildContext builderContext) async {
+  Future<void> _onSearchClick(BuildContext builderContext) async {
     if (!await ConnectionHelper.checkIfDeviceIsConnectedToInternet()) {
       _showNotConnectedInfo();
       return;

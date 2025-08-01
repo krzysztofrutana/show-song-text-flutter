@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/playlist_edit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
@@ -47,10 +48,12 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
           Flexible(
               flex: 1,
               child: list.isEmpty
-                  ? const SizedBox(
+                  ? SizedBox(
                       height: 200,
                       width: double.infinity,
-                      child: Text("Brak list odtwarzania",
+                      child: Text(
+                          LocalizationManager
+                              .instance.appLocalization.noPlaylists,
                           textAlign: TextAlign.center),
                     )
                   : Container(
@@ -126,8 +129,8 @@ Widget searchAppBar(BuildContext context) {
     padding: const EdgeInsets.all(16),
     child: TextField(
       onChanged: (value) => searchController.onChange(value),
-      decoration: const InputDecoration(
-        labelText: 'Wyszukaj',
+      decoration: InputDecoration(
+        labelText: LocalizationManager.instance.appLocalization.search,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(25))),
         prefixIcon: Icon(Icons.search),

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/cubic/playlist_edit_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 
@@ -29,14 +30,17 @@ class _PlaylistSongsListComponentState
   Widget build(BuildContext context) {
     return InputDecorator(
       decoration: InputDecoration(
-          labelText: "Utwory dodane do listy odtwarzania",
+          labelText:
+              LocalizationManager.instance.appLocalization.songsAddedToPlaylist,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(0))),
       child: songs.isEmpty
           ? Center(
               heightFactor: 2,
-              child: const SizedBox(
+              child: SizedBox(
                 width: double.infinity,
-                child: Text("Brak przypisanych utworów",
+                child: Text(
+                    LocalizationManager
+                        .instance.appLocalization.noSongsAssigned,
                     textAlign: TextAlign.center),
               ),
             )
@@ -118,23 +122,26 @@ class _PlaylistSongsListComponentState
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Usuwanie utworu z listy odtwarzania'),
+          title: Text(LocalizationManager
+              .instance.appLocalization.removingSongFromPlaylist),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(
-                    'Czy na pewno chcesz usunąć utwór ${song.author} - ${song.title} z listy odtwarzania z pozycji ${index + 1}?'),
-                Text('Zmiany zostaną wprowadzone po zapisaniu formularza')
+                Text(LocalizationManager.instance.appLocalization
+                    .areYouSureYouWantRemoveSongFromPlaylistAtPosition(
+                        song.author, song.title, index + 1)),
+                Text(LocalizationManager.instance.appLocalization
+                    .changesWillBeImplementedAfterSavingTheForm)
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Anuluj'),
+              child: Text(LocalizationManager.instance.appLocalization.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Tak'),
+              child: Text(LocalizationManager.instance.appLocalization.yes),
               onPressed: () {
                 setState(() {
                   songs.removeAt(index);
