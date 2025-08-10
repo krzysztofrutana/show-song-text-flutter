@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/cubic/song_search_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/models/search_dialog_result_model.dart';
 import 'package:pomocnik_wokalisty/webscraping/models/search_result_model.dart';
@@ -35,8 +36,8 @@ class _SearchDialogState extends State<SearchDialog> {
     return BlocBuilder<SongSearchCubit, SongSearchState>(
         builder: (context, state) => AlertDialog(
               title: Text(state.status != ResultState.textFinded
-                  ? "Wyszukiwanie"
-                  : "Znaleziono tekst"),
+                  ? LocalizationManager.instance.appLocalization.searching
+                  : LocalizationManager.instance.appLocalization.textFound),
               content: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -62,7 +63,8 @@ class _SearchDialogState extends State<SearchDialog> {
                             author: state.choosenSong?.artist,
                             title: state.choosenSong?.title));
                       },
-                      child: Text('Zatwierdź'),
+                      child: Text(
+                          LocalizationManager.instance.appLocalization.confirm),
                     ),
                   ),
                 ),
@@ -70,7 +72,8 @@ class _SearchDialogState extends State<SearchDialog> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Anuluj'),
+                  child:
+                      Text(LocalizationManager.instance.appLocalization.cancel),
                 ),
               ],
             ));
@@ -79,25 +82,30 @@ class _SearchDialogState extends State<SearchDialog> {
   String _getTextByStatus(ResultState status) {
     switch (status) {
       case ResultState.toManyArtistOnList:
-        return "Znaleziono zbyt wiele pasujacych artystów, sprecyzuj nazwę artysty";
+        return LocalizationManager.instance.appLocalization
+            .tooManyMatchingArtistsFoundPleaseSpecifyArtistName;
       case ResultState.cannotFindAnyArtists:
-        return "Nie udało się znaleźć pasującego artysty";
+        return LocalizationManager
+            .instance.appLocalization.couldntFindMatchingArtist;
       case ResultState.cannotFindAnySongs:
-        return "Nie udało się znaleźć pasującego utworu";
+        return LocalizationManager
+            .instance.appLocalization.couldntFindMatchingSong;
       case ResultState.cannotFindText:
-        return "Nie udało się znaleźć tekstu do podanych parametrów";
+        return LocalizationManager
+            .instance.appLocalization.couldNotFindTextForGivenParameters;
       case ResultState.connectionError:
-        return "Wystąpił problem połączenia";
+        return LocalizationManager
+            .instance.appLocalization.thereWasProblemWithConnection;
       case ResultState.invalidRequestData:
-        return "Podane parametry są niepoprawne";
+        return LocalizationManager
+            .instance.appLocalization.parametersProvidedAreIncorrect;
       case ResultState.searchStarted:
-        return "Trwa wyszukiwanie";
+        return LocalizationManager.instance.appLocalization.searchInProgress;
       case ResultState.textFinded:
-        return "Tekst znaleziony";
+        return LocalizationManager.instance.appLocalization.textFound;
       case ResultState.songsToChooseFinded:
-        return "Wybór utworu";
       case ResultState.chooseSongFromList:
-        return "Wybór utworu";
+        return LocalizationManager.instance.appLocalization.songSelection;
       default:
         return '';
     }
@@ -136,7 +144,8 @@ class _SearchDialogState extends State<SearchDialog> {
       context: context,
       builder: (BuildContext context) {
         return FutureProgressDialog(searchFuture,
-            message: Text('Wyszukiwanie tekstu...'));
+            message: Text(
+                LocalizationManager.instance.appLocalization.searchInProgress));
       },
     );
   }
@@ -155,7 +164,8 @@ class _SearchDialogState extends State<SearchDialog> {
       context: parentContext,
       builder: (BuildContext context) {
         return SimpleDialog(
-            title: Text("Wybierz utwór"),
+            title:
+                Text(LocalizationManager.instance.appLocalization.selectSong),
             children: _getSongsLists(parentContext, context));
       },
     );
@@ -197,7 +207,8 @@ class _SearchDialogState extends State<SearchDialog> {
       context: parentContext,
       builder: (BuildContext context) {
         return FutureProgressDialog(searchFuture,
-            message: Text('Wyszukiwanie tekstu...'));
+            message: Text(
+                LocalizationManager.instance.appLocalization.searchInProgress));
       },
     );
   }

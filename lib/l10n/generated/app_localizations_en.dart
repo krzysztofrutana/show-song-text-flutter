@@ -12,15 +12,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addingPlaylist => 'Adding a playlist';
 
   @override
+  String get addSong => 'Add a song';
+
+  @override
+  String get addTo => 'Add to';
+
+  @override
+  String get addToPlaylistSentence => 'playlist';
+
+  @override
+  String get addingToPlaylist => 'Adding to playlist';
+
+  @override
   String get anErrorOccurredWhileRetrievingListInformation => 'An error occurred while retrieving list information.';
 
   @override
   String get areYouSureYouWantDeletSelectedLists => 'Are you sure you want to delete the selected lists?';
 
   @override
+  String get areYouSureYouWantDeleteSelectedSongs => 'Are you sure you want to delete the selected songs?';
+
+  @override
+  String areYouSureYouWantRemoveCurrentSongFromPlaylistAtPosition(Object name, Object position) {
+    return 'Are you sure you want to remove the song from the playlist $name at position $position?';
+  }
+
+  @override
   String areYouSureYouWantRemoveSongFromPlaylistAtPosition(Object author, Object index, Object title) {
     return 'Are you sure you want to remove the song $author - $title from the playlist at position $index?';
   }
+
+  @override
+  String get author => 'Author';
+
+  @override
+  String get authorIsRequired => 'Author is required';
 
   @override
   String get cancel => 'Cancel';
@@ -30,6 +56,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clientMode => 'Client mode';
+
+  @override
+  String get confirm => 'Confirm';
 
   @override
   String get connecting => 'Connecting';
@@ -52,10 +81,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connectionToTheServer => 'Connection to the server';
 
   @override
+  String get couldntFindMatchingArtist => 'Couldn\'t find a matching artist';
+
+  @override
+  String get couldntFindMatchingSong => 'Couldn\'t find a matching song';
+
+  @override
+  String get couldNotFindTextForGivenParameters => 'Could not find text for the given parameters';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get currentIP => 'Current IP:';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
   String get deletingPlaylists => 'Deleting playlists';
 
   @override
+  String get deletingSongs => 'Deleting songs';
+
+  @override
   String get editPlaylist => 'Edit playlist';
+
+  @override
+  String get editSong => 'Edit song';
 
   @override
   String get enterName => 'Enter a name';
@@ -67,6 +120,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error => 'Error';
 
   @override
+  String errorWithMessage(Object message) {
+    return 'Error: $message';
+  }
+
+  @override
   String get fontSize => 'Font size';
 
   @override
@@ -76,10 +134,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ipIsRequired => 'IP is required';
 
   @override
+  String get loading => 'Loading...';
+
+  @override
   String get name => 'Name';
 
   @override
   String get nameIsRequired => 'Name is required';
+
+  @override
+  String get noActiveInternetConnection => 'No active internet connection';
 
   @override
   String get noConnection => 'No connection';
@@ -91,10 +155,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPlaylistsSelected => 'No playlists selected';
 
   @override
+  String get noSongs => 'No songs';
+
+  @override
   String get noSongsAssigned => 'No songs assigned';
 
   @override
+  String get noSongsSelected => 'No songs selected';
+
+  @override
   String get noTextToDisplay => 'No text to display';
+
+  @override
+  String numberOfConnectedDevices(Object number) {
+    return 'Number of connected devices: $number';
+  }
 
   @override
   String numberOfPlaylists(Object number) {
@@ -102,16 +177,35 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String numberOfSongs(Object number) {
+    return 'Number of songs: $number';
+  }
+
+  @override
   String get ok => 'Ok';
 
   @override
+  String get parametersProvidedAreIncorrect => 'The parameters provided are incorrect';
+
+  @override
+  String get playlist => 'playlist';
+
+  @override
   String get playlists => 'Playlists';
+
+  @override
+  String get playlistsToWhichSongHasBeenAdded => 'Playlists to which the song has been added';
 
   @override
   String get pleaseSelectOnlyOneListForPresentation => 'Please select only one list for presentation';
 
   @override
   String get pleaseSelectPlaylistForPresentation => 'Please select the playlist for presentation';
+
+  @override
+  String position(Object position) {
+    return 'Position: $position';
+  }
 
   @override
   String get presentiaton => 'Presentation';
@@ -135,16 +229,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search => 'Search';
 
   @override
+  String get searchInProgress => 'Search in progress';
+
+  @override
+  String get searching => 'Searching';
+
+  @override
+  String get selectSong => 'Select a song';
+
+  @override
+  String get serverDown => 'Server down';
+
+  @override
   String get serverSettings => 'Server settings';
 
   @override
+  String get settingsHaveBeenSaved => 'The settings have been saved';
+
+  @override
   String get singersAssistant => 'Singer\'s assistant';
+
+  @override
+  String get songSelection => 'Song selection';
 
   @override
   String get songsAddedToPlaylist => 'Songs added to playlist';
 
   @override
   String get songsList => 'Songs list';
+
+  @override
+  String get text => 'Text';
+
+  @override
+  String get textFound => 'Text found';
+
+  @override
+  String get textIsRequired => 'Text is required';
 
   @override
   String get thisWillBeTheFontSize => 'This will be the font size';
@@ -156,10 +277,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thereIsAlreadyPlaylistWithThisName => 'There is already a playlist with this name';
 
   @override
+  String get thereIsAlreadySongWithThisTitle => 'There is already a song with this title';
+
+  @override
+  String get thereWasProblemWithConnection => 'There was a problem with the connection';
+
+  @override
   String get theValueEnteredIsNotNumber => 'The value entered is not a number';
 
   @override
+  String get title => 'Title';
+
+  @override
+  String get titleIsRequired => 'Title is required';
+
+  @override
+  String get toCreatePlaylistYouNeedToSelectSongs => 'To create a playlist, you need to select songs.';
+
+  @override
+  String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Too many matching artists found, please specify the artist name';
+
+  @override
+  String get toAddToPlaylistSelectSongs => 'To add to the playlist, select songs';
+
+  @override
+  String get toSearchForTextYouNeedAtLeastTitleOrAuthor => 'To search for a text, you need at least the title or author';
+
+  @override
+  String get wifiHotspotDisabled => 'Wifi hotspot disabled';
+
+  @override
   String get yes => 'Yes';
+
+  @override
+  String get youMustMarkSongsToBeDeleted => 'You must mark the songs to be deleted';
 
   @override
   String get youShouldMarkThePlaylistsToBeDeleted => 'You should mark the playlists to be deleted';

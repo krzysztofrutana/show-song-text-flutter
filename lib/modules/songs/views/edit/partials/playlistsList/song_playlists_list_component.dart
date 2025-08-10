@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/partials/playlistsList/models/playlist_include_song_model.dart';
 
 class SongPlaylistsListComponent extends StatefulWidget {
@@ -26,15 +27,17 @@ class _SongPlaylistsListComponentState
   Widget build(BuildContext context) {
     return InputDecorator(
       decoration: InputDecoration(
-          labelText: "Listy odtwarzania do których dodano utwór",
+          labelText: LocalizationManager
+              .instance.appLocalization.playlistsToWhichSongHasBeenAdded,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(0))),
       child: playlists.isEmpty
           ? Center(
               heightFactor: 2,
-              child: const SizedBox(
+              child: SizedBox(
                 width: double.infinity,
-                child:
-                    Text("Brak list odtwarzania", textAlign: TextAlign.center),
+                child: Text(
+                    LocalizationManager.instance.appLocalization.noPlaylists,
+                    textAlign: TextAlign.center),
               ),
             )
           : Container(
@@ -48,7 +51,8 @@ class _SongPlaylistsListComponentState
                   final playlistModel = playlists[index];
                   return ListTile(
                     title: Text(playlistModel.playlist.name),
-                    subtitle: Text("Pozycja: ${playlistModel.position + 1}"),
+                    subtitle: Text(LocalizationManager.instance.appLocalization
+                        .position(playlistModel.position + 1)),
                     titleTextStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -92,22 +96,25 @@ class _SongPlaylistsListComponentState
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Usuwanie utworu z listy odtwarzania'),
+          title: Text(LocalizationManager
+              .instance.appLocalization.removingSongFromPlaylist),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(
-                    'Czy na pewno chcesz usunąć utwór z listy odtwarzania ${playlistModel.playlist.name} z pozycji ${playlistModel.position + 1}?'),
+                Text(LocalizationManager.instance.appLocalization
+                    .areYouSureYouWantRemoveCurrentSongFromPlaylistAtPosition(
+                        playlistModel.playlist.name,
+                        playlistModel.position + 1)),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Anuluj'),
+              child: Text(LocalizationManager.instance.appLocalization.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const Text('Tak'),
+              child: Text(LocalizationManager.instance.appLocalization.yes),
               onPressed: () {
                 playlistModel.playlist.songsIds
                     .removeAt(playlistModel.position);

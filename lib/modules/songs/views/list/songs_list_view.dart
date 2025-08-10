@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
@@ -59,7 +60,10 @@ class _SongsListState extends State<SongsList> {
                         children: [
                           Icon(Icons.cancel_outlined, size: iconSize),
                           SizedBox(height: 4),
-                          Text('Anuluj', style: TextStyle(fontSize: fontSize))
+                          Text(
+                              LocalizationManager
+                                  .instance.appLocalization.cancel,
+                              style: TextStyle(fontSize: fontSize))
                         ],
                       ),
                       onPressed: () {
@@ -82,7 +86,10 @@ class _SongsListState extends State<SongsList> {
                                 AssetImage('assets/images/icons/delete.png'),
                                 size: iconSize),
                             SizedBox(height: 4),
-                            Text('Usuń', style: TextStyle(fontSize: fontSize))
+                            Text(
+                                LocalizationManager
+                                    .instance.appLocalization.delete,
+                                style: TextStyle(fontSize: fontSize))
                           ],
                         ),
                         onPressed: () =>
@@ -100,9 +107,13 @@ class _SongsListState extends State<SongsList> {
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('Utwórz',
+                              Text(
+                                  LocalizationManager
+                                      .instance.appLocalization.create,
                                   style: TextStyle(fontSize: fontSize)),
-                              Text('playlistę',
+                              Text(
+                                  LocalizationManager
+                                      .instance.appLocalization.playlist,
                                   style: TextStyle(fontSize: fontSize))
                             ],
                           )
@@ -125,9 +136,13 @@ class _SongsListState extends State<SongsList> {
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('Dodaj do',
+                              Text(
+                                  LocalizationManager
+                                      .instance.appLocalization.addTo,
                                   style: TextStyle(fontSize: fontSize)),
-                              Text('playlisty',
+                              Text(
+                                  LocalizationManager.instance.appLocalization
+                                      .addToPlaylistSentence,
                                   style: TextStyle(fontSize: fontSize))
                             ],
                           )
@@ -150,7 +165,9 @@ class _SongsListState extends State<SongsList> {
                             SizedBox(
                               height: 4,
                             ),
-                            Text('Prezentacja',
+                            Text(
+                                LocalizationManager
+                                    .instance.appLocalization.presentiaton,
                                 style: TextStyle(fontSize: fontSize))
                           ]),
                       onPressed: () =>
@@ -177,53 +194,34 @@ class _SongsListState extends State<SongsList> {
         parentContext.read<SongsListComponentBloc>().state.selectedSongs.length;
 
     if (selectedSongsLength == 0) {
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text(
-              'Brak zaznaczonych utworów',
-              style: TextStyle(fontSize: 20),
-            ),
-            content: const SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('Należy zaznaczyć utwory do usunięcia'),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Ok'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
+      return showNoSongsSelectedDialog(LocalizationManager
+          .instance.appLocalization.youMustMarkSongsToBeDeleted);
     } else {
       return showDialog<void>(
         context: context,
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Usuwanie utworów'),
+            title: Text(
+                LocalizationManager.instance.appLocalization.deletingSongs),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  const Text('Czy na pewno chcesz usunąć zaznaczone utwory?'),
-                  Text('Liczba utworów: $selectedSongsLength'),
+                  Text(LocalizationManager.instance.appLocalization
+                      .areYouSureYouWantDeleteSelectedSongs),
+                  Text(LocalizationManager.instance.appLocalization
+                      .numberOfSongs(selectedSongsLength)),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Anuluj'),
+                child:
+                    Text(LocalizationManager.instance.appLocalization.cancel),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               TextButton(
-                child: const Text('Tak'),
+                child: Text(LocalizationManager.instance.appLocalization.yes),
                 onPressed: () {
                   parentContext
                       .read<SongsListComponentBloc>()
@@ -252,52 +250,33 @@ class _SongsListState extends State<SongsList> {
         .add(PlaylistSetSelectedSongs(selectedSongs));
 
     if (selectedSongs.isEmpty) {
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text(
-              'Brak zaznaczonych utworów',
-              style: TextStyle(fontSize: 20),
-            ),
-            content: const SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('By utworzyć playlistę należy wybrać utwory'),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Ok'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
+      return showNoSongsSelectedDialog(LocalizationManager
+          .instance.appLocalization.toCreatePlaylistYouNeedToSelectSongs);
     } else {
       return showDialog<void>(
         context: context,
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Dodawanie playlisty'),
+            title: Text(
+                LocalizationManager.instance.appLocalization.addingPlaylist),
             content: SingleChildScrollView(
               child: Column(
                 children: [
                   ListBody(
                     children: <Widget>[
-                      Text('Liczba utworów: ${selectedSongs.length}'),
+                      Text(LocalizationManager.instance.appLocalization
+                          .numberOfSongs(selectedSongs.length)),
                       TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: 'Wprowadź nazwę',
-                            labelText: 'Nazwa',
-                          ),
+                          decoration: InputDecoration(
+                              hintText: LocalizationManager
+                                  .instance.appLocalization.enterName,
+                              labelText: LocalizationManager
+                                  .instance.appLocalization.name),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Nazwa jest wymagana';
+                              return LocalizationManager
+                                  .instance.appLocalization.nameIsRequired;
                             }
                             return null;
                           },
@@ -311,11 +290,12 @@ class _SongsListState extends State<SongsList> {
             ),
             actions: <Widget>[
               TextButton(
-                child: const Text('Anuluj'),
+                child:
+                    Text(LocalizationManager.instance.appLocalization.cancel),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               TextButton(
-                child: const Text('Tak'),
+                child: Text(LocalizationManager.instance.appLocalization.yes),
                 onPressed: () {
                   parentContext.read<AddPlaylistBloc>().add(AddPlaylistSave());
                   parentContext.read<AddPlaylistBloc>().add(AddPlaylistReset());
@@ -350,43 +330,49 @@ class _SongsListState extends State<SongsList> {
         .add(PlaylistSetSelectedSongs(selectedSongs));
 
     if (selectedSongs.isEmpty) {
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text(
-              'Brak zaznaczonych utworów',
-              style: TextStyle(fontSize: 20),
-            ),
-            content: const SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('By dodać do playlisty należy wybrać utwory'),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Ok'),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          );
-        },
-      );
+      return showNoSongsSelectedDialog(LocalizationManager
+          .instance.appLocalization.toAddToPlaylistSelectSongs);
     } else {
       return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: const Text('Dodawanie do playlisty'),
+            title: Text(
+                LocalizationManager.instance.appLocalization.addingToPlaylist),
             children: _getPlaylistsOptions(
                 playlists.values, selectedSongs, parentContext, context),
           );
         },
       );
     }
+  }
+
+  Future<void> showNoSongsSelectedDialog(String message) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            LocalizationManager.instance.appLocalization.noSongsSelected,
+            style: TextStyle(fontSize: 20),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(LocalizationManager.instance.appLocalization.cancel),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   List<SimpleDialogOption> _getPlaylistsOptions(

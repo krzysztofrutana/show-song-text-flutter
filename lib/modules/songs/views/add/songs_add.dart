@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/connection_helper.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/cubic/songs_add_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/helpers/song_add_validator.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/cubic/song_search_cubit.dart';
@@ -35,7 +36,7 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              title: const Text("Dodaj utwór"),
+              title: Text(LocalizationManager.instance.appLocalization.addSong),
               centerTitle: true,
               actions: [
                 IconButton(
@@ -79,8 +80,9 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
                                   controller: authorController,
                                   validator: validateAuthor,
                                   onChanged: _songAddCubit.updateAuthor,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Autor',
+                                  decoration: InputDecoration(
+                                      labelText: LocalizationManager
+                                          .instance.appLocalization.author,
                                       border: OutlineInputBorder()),
                                 ),
                                 const SizedBox(height: 8.0),
@@ -88,26 +90,21 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
                                   controller: titleController,
                                   validator: validateTitle,
                                   onChanged: _songAddCubit.updateTitle,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Tytuł',
+                                  decoration: InputDecoration(
+                                      labelText: LocalizationManager
+                                          .instance.appLocalization.title,
                                       border: OutlineInputBorder()),
                                 ),
                                 const SizedBox(height: 8.0),
-                                // TextFormField(
-                                //   onChanged: _songAddCubit.updateKey,
-                                //   decoration: const InputDecoration(
-                                //       labelText: 'Tonacja',
-                                //       border: OutlineInputBorder()),
-                                // ),
-                                // const SizedBox(height: 8.0),
                                 TextFormField(
                                   controller: textController,
                                   validator: validateText,
                                   onChanged: _songAddCubit.updateText,
                                   minLines: 12,
                                   maxLines: null,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Tekst',
+                                  decoration: InputDecoration(
+                                      labelText: LocalizationManager
+                                          .instance.appLocalization.text,
                                       alignLabelWithHint: true,
                                       border: OutlineInputBorder()),
                                 ),
@@ -183,14 +180,15 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
 
   void _showNotConnectedInfo() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text('Brak aktywnego połączenia internetowego'),
+      content: Text(LocalizationManager
+          .instance.appLocalization.noActiveInternetConnection),
     ));
   }
 
   void _showInvalidSearchData() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text(
-          'Do wyszukania tekstu potrzeba przynajmniej tytułu lub autora'),
+      content: Text(LocalizationManager
+          .instance.appLocalization.toSearchForTextYouNeedAtLeastTitleOrAuthor),
     ));
   }
 }

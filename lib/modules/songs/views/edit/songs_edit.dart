@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/connection_helper.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/helpers/song_add_validator.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/cubic/song_search_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/models/search_dialog_result_model.dart';
@@ -51,7 +52,8 @@ class _SongsEditState extends State<SongsEdit> with SongEditValidator {
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              title: const Text("Edytuj utwór"),
+              title:
+                  Text(LocalizationManager.instance.appLocalization.editSong),
               centerTitle: true,
               actions: [
                 IconButton(
@@ -95,8 +97,9 @@ class _SongsEditState extends State<SongsEdit> with SongEditValidator {
                                   controller: authorController,
                                   validator: validateAuthor,
                                   onChanged: _songEditCubit.updateAuthor,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Autor',
+                                  decoration: InputDecoration(
+                                      labelText: LocalizationManager
+                                          .instance.appLocalization.author,
                                       border: OutlineInputBorder()),
                                 ),
                                 const SizedBox(height: 8.0),
@@ -105,8 +108,9 @@ class _SongsEditState extends State<SongsEdit> with SongEditValidator {
                                   validator: (value) => validateTitle(
                                       value, _songEditCubit.state.uuid),
                                   onChanged: _songEditCubit.updateTitle,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Tytuł',
+                                  decoration: InputDecoration(
+                                      labelText: LocalizationManager
+                                          .instance.appLocalization.title,
                                       border: OutlineInputBorder()),
                                 ),
                                 const SizedBox(height: 8.0),
@@ -116,8 +120,9 @@ class _SongsEditState extends State<SongsEdit> with SongEditValidator {
                                   onChanged: _songEditCubit.updateText,
                                   minLines: 12,
                                   maxLines: null,
-                                  decoration: const InputDecoration(
-                                      labelText: 'Tekst',
+                                  decoration: InputDecoration(
+                                      labelText: LocalizationManager
+                                          .instance.appLocalization.text,
                                       alignLabelWithHint: true,
                                       border: OutlineInputBorder()),
                                 ),
@@ -195,14 +200,15 @@ class _SongsEditState extends State<SongsEdit> with SongEditValidator {
 
   void _showNotConnectedInfo() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text('Brak aktywnego połączenia internetowego'),
+      content: Text(LocalizationManager
+          .instance.appLocalization.noActiveInternetConnection),
     ));
   }
 
   void _showInvalidSearchData() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text(
-          'Do wyszukania tekstu potrzeba przynajmniej tytułu lub autora'),
+      content: Text(LocalizationManager
+          .instance.appLocalization.toSearchForTextYouNeedAtLeastTitleOrAuthor),
     ));
   }
 }

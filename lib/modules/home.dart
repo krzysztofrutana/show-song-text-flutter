@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/navigation_drawer.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/playlists_list_view.dart';
@@ -30,19 +31,17 @@ class _HomeState extends State<Home> {
 String _getTextForItem(NavigationPage navigationPage) {
   switch (navigationPage) {
     case NavigationPage.songsList:
-      return "Lista utworów";
+      return LocalizationManager.instance.appLocalization.songsList;
     case NavigationPage.songsAdd:
-      return "Dodaj utwór";
+      return LocalizationManager.instance.appLocalization.addSong;
     case NavigationPage.songsEdit:
-      return "Edytuj utwór";
+      return LocalizationManager.instance.appLocalization.editSong;
     case NavigationPage.playlistList:
-      return "Listy odtwarzania";
-    case NavigationPage.playlistAdd:
-      return "Dodaj listę";
+      return LocalizationManager.instance.appLocalization.playlists;
     case NavigationPage.playlistEdit:
-      return "Edytuj listę";
+      return LocalizationManager.instance.appLocalization.editPlaylist;
     case NavigationPage.serverSettings:
-      return "Ustawienia prezentacji";
+      return LocalizationManager.instance.appLocalization.presentationSettings;
     default:
       return '-';
   }

@@ -118,16 +118,20 @@ class _PresentationSettingsState extends State<PresentationSettings>
               Widget child;
               if (snapshot.connectionState == ConnectionState.done) {
                 child = Column(children: [
-                  Text("Aktualne IP:"),
+                  Text(LocalizationManager.instance.appLocalization.currentIP),
                   Text(
-                    state.server.ip ?? 'Hotspot Wifi wyłączony',
+                    state.server.ip ??
+                        LocalizationManager
+                            .instance.appLocalization.wifiHotspotDisabled,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   const SizedBox(height: 10.0),
                   state.server.serverStarted
-                      ? Text(
-                          'Liczba podłączonych urządzeń: ${state.server.activeClienst.length}')
-                      : Text("Serwer wyłączony"),
+                      ? Text(LocalizationManager.instance.appLocalization
+                          .numberOfConnectedDevices(
+                              state.server.activeClienst.length))
+                      : Text(LocalizationManager
+                          .instance.appLocalization.serverDown),
                   state.server.serverStarted
                       ? IconButton(
                           iconSize: 40,
@@ -141,9 +145,11 @@ class _PresentationSettingsState extends State<PresentationSettings>
                           icon: Icon(Icons.play_arrow_outlined)),
                 ]);
               } else if (snapshot.hasError) {
-                child = Text('Error: ${snapshot.error}');
+                child = Text(LocalizationManager.instance.appLocalization
+                    .errorWithMessage(snapshot.error!));
               } else {
-                child = Text('Ładowanie...');
+                child =
+                    Text(LocalizationManager.instance.appLocalization.loading);
               }
               return child;
             }),
@@ -163,7 +169,8 @@ class _PresentationSettingsState extends State<PresentationSettings>
 
   void _showConfirmSaveToast(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: const Text('Ustawienia zostały zapisane'),
+      content: Text(
+          LocalizationManager.instance.appLocalization.settingsHaveBeenSaved),
     ));
   }
 }
