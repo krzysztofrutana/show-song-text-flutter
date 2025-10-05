@@ -18,7 +18,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get addTo => 'Dodaj do';
 
   @override
-  String get addToPlaylistSentence => 'playlisty';
+  String get addToPlaylistSentence => 'Dodaj do playlisty';
 
   @override
   String get addingToPlaylist => 'Dodawanie do playlisty';
@@ -93,6 +93,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get create => 'Utwórz';
 
   @override
+  String get createPlaylist => 'Utwórz playlistę';
+
+  @override
   String get currentIP => 'Aktualne IP:';
 
   @override
@@ -132,6 +135,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get ipIsRequired => 'IP jest wymagane';
+
+  @override
+  String get language => 'Język:';
 
   @override
   String get loading => 'Ładowanie...';
@@ -186,9 +192,6 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get parametersProvidedAreIncorrect => 'Podane parametry są niepoprawne';
-
-  @override
-  String get playlist => 'playlistę';
 
   @override
   String get playlists => 'Listy odtwarzania';

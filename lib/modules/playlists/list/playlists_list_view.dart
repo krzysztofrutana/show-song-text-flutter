@@ -49,64 +49,73 @@ class _PlaylistsListState extends State<PlaylistsList> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    MaterialButton(
+                    Expanded(
+                      child: MaterialButton(
+                          minWidth: 0,
+                          padding: EdgeInsets.all(0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 10,
+                            children: [
+                              Icon(Icons.cancel_outlined, size: iconSize),
+                              Text(
+                                  LocalizationManager
+                                      .instance.appLocalization.cancel,
+                                  style: TextStyle(fontSize: fontSize))
+                            ],
+                          ),
+                          onPressed: () {
+                            internalContext
+                                .read<PlaylistsListComponentBloc>()
+                                .add(ClearSelectedPlaylists());
+
+                            internalContext
+                                .read<PlaylistsListComponentBloc>()
+                                .add(ChoosePlaylistChangeEvent(value: false));
+                          }),
+                    ),
+                    Expanded(
+                      child: MaterialButton(
+                          minWidth: 0,
+                          padding: EdgeInsets.all(0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 10,
+                            children: [
+                              ImageIcon(
+                                AssetImage('assets/images/icons/delete.png'),
+                                size: iconSize,
+                              ),
+                              Text(
+                                  LocalizationManager
+                                      .instance.appLocalization.delete,
+                                  style: TextStyle(fontSize: fontSize))
+                            ],
+                          ),
+                          onPressed: () =>
+                              _showDeleteConfirmModal(internalContext)),
+                    ),
+                    Expanded(
+                      child: MaterialButton(
                         minWidth: 0,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        padding: EdgeInsets.all(0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 10,
                           children: [
-                            Icon(Icons.cancel_outlined, size: iconSize),
-                            SizedBox(height: 4),
+                            ImageIcon(
+                                AssetImage(
+                                    'assets/images/icons/presentation.png'),
+                                size: iconSize),
                             Text(
                                 LocalizationManager
-                                    .instance.appLocalization.cancel,
+                                    .instance.appLocalization.presentiaton,
                                 style: TextStyle(fontSize: fontSize))
                           ],
                         ),
-                        onPressed: () {
-                          internalContext
-                              .read<PlaylistsListComponentBloc>()
-                              .add(ClearSelectedPlaylists());
-
-                          internalContext
-                              .read<PlaylistsListComponentBloc>()
-                              .add(ChoosePlaylistChangeEvent(value: false));
-                        }),
-                    MaterialButton(
-                        minWidth: 0,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ImageIcon(
-                              AssetImage('assets/images/icons/delete.png'),
-                              size: iconSize,
-                            ),
-                            SizedBox(height: 4),
-                            Text('Usuń', style: TextStyle(fontSize: fontSize))
-                          ],
-                        ),
                         onPressed: () =>
-                            _showDeleteConfirmModal(internalContext)),
-                    MaterialButton(
-                      minWidth: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ImageIcon(
-                              AssetImage(
-                                  'assets/images/icons/presentation.png'),
-                              size: iconSize),
-                          SizedBox(height: 4),
-                          Text(
-                              LocalizationManager
-                                  .instance.appLocalization.presentiaton,
-                              style: TextStyle(fontSize: fontSize))
-                        ],
+                            _runPresentationForSelected(internalContext),
                       ),
-                      onPressed: () =>
-                          _runPresentationForSelected(internalContext),
                     )
                   ],
                 ),

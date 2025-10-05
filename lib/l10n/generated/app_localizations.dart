@@ -116,7 +116,7 @@ abstract class AppLocalizations {
   /// No description provided for @addToPlaylistSentence.
   ///
   /// In pl, this message translates to:
-  /// **'playlisty'**
+  /// **'Dodaj do playlisty'**
   String get addToPlaylistSentence;
 
   /// No description provided for @addingToPlaylist.
@@ -251,6 +251,12 @@ abstract class AppLocalizations {
   /// **'Utwórz'**
   String get create;
 
+  /// No description provided for @createPlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Utwórz playlistę'**
+  String get createPlaylist;
+
   /// No description provided for @currentIP.
   ///
   /// In pl, this message translates to:
@@ -328,6 +334,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'IP jest wymagane'**
   String get ipIsRequired;
+
+  /// No description provided for @language.
+  ///
+  /// In pl, this message translates to:
+  /// **'Język:'**
+  String get language;
 
   /// No description provided for @loading.
   ///
@@ -424,12 +436,6 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Podane parametry są niepoprawne'**
   String get parametersProvidedAreIncorrect;
-
-  /// No description provided for @playlist.
-  ///
-  /// In pl, this message translates to:
-  /// **'playlistę'**
-  String get playlist;
 
   /// No description provided for @playlists.
   ///

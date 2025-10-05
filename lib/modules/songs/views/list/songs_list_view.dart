@@ -52,126 +52,120 @@ class _SongsListState extends State<SongsList> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    MaterialButton(
-                      minWidth: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.cancel_outlined, size: iconSize),
-                          SizedBox(height: 4),
-                          Text(
-                              LocalizationManager
-                                  .instance.appLocalization.cancel,
-                              style: TextStyle(fontSize: fontSize))
-                        ],
-                      ),
-                      onPressed: () {
-                        internalContext
-                            .read<SongsListComponentBloc>()
-                            .add(ClearSelectedSongs());
+                    Expanded(
+                      child: MaterialButton(
+                        minWidth: 0,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 10,
+                          children: [
+                            Icon(Icons.cancel_outlined, size: iconSize),
+                            Text(
+                                LocalizationManager
+                                    .instance.appLocalization.cancel,
+                                style: TextStyle(fontSize: fontSize),
+                                textAlign: TextAlign.center)
+                          ],
+                        ),
+                        onPressed: () {
+                          internalContext
+                              .read<SongsListComponentBloc>()
+                              .add(ClearSelectedSongs());
 
-                        internalContext
-                            .read<SongsListComponentBloc>()
-                            .add(ChooseSongChangeEvent(value: false));
-                      },
+                          internalContext
+                              .read<SongsListComponentBloc>()
+                              .add(ChooseSongChangeEvent(value: false));
+                        },
+                      ),
                     ),
-                    MaterialButton(
+                    Expanded(
+                      child: MaterialButton(
+                          minWidth: 0,
+                          padding: EdgeInsets.symmetric(horizontal: 4),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 10,
+                            children: [
+                              ImageIcon(
+                                  AssetImage('assets/images/icons/delete.png'),
+                                  size: iconSize),
+                              Text(
+                                  LocalizationManager
+                                      .instance.appLocalization.delete,
+                                  style: TextStyle(fontSize: fontSize),
+                                  textAlign: TextAlign.center)
+                            ],
+                          ),
+                          onPressed: () =>
+                              _showDeleteConfirmModal(internalContext)),
+                    ),
+                    Expanded(
+                      child: MaterialButton(
                         minWidth: 0,
                         padding: EdgeInsets.symmetric(horizontal: 4),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ImageIcon(
-                                AssetImage('assets/images/icons/delete.png'),
+                                AssetImage('assets/images/icons/playlist.png'),
                                 size: iconSize),
-                            SizedBox(height: 4),
                             Text(
                                 LocalizationManager
-                                    .instance.appLocalization.delete,
-                                style: TextStyle(fontSize: fontSize))
+                                    .instance.appLocalization.createPlaylist,
+                                style: TextStyle(fontSize: fontSize),
+                                textAlign: TextAlign.center)
                           ],
                         ),
                         onPressed: () =>
-                            _showDeleteConfirmModal(internalContext)),
-                    MaterialButton(
-                      minWidth: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ImageIcon(
-                              AssetImage('assets/images/icons/playlist.png'),
-                              size: iconSize),
-                          SizedBox(width: 4),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                  LocalizationManager
-                                      .instance.appLocalization.create,
-                                  style: TextStyle(fontSize: fontSize)),
-                              Text(
-                                  LocalizationManager
-                                      .instance.appLocalization.playlist,
-                                  style: TextStyle(fontSize: fontSize))
-                            ],
-                          )
-                        ],
+                            _showCreatePlaylistModal(internalContext),
                       ),
-                      onPressed: () =>
-                          _showCreatePlaylistModal(internalContext),
                     ),
-                    MaterialButton(
-                      minWidth: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ImageIcon(
-                            AssetImage('assets/images/icons/playlist.png'),
-                            size: iconSize,
-                          ),
-                          SizedBox(height: 4),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                  LocalizationManager
-                                      .instance.appLocalization.addTo,
-                                  style: TextStyle(fontSize: fontSize)),
-                              Text(
-                                  LocalizationManager.instance.appLocalization
-                                      .addToPlaylistSentence,
-                                  style: TextStyle(fontSize: fontSize))
-                            ],
-                          )
-                        ],
-                      ),
-                      onPressed: () =>
-                          _showAddSelectedToExistPlaylistModal(internalContext),
-                    ),
-                    MaterialButton(
-                      minWidth: 0,
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
+                    Expanded(
+                      child: MaterialButton(
+                        minWidth: 0,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ImageIcon(
-                              AssetImage(
-                                  'assets/images/icons/presentation.png'),
+                              AssetImage('assets/images/icons/playlist.png'),
                               size: iconSize,
                             ),
-                            SizedBox(
-                              height: 4,
-                            ),
                             Text(
-                                LocalizationManager
-                                    .instance.appLocalization.presentiaton,
-                                style: TextStyle(fontSize: fontSize))
-                          ]),
-                      onPressed: () =>
-                          _runPresentationForSelected(internalContext),
+                              LocalizationManager.instance.appLocalization
+                                  .addToPlaylistSentence,
+                              style: TextStyle(fontSize: fontSize),
+                              textAlign: TextAlign.center,
+                            )
+                          ],
+                        ),
+                        onPressed: () => _showAddSelectedToExistPlaylistModal(
+                            internalContext),
+                      ),
+                    ),
+                    Expanded(
+                      child: MaterialButton(
+                        minWidth: 0,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            spacing: 10,
+                            children: [
+                              ImageIcon(
+                                AssetImage(
+                                    'assets/images/icons/presentation.png'),
+                                size: iconSize,
+                              ),
+                              Text(
+                                  LocalizationManager
+                                      .instance.appLocalization.presentiaton,
+                                  style: TextStyle(fontSize: fontSize),
+                                  textAlign: TextAlign.center)
+                            ]),
+                        onPressed: () =>
+                            _runPresentationForSelected(internalContext),
+                      ),
                     )
                   ],
                 ),
