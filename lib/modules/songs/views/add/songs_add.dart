@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:pomocnik_wokalisty/ads/ads_mixin.dart';
+import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/connection_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/cubic/songs_add_cubit.dart';
@@ -17,7 +20,8 @@ class SongsAdd extends StatefulWidget with SongAddValidator {
   State<SongsAdd> createState() => _SongsAddState();
 }
 
-class _SongsAddState extends State<SongsAdd> with SongAddValidator {
+class _SongsAddState extends State<SongsAdd>
+    with SongAddValidator, Ads, InterstitialAds {
   final SongsAddCubit _songAddCubit = SongsAddCubit();
 
   final _formKey = GlobalKey<FormState>();
@@ -25,6 +29,30 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
   TextEditingController textController = TextEditingController();
   TextEditingController authorController = TextEditingController();
   TextEditingController titleController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initAds(_getWidth, _setBanerAdd);
+    initializeInterstitialMobileAdsSDK();
+  }
+
+  @override
+  void dispose() {
+    bannerAd?.dispose();
+    interstitialAd?.dispose();
+    super.dispose();
+  }
+
+  void _setBanerAdd(BannerAd? banner) {
+    setState(() {
+      bannerAd = banner;
+    });
+  }
+
+  int _getWidth() {
+    return MediaQuery.sizeOf(context).width.truncate();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +69,13 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
               actions: [
                 IconButton(
                     padding: EdgeInsets.all(10),
-                    iconSize: 35,
+                    iconSize: 30,
                     icon: const Icon(Icons.search),
                     onPressed: () => _onSearchClick(context)),
                 IconButton(
                   padding: EdgeInsets.all(10),
-                  iconSize: 35,
+                  iconSize: 30,
                   icon: const Icon(Icons.save),
-                  color: Colors.red,
                   onPressed: () => {
                     if (_formKey.currentState!.validate())
                       {_saveSong(context, _songAddCubit)}
@@ -61,60 +88,78 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
                 )
               ],
             ),
-            body: SingleChildScrollView(
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      BlocSelector<SongsAddCubit, SongsAddState,
-                          AutovalidateMode>(
-                        bloc: _songAddCubit,
-                        selector: (state) => state.autovalidateMode,
-                        builder: (context, AutovalidateMode autovalidateMode) {
-                          return Form(
-                            key: _formKey,
-                            autovalidateMode: autovalidateMode,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  controller: authorController,
-                                  validator: validateAuthor,
-                                  onChanged: _songAddCubit.updateAuthor,
-                                  decoration: InputDecoration(
-                                      labelText: LocalizationManager
-                                          .instance.appLocalization.author,
-                                      border: OutlineInputBorder()),
-                                ),
-                                const SizedBox(height: 8.0),
-                                TextFormField(
-                                  controller: titleController,
-                                  validator: validateTitle,
-                                  onChanged: _songAddCubit.updateTitle,
-                                  decoration: InputDecoration(
-                                      labelText: LocalizationManager
-                                          .instance.appLocalization.title,
-                                      border: OutlineInputBorder()),
-                                ),
-                                const SizedBox(height: 8.0),
-                                TextFormField(
-                                  controller: textController,
-                                  validator: validateText,
-                                  onChanged: _songAddCubit.updateText,
-                                  minLines: 12,
-                                  maxLines: null,
-                                  decoration: InputDecoration(
-                                      labelText: LocalizationManager
-                                          .instance.appLocalization.text,
-                                      alignLabelWithHint: true,
-                                      border: OutlineInputBorder()),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  )),
+            body: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              BlocSelector<SongsAddCubit, SongsAddState,
+                                  AutovalidateMode>(
+                                bloc: _songAddCubit,
+                                selector: (state) => state.autovalidateMode,
+                                builder: (context,
+                                    AutovalidateMode autovalidateMode) {
+                                  return Form(
+                                    key: _formKey,
+                                    autovalidateMode: autovalidateMode,
+                                    child: Column(
+                                      children: [
+                                        TextFormField(
+                                          controller: authorController,
+                                          validator: validateAuthor,
+                                          onChanged: _songAddCubit.updateAuthor,
+                                          decoration: InputDecoration(
+                                              labelText: LocalizationManager
+                                                  .instance
+                                                  .appLocalization
+                                                  .author,
+                                              border: OutlineInputBorder()),
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        TextFormField(
+                                          controller: titleController,
+                                          validator: validateTitle,
+                                          onChanged: _songAddCubit.updateTitle,
+                                          decoration: InputDecoration(
+                                              labelText: LocalizationManager
+                                                  .instance
+                                                  .appLocalization
+                                                  .title,
+                                              border: OutlineInputBorder()),
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        TextFormField(
+                                          controller: textController,
+                                          validator: validateText,
+                                          onChanged: _songAddCubit.updateText,
+                                          minLines: 12,
+                                          maxLines: null,
+                                          decoration: InputDecoration(
+                                              labelText: LocalizationManager
+                                                  .instance
+                                                  .appLocalization
+                                                  .text,
+                                              alignLabelWithHint: true,
+                                              border: OutlineInputBorder()),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          )),
+                    ),
+                  ),
+                  getBanerWidget()
+                ],
+              ),
             ));
       },
     );
@@ -156,6 +201,8 @@ class _SongsAddState extends State<SongsAdd> with SongAddValidator {
       );
 
       if (searchResult != null) {
+        showInterstitialAds();
+
         setState(() {
           _songAddCubit.updateText(searchResult.text);
           textController.value = TextEditingValue(text: searchResult.text!);

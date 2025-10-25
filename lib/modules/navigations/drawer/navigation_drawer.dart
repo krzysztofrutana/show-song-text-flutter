@@ -1,13 +1,17 @@
 import 'dart:io';
 
+import 'package:async_preferences/async_preferences.dart';
 import 'package:country_flags/country_flags.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/helpers/initialization_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/main.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/views/client_screen_mode.dart';
+import 'package:pomocnik_wokalisty/modules/dialogs/policy_dialog.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 
 class MyNavigationDrawer extends StatefulWidget {
@@ -18,6 +22,9 @@ class MyNavigationDrawer extends StatefulWidget {
 }
 
 class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
+  final _initializationHelper = AdMobInitializationHelper();
+  late final Future<bool> _future;
+
   final List<DropdownMenuEntry<String>> _supportedLanguageList = [
     DropdownMenuEntry<String>(
         value: 'pl',
@@ -33,7 +40,45 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
             theme: ImageTheme(shape: Circle(), height: 25, width: 25))),
   ];
 
-  List<_NavigationItem> getNavigationItems() {
+  String _selectedLanguage = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    _future = _isUnderGdpr();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var items = _getNavigationItems();
+    return BlocBuilder<NavigationDrawerBloc, NavigationDrawerState>(
+        builder: (context, state) {
+      return Drawer(
+        child: Column(
+          children: [
+            _makeHeaderItem(),
+            Expanded(
+                child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: items.length,
+                    itemBuilder: (context, index) =>
+                        _makeListItem(items[index], state))),
+            _makeFooterItem(context)
+          ],
+        ),
+      );
+    });
+  }
+
+  Future<bool> _isUnderGdpr() async {
+    if (!Platform.isAndroid) return false;
+
+    final preferences = AsyncPreferences();
+    return await preferences.getInt('IABTCF_gdprApplies') == 1;
+  }
+
+  List<_NavigationItem> _getNavigationItems() {
     return [
       _NavigationItem(
           false,
@@ -61,8 +106,6 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
           const AssetImage('assets/images/icons/presentation.png')),
     ];
   }
-
-  String _selectedLanguage = '';
 
   DropdownMenuEntry<String> _getDefaultLanguage() {
     if (_selectedLanguage.isNotEmpty) {
@@ -96,11 +139,11 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
     }
   }
 
-  Widget getSelectedLanguageIcon() {
+  Widget _getSelectedLanguageIcon() {
     return Padding(
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.all(10),
       child: CountryFlag.fromLanguageCode(_selectedLanguage,
-          theme: ImageTheme(shape: Circle(), height: 10, width: 10)),
+          theme: ImageTheme(shape: Circle(), height: 8, width: 8)),
     );
   }
 
@@ -151,41 +194,135 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
       );
 
   Widget _makeFooterItem(BuildContext context) => Builder(builder: (context) {
-        return Align(
-          alignment: FractionalOffset.bottomCenter,
-          child: Column(children: [
-            Divider(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(bottom: 10),
-                  child: DropdownMenu<String>(
-                    inputDecorationTheme: InputDecorationTheme(
-                      enabledBorder: InputBorder.none,
-                    ),
-                    width: 150,
-                    initialSelection: _getDefaultLanguage().value,
-                    dropdownMenuEntries: _supportedLanguageList,
-                    leadingIcon: getSelectedLanguageIcon(),
-                    label: Text(
-                        LocalizationManager.instance.appLocalization.language),
-                    onSelected: (value) {
-                      setState(() {
-                        MyApp.of(context).setLocale(
-                            Locale.fromSubtags(languageCode: value.toString()));
+        return Column(
+          children: [
+            Align(
+              alignment: FractionalOffset.bottomCenter,
+              child: Column(children: <Widget>[
+                Divider(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 5),
+                      child: DropdownMenu<String>(
+                        inputDecorationTheme: InputDecorationTheme(
+                          enabledBorder: InputBorder.none,
+                          labelStyle: TextStyle(fontSize: 14),
+                        ),
+                        width: 160,
+                        textStyle: TextStyle(fontSize: 14),
+                        initialSelection: _getDefaultLanguage().value,
+                        dropdownMenuEntries: _supportedLanguageList,
+                        leadingIcon: _getSelectedLanguageIcon(),
+                        label: Text(LocalizationManager
+                            .instance.appLocalization.language),
+                        onSelected: (value) {
+                          setState(() {
+                            MyApp.of(context).setLocale(Locale.fromSubtags(
+                                languageCode: value.toString()));
 
-                        LocalStorage.instance
-                            .setString('lang', value.toString());
-                        _selectedLanguage = value.toString();
-                      });
-                    },
-                  ),
+                            LocalStorage.instance
+                                .setString('lang', value.toString());
+                            _selectedLanguage = value.toString();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            )
-          ]),
+              ]),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 5),
+              child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(children: [
+                    TextSpan(
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                        text: LocalizationManager
+                            .instance.appLocalization.privacyPolicy,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  var language = _getDefaultLanguage().value;
+                                  return PolicyDialog(
+                                      mdFileName:
+                                          'privacy_policy_$language.md');
+                                });
+                          }),
+                    TextSpan(
+                        style: TextStyle(fontSize: 12, color: Colors.black),
+                        text:
+                            ' ${LocalizationManager.instance.appLocalization.and} '),
+                    TextSpan(
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                        text: LocalizationManager
+                            .instance.appLocalization.termsAndConditions,
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  var language = _getDefaultLanguage().value;
+                                  return PolicyDialog(
+                                      mdFileName:
+                                          'terms_and_conditions_$language.md');
+                                });
+                          })
+                  ])),
+            ),
+            FutureBuilder(
+              future: _future,
+              builder: (context, snapshot) => Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Visibility(
+                  visible: snapshot.hasData && snapshot.data == true,
+                  child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(children: [
+                        TextSpan(
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                            text: LocalizationManager
+                                .instance.appLocalization.changePrivacyPolicy,
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () async {
+                                Navigator.of(context).pop();
+
+                                final scafooldMessenger =
+                                    ScaffoldMessenger.of(context);
+                                final didChangePreferences =
+                                    await _initializationHelper
+                                        .changePrivacyPreferences();
+
+                                scafooldMessenger.showSnackBar(SnackBar(
+                                    content: didChangePreferences
+                                        ? Text(LocalizationManager
+                                            .instance
+                                            .appLocalization
+                                            .yourPrivacyChoisesHasBeenUpdated)
+                                        : Text(LocalizationManager
+                                            .instance
+                                            .appLocalization
+                                            .anErrorOccurredWhileTryingToChangeYourPrivacyPreferences)));
+                              }),
+                      ])),
+                ),
+              ),
+            ),
+          ],
         );
       });
 
@@ -200,28 +337,6 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
       BlocProvider.of<NavigationDrawerBloc>(context).add(NavigateToEvent(item));
       Navigator.pop(context);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var items = getNavigationItems();
-    return BlocBuilder<NavigationDrawerBloc, NavigationDrawerState>(
-        builder: (context, state) {
-      return Drawer(
-        child: Column(
-          children: [
-            _makeHeaderItem(),
-            Expanded(
-                child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: items.length,
-                    itemBuilder: (context, index) =>
-                        _makeListItem(items[index], state))),
-            _makeFooterItem(context)
-          ],
-        ),
-      );
-    });
   }
 }
 

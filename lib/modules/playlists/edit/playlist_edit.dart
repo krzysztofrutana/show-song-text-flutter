@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:pomocnik_wokalisty/ads/ads_mixin.dart';
+import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
+import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/cubic/playlist_edit_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/helpers/playlist_edit_validator.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/partials/playlist_songs_list_component.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
 
 class PlaylistEdit extends StatefulWidget with PlaylistEditValidator {
   PlaylistEdit({super.key, required this.playlistId});
@@ -16,7 +22,7 @@ class PlaylistEdit extends StatefulWidget with PlaylistEditValidator {
 }
 
 class _PlaylistEditState extends State<PlaylistEdit>
-    with PlaylistEditValidator {
+    with PlaylistEditValidator, Ads, InterstitialAds {
   final PlaylistEditCubit _playlistEditCubit = PlaylistEditCubit();
 
   final _formKey = GlobalKey<FormState>();
@@ -25,6 +31,26 @@ class _PlaylistEditState extends State<PlaylistEdit>
   void initState() {
     _playlistEditCubit.initForm(widget.playlistId);
     super.initState();
+
+    initAds(_getWidth, _setBanerAdd);
+    initializeInterstitialMobileAdsSDK();
+  }
+
+  @override
+  void dispose() {
+    bannerAd?.dispose();
+    interstitialAd?.dispose();
+    super.dispose();
+  }
+
+  void _setBanerAdd(BannerAd? banner) {
+    setState(() {
+      bannerAd = banner;
+    });
+  }
+
+  int _getWidth() {
+    return MediaQuery.sizeOf(context).width.truncate();
   }
 
   @override
@@ -44,8 +70,16 @@ class _PlaylistEditState extends State<PlaylistEdit>
                 IconButton(
                   padding: EdgeInsets.all(10),
                   iconSize: 35,
+                  icon: ImageIcon(
+                    AssetImage('assets/images/icons/presentation.png'),
+                    size: 30,
+                  ),
+                  onPressed: () => {_runPresentationForSelected(context)},
+                ),
+                IconButton(
+                  padding: EdgeInsets.all(10),
+                  iconSize: 35,
                   icon: const Icon(Icons.save),
-                  color: Colors.red,
                   onPressed: () => {
                     if (_formKey.currentState!.validate())
                       {_savePlaylist(context, _playlistEditCubit)}
@@ -58,42 +92,55 @@ class _PlaylistEditState extends State<PlaylistEdit>
                 )
               ],
             ),
-            body: SingleChildScrollView(
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      BlocSelector<PlaylistEditCubit, PlaylistEditState,
-                          AutovalidateMode>(
-                        bloc: _playlistEditCubit,
-                        selector: (state) => state.autovalidateMode,
-                        builder: (context, AutovalidateMode autovalidateMode) {
-                          return Form(
-                            key: _formKey,
-                            autovalidateMode: autovalidateMode,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  initialValue: _playlistEditCubit.state.name,
-                                  validator: (value) => validateName(
-                                      value, _playlistEditCubit.state.uuid),
-                                  onChanged: _playlistEditCubit.updateName,
-                                  decoration: InputDecoration(
-                                      labelText: LocalizationManager
-                                          .instance.appLocalization.name,
-                                      border: OutlineInputBorder()),
-                                ),
-                                const SizedBox(height: 8.0),
-                              ],
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            BlocSelector<PlaylistEditCubit, PlaylistEditState,
+                                AutovalidateMode>(
+                              bloc: _playlistEditCubit,
+                              selector: (state) => state.autovalidateMode,
+                              builder:
+                                  (context, AutovalidateMode autovalidateMode) {
+                                return Form(
+                                  key: _formKey,
+                                  autovalidateMode: autovalidateMode,
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        initialValue:
+                                            _playlistEditCubit.state.name,
+                                        validator: (value) => validateName(
+                                            value,
+                                            _playlistEditCubit.state.uuid),
+                                        onChanged:
+                                            _playlistEditCubit.updateName,
+                                        decoration: InputDecoration(
+                                            labelText: LocalizationManager
+                                                .instance.appLocalization.name,
+                                            border: OutlineInputBorder()),
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 8.0),
-                      PlaylistSongsListComponent(
-                          playlistEditCubit: _playlistEditCubit)
-                    ],
-                  )),
+                            const SizedBox(height: 8.0),
+                            PlaylistSongsListComponent(
+                                playlistEditCubit: _playlistEditCubit)
+                          ],
+                        )),
+                  ),
+                ),
+                getBanerWidget()
+              ],
             ));
       },
     );
@@ -106,5 +153,57 @@ class _PlaylistEditState extends State<PlaylistEdit>
     context.read<PlaylistsListComponentBloc>().add(ReloadListEvent());
 
     return Navigator.of(context).pop();
+  }
+
+  void _runPresentationForSelected(BuildContext parentContext) async {
+    var selectedSongs = _playlistEditCubit.state.songsIds;
+
+    if (selectedSongs.isEmpty) {
+      return showNoSongsAssigneddDialog(LocalizationManager
+          .instance.appLocalization.thePlaylistDoesNotContainAnySongs);
+    }
+    var box = DataCollections.songs();
+    var songs =
+        box.values.where((song) => selectedSongs.contains(song.uuid)).toList();
+
+    parentContext
+        .read<PresentatationBloc>()
+        .add(SongsPresentation(songs: songs));
+
+    showInterstitialAds();
+
+    Navigator.of(parentContext).push(
+      MaterialPageRoute(
+        builder: (parentContext) => PresentationView(),
+      ),
+    );
+  }
+
+  Future<void> showNoSongsAssigneddDialog(String message) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            LocalizationManager.instance.appLocalization.noSongsAssigned,
+            style: TextStyle(fontSize: 20),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(LocalizationManager.instance.appLocalization.cancel),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

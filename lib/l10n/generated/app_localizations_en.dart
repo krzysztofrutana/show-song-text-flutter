@@ -24,6 +24,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addingToPlaylist => 'Adding to playlist';
 
   @override
+  String get and => 'and';
+
+  @override
+  String get anErrorOccurredWhileTryingToChangeYourPrivacyPreferences => 'An error ocurred while trying to change your privacy preferences';
+
+  @override
   String get anErrorOccurredWhileRetrievingListInformation => 'An error occurred while retrieving list information.';
 
   @override
@@ -50,6 +56,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get changePrivacyPolicy => 'Change privacy preferences';
 
   @override
   String get changesWillBeImplementedAfterSavingTheForm => 'Changes will be implemented after saving the form';
@@ -223,6 +232,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get presentationSettings => 'Presentation settings';
 
   @override
+  String get privacyPolicy => 'Privacy policy';
+
+  @override
   String get removingSongFromPlaylist => 'Removing a song from a playlist';
 
   @override
@@ -250,7 +262,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsHaveBeenSaved => 'The settings have been saved';
 
   @override
-  String get singersAssistant => 'Singer\'s assistant';
+  String get singersAssistant => 'Singer assistant';
 
   @override
   String get songSelection => 'Song selection';
@@ -260,6 +272,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get songsList => 'Songs list';
+
+  @override
+  String get termsAndConditions => 'Terms and conditions';
 
   @override
   String get text => 'Text';
@@ -275,6 +290,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get theAddressOfTheLastServerUsedIs => 'The address of the last server used is:';
+
+  @override
+  String get thePlaylistDoesNotContainAnySongs => 'The playlist does not contain any songs';
 
   @override
   String get thereIsAlreadyPlaylistWithThisName => 'There is already a playlist with this name';
@@ -295,16 +313,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleIsRequired => 'Title is required';
 
   @override
-  String get toCreatePlaylistYouNeedToSelectSongs => 'To create a playlist, you need to select songs.';
+  String get toCreatePlaylistYouNeedToSelectSongs => 'To create a playlist you need to select songs.';
 
   @override
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Too many matching artists found, please specify the artist name';
 
   @override
-  String get toAddToPlaylistSelectSongs => 'To add to the playlist, select songs';
+  String get toAddToPlaylistSelectSongs => 'To add to the playlist you need to select songs.';
 
   @override
-  String get toSearchForTextYouNeedAtLeastTitleOrAuthor => 'To search for a text, you need at least the title or author';
+  String get toRunPresentationSelectSongs => 'To start presentation you need to select songs.';
+
+  @override
+  String get toSearchForTextYouNeedAtLeastTitleOrAuthor => 'To search for a text you need at least the title or author';
 
   @override
   String get wifiHotspotDisabled => 'Wifi hotspot disabled';
@@ -317,4 +338,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get youShouldMarkThePlaylistsToBeDeleted => 'You should mark the playlists to be deleted';
+
+  @override
+  String get yourPrivacyChoisesHasBeenUpdated => 'Your privacy choises has been updated';
 }

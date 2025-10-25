@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
@@ -17,7 +18,19 @@ class SongsList extends StatefulWidget {
   State<SongsList> createState() => _SongsListState();
 }
 
-class _SongsListState extends State<SongsList> {
+class _SongsListState extends State<SongsList> with InterstitialAds {
+  @override
+  void initState() {
+    super.initState();
+    initializeInterstitialMobileAdsSDK();
+  }
+
+  @override
+  void dispose() {
+    interstitialAd?.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -405,6 +418,10 @@ class _SongsListState extends State<SongsList> {
     var selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
 
+    if (selectedSongs.isEmpty) {
+      return showNoSongsSelectedDialog(LocalizationManager
+          .instance.appLocalization.toRunPresentationSelectSongs);
+    }
     var box = DataCollections.songs();
     var songs =
         box.values.where((song) => selectedSongs.contains(song.uuid)).toList();
@@ -412,6 +429,8 @@ class _SongsListState extends State<SongsList> {
     parentContext
         .read<PresentatationBloc>()
         .add(SongsPresentation(songs: songs));
+
+    showInterstitialAds();
 
     Navigator.of(parentContext).push(
       MaterialPageRoute(

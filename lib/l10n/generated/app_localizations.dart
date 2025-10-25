@@ -125,6 +125,18 @@ abstract class AppLocalizations {
   /// **'Dodawanie do playlisty'**
   String get addingToPlaylist;
 
+  /// No description provided for @and.
+  ///
+  /// In pl, this message translates to:
+  /// **'i'**
+  String get and;
+
+  /// No description provided for @anErrorOccurredWhileTryingToChangeYourPrivacyPreferences.
+  ///
+  /// In pl, this message translates to:
+  /// **'Wystąpił błąd podczas próby zmiany preferencji prywatności'**
+  String get anErrorOccurredWhileTryingToChangeYourPrivacyPreferences;
+
   /// No description provided for @anErrorOccurredWhileRetrievingListInformation.
   ///
   /// In pl, this message translates to:
@@ -172,6 +184,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Anuluj'**
   String get cancel;
+
+  /// No description provided for @changePrivacyPolicy.
+  ///
+  /// In pl, this message translates to:
+  /// **'Zmień preferencje prywatności'**
+  String get changePrivacyPolicy;
 
   /// No description provided for @changesWillBeImplementedAfterSavingTheForm.
   ///
@@ -491,6 +509,12 @@ abstract class AppLocalizations {
   /// **'Ustawienia prezentacji'**
   String get presentationSettings;
 
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In pl, this message translates to:
+  /// **'Polityka prywatności'**
+  String get privacyPolicy;
+
   /// No description provided for @removingSongFromPlaylist.
   ///
   /// In pl, this message translates to:
@@ -569,6 +593,12 @@ abstract class AppLocalizations {
   /// **'Lista utworów'**
   String get songsList;
 
+  /// No description provided for @termsAndConditions.
+  ///
+  /// In pl, this message translates to:
+  /// **'Zasady i warunki'**
+  String get termsAndConditions;
+
   /// No description provided for @text.
   ///
   /// In pl, this message translates to:
@@ -598,6 +628,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Adres ostatnio użytego serwera to:'**
   String get theAddressOfTheLastServerUsedIs;
+
+  /// No description provided for @thePlaylistDoesNotContainAnySongs.
+  ///
+  /// In pl, this message translates to:
+  /// **'Playlista nie zawiera utworów'**
+  String get thePlaylistDoesNotContainAnySongs;
 
   /// No description provided for @thereIsAlreadyPlaylistWithThisName.
   ///
@@ -650,13 +686,19 @@ abstract class AppLocalizations {
   /// No description provided for @toAddToPlaylistSelectSongs.
   ///
   /// In pl, this message translates to:
-  /// **'Aby dodać do listy odtwarzania, wybierz utwory'**
+  /// **'Aby dodać do listy odtwarzania wybierz utwory'**
   String get toAddToPlaylistSelectSongs;
+
+  /// No description provided for @toRunPresentationSelectSongs.
+  ///
+  /// In pl, this message translates to:
+  /// **'Aby uruchomić prezentację wybierz utwory'**
+  String get toRunPresentationSelectSongs;
 
   /// No description provided for @toSearchForTextYouNeedAtLeastTitleOrAuthor.
   ///
   /// In pl, this message translates to:
-  /// **'Aby wyszukać tekst, potrzebujesz co najmniej tytułu lub autora'**
+  /// **'Aby wyszukać tekst potrzebujesz co najmniej tytułu lub autora'**
   String get toSearchForTextYouNeedAtLeastTitleOrAuthor;
 
   /// No description provided for @wifiHotspotDisabled.
@@ -682,6 +724,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Należy zaznaczyć listy do usunięcia'**
   String get youShouldMarkThePlaylistsToBeDeleted;
+
+  /// No description provided for @yourPrivacyChoisesHasBeenUpdated.
+  ///
+  /// In pl, this message translates to:
+  /// **'Your privacy choises has been updated'**
+  String get yourPrivacyChoisesHasBeenUpdated;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

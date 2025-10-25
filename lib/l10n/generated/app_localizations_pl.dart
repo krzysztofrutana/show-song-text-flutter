@@ -24,6 +24,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get addingToPlaylist => 'Dodawanie do playlisty';
 
   @override
+  String get and => 'i';
+
+  @override
+  String get anErrorOccurredWhileTryingToChangeYourPrivacyPreferences => 'Wystąpił błąd podczas próby zmiany preferencji prywatności';
+
+  @override
   String get anErrorOccurredWhileRetrievingListInformation => 'Wystąpił błąd przy pobieraniu informacji o liście';
 
   @override
@@ -50,6 +56,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get cancel => 'Anuluj';
+
+  @override
+  String get changePrivacyPolicy => 'Zmień preferencje prywatności';
 
   @override
   String get changesWillBeImplementedAfterSavingTheForm => 'Zmiany zostaną wprowadzone po zapisaniu formularza';
@@ -223,6 +232,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get presentationSettings => 'Ustawienia prezentacji';
 
   @override
+  String get privacyPolicy => 'Polityka prywatności';
+
+  @override
   String get removingSongFromPlaylist => 'Usuwanie utworu z listy odtwarzania';
 
   @override
@@ -262,6 +274,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get songsList => 'Lista utworów';
 
   @override
+  String get termsAndConditions => 'Zasady i warunki';
+
+  @override
   String get text => 'Tekst';
 
   @override
@@ -275,6 +290,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get theAddressOfTheLastServerUsedIs => 'Adres ostatnio użytego serwera to:';
+
+  @override
+  String get thePlaylistDoesNotContainAnySongs => 'Playlista nie zawiera utworów';
 
   @override
   String get thereIsAlreadyPlaylistWithThisName => 'Istnieje już lista odtwarzania z tą nazwą';
@@ -301,10 +319,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty';
 
   @override
-  String get toAddToPlaylistSelectSongs => 'Aby dodać do listy odtwarzania, wybierz utwory';
+  String get toAddToPlaylistSelectSongs => 'Aby dodać do listy odtwarzania wybierz utwory';
 
   @override
-  String get toSearchForTextYouNeedAtLeastTitleOrAuthor => 'Aby wyszukać tekst, potrzebujesz co najmniej tytułu lub autora';
+  String get toRunPresentationSelectSongs => 'Aby uruchomić prezentację wybierz utwory';
+
+  @override
+  String get toSearchForTextYouNeedAtLeastTitleOrAuthor => 'Aby wyszukać tekst potrzebujesz co najmniej tytułu lub autora';
 
   @override
   String get wifiHotspotDisabled => 'Hotspot Wifi wyłączony';
@@ -317,4 +338,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get youShouldMarkThePlaylistsToBeDeleted => 'Należy zaznaczyć listy do usunięcia';
+
+  @override
+  String get yourPrivacyChoisesHasBeenUpdated => 'Your privacy choises has been updated';
 }

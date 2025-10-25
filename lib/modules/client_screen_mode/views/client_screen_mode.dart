@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
+import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubic/client_screen_mode_cubic.dart';
@@ -17,7 +18,8 @@ class ClientScreenMode extends StatefulWidget {
   State<ClientScreenMode> createState() => _ClientScreenModeState();
 }
 
-class _ClientScreenModeState extends State<ClientScreenMode> {
+class _ClientScreenModeState extends State<ClientScreenMode>
+    with InterstitialAds {
   @override
   void initState() {
     super.initState();
@@ -27,6 +29,8 @@ class _ClientScreenModeState extends State<ClientScreenMode> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _checkInitialData(key.currentContext!);
     });
+
+    initializeInterstitialMobileAdsSDK();
   }
 
   @override
@@ -38,6 +42,7 @@ class _ClientScreenModeState extends State<ClientScreenMode> {
   @override
   void dispose() {
     FullScreen.setFullScreen(false);
+    interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -214,6 +219,7 @@ class _ClientScreenModeState extends State<ClientScreenMode> {
               child: Text(LocalizationManager.instance.appLocalization.yes),
               onPressed: () {
                 try {
+                  showInterstitialAds();
                   parentContext.read<ClientCubit>().startConnection(
                       _onDataRecived, _showConnectionErrorToast);
 
