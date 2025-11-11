@@ -167,6 +167,12 @@ abstract class AppLocalizations {
   /// **'Czy na pewno chcesz usunąć utwór {author} - {title} z listy odtwarzania z pozycji {index}?'**
   String areYouSureYouWantRemoveSongFromPlaylistAtPosition(Object author, Object index, Object title);
 
+  /// No description provided for @areYouSureYouWantToLeaveTheApplication.
+  ///
+  /// In pl, this message translates to:
+  /// **'Czy na pewno chcesz opuścić aplikację?'**
+  String get areYouSureYouWantToLeaveTheApplication;
+
   /// No description provided for @author.
   ///
   /// In pl, this message translates to:
@@ -335,6 +341,12 @@ abstract class AppLocalizations {
   /// **'Błąd: {message}'**
   String errorWithMessage(Object message);
 
+  /// No description provided for @exitApplication.
+  ///
+  /// In pl, this message translates to:
+  /// **'Wyjście z aplikacji'**
+  String get exitApplication;
+
   /// No description provided for @fontSize.
   ///
   /// In pl, this message translates to:
@@ -358,6 +370,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Język:'**
   String get language;
+
+  /// No description provided for @leave.
+  ///
+  /// In pl, this message translates to:
+  /// **'Wyjdź'**
+  String get leave;
 
   /// No description provided for @loading.
   ///

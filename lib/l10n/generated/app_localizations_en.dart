@@ -49,6 +49,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get areYouSureYouWantToLeaveTheApplication => 'Are you sure you want to leave the application?';
+
+  @override
   String get author => 'Author';
 
   @override
@@ -137,6 +140,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get exitApplication => 'Exit the application';
+
+  @override
   String get fontSize => 'Font size';
 
   @override
@@ -147,6 +153,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get language => 'Language:';
+
+  @override
+  String get leave => 'Leave';
 
   @override
   String get loading => 'Loading...';

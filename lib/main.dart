@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:nested/nested.dart';
 import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
@@ -62,12 +64,59 @@ class _MyAppState extends State<MyApp> {
     if (language != null && language.isNotEmpty) {
       _locale = Locale(language);
     }
-    return MaterialApp(
-      locale: _locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: InitializeScreen(targetWidget: MyHomePage()),
-    );
+    return MultiBlocProvider(
+        providers: getBlockProviders,
+        child: MaterialApp(
+          locale: _locale,
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          onGenerateTitle: (ctx) {
+            return AppLocalizations.of(ctx)!.singersAssistant;
+          },
+          home: InitializeScreen(targetWidget: MyHomePage()),
+        ));
+  }
+
+  List<SingleChildWidget> get getBlockProviders {
+    return [
+      BlocProvider(
+        create: (context) => NavigationDrawerBloc(),
+      ),
+      BlocProvider(
+        create: (context) => SongsAddCubit(),
+      ),
+      BlocProvider(
+        create: (context) => SongsEditCubit(),
+      ),
+      BlocProvider(
+        create: (context) => SongsListComponentBloc(),
+      ),
+      BlocProvider(
+        create: (context) => AddPlaylistBloc(),
+      ),
+      BlocProvider(
+        create: (context) => PlaylistsListComponentBloc(),
+      ),
+      BlocProvider(
+        create: (context) => PlaylistEditCubit(),
+      ),
+      BlocProvider(
+        create: (context) => ServerCubit(),
+      ),
+      BlocProvider(
+        create: (context) => ClientCubit(),
+      ),
+      BlocProvider(
+        create: (context) => PresentatationBloc(),
+      ),
+      BlocProvider(
+        create: (context) => ClientScreenModeCubic(),
+      ),
+      BlocProvider(
+        create: (context) => SongSearchCubit(),
+      ),
+    ];
   }
 }
 
@@ -79,53 +128,53 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool canPop = false;
   @override
   Widget build(BuildContext context) {
     LocalizationManager.instance.setLocalization(context);
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => NavigationDrawerBloc(),
-        ),
-        BlocProvider(
-          create: (context) => SongsAddCubit(),
-        ),
-        BlocProvider(
-          create: (context) => SongsEditCubit(),
-        ),
-        BlocProvider(
-          create: (context) => SongsListComponentBloc(),
-        ),
-        BlocProvider(
-          create: (context) => AddPlaylistBloc(),
-        ),
-        BlocProvider(
-          create: (context) => PlaylistsListComponentBloc(),
-        ),
-        BlocProvider(
-          create: (context) => PlaylistEditCubit(),
-        ),
-        BlocProvider(
-          create: (context) => ServerCubit(),
-        ),
-        BlocProvider(
-          create: (context) => ClientCubit(),
-        ),
-        BlocProvider(
-          create: (context) => PresentatationBloc(),
-        ),
-        BlocProvider(
-          create: (context) => ClientScreenModeCubic(),
-        ),
-        BlocProvider(
-          create: (context) => SongSearchCubit(),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: LocalizationManager.instance.appLocalization.singersAssistant,
-        home: Home(),
-      ),
+    return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (bool didPop, Object? result) async {
+          if (didPop) {
+            return;
+          }
+          final bool shouldPop = await _showBackDialog() ?? false;
+          if (context.mounted && shouldPop) {
+            SystemNavigator.pop();
+          }
+        },
+        child: Home());
+  }
+
+  Future<bool?> _showBackDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+              LocalizationManager.instance.appLocalization.exitApplication),
+          content: Text(LocalizationManager
+              .instance.appLocalization.areYouSureYouWantToLeaveTheApplication),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge),
+              child: Text(LocalizationManager.instance.appLocalization.cancel),
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge),
+              child: Text(LocalizationManager.instance.appLocalization.leave),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
