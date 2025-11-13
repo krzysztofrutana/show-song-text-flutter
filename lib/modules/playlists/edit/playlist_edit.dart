@@ -159,16 +159,15 @@ class _PlaylistEditState extends State<PlaylistEdit>
     var selectedSongs = _playlistEditCubit.state.songsIds;
 
     if (selectedSongs.isEmpty) {
-      return showNoSongsAssigneddDialog(LocalizationManager
+      return showNoSongsAssignedDialog(LocalizationManager
           .instance.appLocalization.thePlaylistDoesNotContainAnySongs);
     }
-    var box = DataCollections.songs();
-    var songs =
-        box.values.where((song) => selectedSongs.contains(song.uuid)).toList();
+    var box = DataCollections.playlists();
+    var playlist = box.get(_playlistEditCubit.state.uuid);
 
     parentContext
         .read<PresentatationBloc>()
-        .add(SongsPresentation(songs: songs));
+        .add(PlaylistPresentation(playlist: playlist!));
 
     showInterstitialAds();
 
@@ -179,7 +178,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
     );
   }
 
-  Future<void> showNoSongsAssigneddDialog(String message) {
+  Future<void> showNoSongsAssignedDialog(String message) {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!

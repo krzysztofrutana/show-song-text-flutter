@@ -12,12 +12,12 @@ class SongToFindModel {
     if (artist != null && artist!.isNotEmpty) {
       normalizedArtist =
           TextHelper.normalizeTextWithoutPolishSpecialChar(artist!)
-              .replaceAll(" ", "_");
+              .replaceAll(" ", "%20");
     }
 
     if (title != null && title!.isNotEmpty) {
       normalizedTitle = TextHelper.normalizeTextWithoutPolishSpecialChar(title!)
-          .replaceAll(" ", "_");
+          .replaceAll(" ", "%20");
     }
   }
 }

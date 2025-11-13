@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
@@ -14,14 +15,24 @@ class PresentatationBloc extends Bloc<PresetationEvent, PresentationState> {
       }
 
       if (event is PlaylistPresentation) {
-        var presentation = DataCollections.playlists().get(event.playlist.uuid);
+        var playlist = DataCollections.playlists().get(event.playlist.uuid);
 
-        if (presentation == null) return;
+        if (playlist == null) return;
 
         var songsBox = DataCollections.songs();
-        var songs = songsBox.values
-            .where((song) => presentation.songsIds.contains(song.uuid))
+        var songsFromPlaylist = songsBox.values
+            .where((song) => playlist.songsIds.contains(song.uuid))
             .toList();
+
+        List<Song> songs = List.empty(growable: true);
+
+        for (var songUuid in playlist.songsIds) {
+          var song =
+              songsFromPlaylist.firstWhereOrNull((x) => x.uuid == songUuid);
+          if (song != null) {
+            songs.add(song);
+          }
+        }
 
         emit(PresentationActive(songs: songs));
       }

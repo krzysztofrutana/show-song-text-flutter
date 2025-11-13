@@ -50,10 +50,7 @@ class TekstowoHelper {
 
   static Future<SearchResultModel> searchByArtist(
       SongToFindModel songToFind) async {
-    var encodedArtist = songToFind.normalizedArtist!
-        .replaceAll("_", "+")
-        .replaceAll("/", "_")
-        .replaceAll("'", "%27");
+    var encodedArtist = songToFind.normalizedArtist!;
     Parser? parser;
     String? url;
 
@@ -94,9 +91,7 @@ class TekstowoHelper {
     String? url;
 
     try {
-      var encodedTitle = songToFind.normalizedTitle!
-          .replaceAll("_", "+")
-          .replaceAll("'", "%27");
+      var encodedTitle = songToFind.normalizedTitle!;
 
       if (encodedTitle.isNotEmpty) {
         url =

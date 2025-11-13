@@ -1,7 +1,6 @@
 class TextHelper {
   static String normalizeTextWithoutPolishSpecialChar(String text) {
-    text = text.replaceAll("ł", "l");
-    text = text.replaceAll("Ł", "L");
+    text = text.replaceAll("ł", "l").replaceAll("Ł", "L");
 
     return text;
   }

@@ -53,10 +53,18 @@ class SongsListComponentBloc
       }
 
       if (event is RemoveSelectedSongsEvent) {
-        var box = DataCollections.songs();
+        var songBox = DataCollections.songs();
+        var playlistBox = DataCollections.playlists();
         for (var i = 0; i < state.selectedSongs.length; i++) {
-          var element = state.selectedSongs[i];
-          box.delete(element);
+          var songUuid = state.selectedSongs[i];
+
+          var playlistsWithSong = playlistBox.values
+              .where((playlist) => playlist.songsIds.contains(songUuid));
+          for (var playlist in playlistsWithSong) {
+            playlist.songsIds.removeWhere((uuid) => uuid == songUuid);
+            playlistBox.put(playlist.uuid, playlist);
+          }
+          songBox.delete(songUuid);
         }
       }
 
