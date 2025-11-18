@@ -2,7 +2,7 @@ name: pomocnik_wokalisty
 description: "Pomocnik wokalisty"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 0.0.9
+version: 0.9.0
 
 environment:
   sdk: ^3.6.2
