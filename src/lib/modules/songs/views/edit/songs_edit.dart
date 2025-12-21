@@ -36,14 +36,14 @@ class _SongsEditState extends State<SongsEdit>
 
   @override
   void initState() {
+    super.initState();
+
     _songEditCubit.initForm(widget.songId);
 
     textController.value = TextEditingValue(text: _songEditCubit.state.text);
     authorController.value =
         TextEditingValue(text: _songEditCubit.state.author);
     titleController.value = TextEditingValue(text: _songEditCubit.state.title);
-
-    super.initState();
 
     initAds(_getWidth, _setBanerAdd);
     initializeInterstitialMobileAdsSDK();

@@ -78,15 +78,23 @@ class _ClientScreenModeState extends State<ClientScreenMode>
       var fontSize = LocalStorage.instance.getInt('fontSize') ?? 15;
 
       return BlocBuilder<ClientScreenModeCubic, ClientScreenModeState>(
-        builder: (context, state) => Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: AutoSizeText(
-            state.text,
-            style: TextStyle(
-                fontSize: fontSize.toDouble(),
-                color: Colors.black,
-                decoration: TextDecoration.none),
-          ),
+        builder: (context, state) => Column(
+          children: [
+            Expanded(
+              child: SizedBox.expand(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: AutoSizeText(
+                    state.text,
+                    style: TextStyle(
+                        fontSize: fontSize.toDouble(),
+                        color: Colors.black,
+                        decoration: TextDecoration.none),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     } else {

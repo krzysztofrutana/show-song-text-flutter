@@ -8,6 +8,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:nested/nested.dart';
 import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
@@ -33,7 +34,7 @@ void main() async {
   EventsHub.init();
 
   WidgetsFlutterBinding.ensureInitialized();
-  await FullScreen.ensureInitialized();
+  await FullScreenHelper.init();
   if (Platform.isAndroid) MobileAds.instance.initialize();
 
   runApp(const MyApp());

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
@@ -7,6 +8,7 @@ import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
+import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/songs_add.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/songs_list_component.dart';
@@ -426,9 +428,18 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
     var songs =
         box.values.where((song) => selectedSongs.contains(song.uuid)).toList();
 
+    List<Song> toPresentation = List.empty(growable: true);
+
+    for (var selectedSongId in selectedSongs) {
+      var song = songs.firstWhereOrNull((x) => x.uuid == selectedSongId);
+      if (song != null) {
+        toPresentation.add(song);
+      }
+    }
+
     parentContext
         .read<PresentatationBloc>()
-        .add(SongsPresentation(songs: songs));
+        .add(SongsPresentation(songs: toPresentation));
 
     showInterstitialAds();
 
