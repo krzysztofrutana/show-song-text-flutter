@@ -281,6 +281,12 @@ abstract class AppLocalizations {
   /// **'Utwórz playlistę'**
   String get createPlaylist;
 
+  /// No description provided for @createPresentationError.
+  ///
+  /// In pl, this message translates to:
+  /// **'Błąd uruchamiania prezentacji'**
+  String get createPresentationError;
+
   /// No description provided for @currentIP.
   ///
   /// In pl, this message translates to:
@@ -610,6 +616,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Lista utworów'**
   String get songsList;
+
+  /// No description provided for @songMustHaveTextDividedIntoLines.
+  ///
+  /// In pl, this message translates to:
+  /// **'Utwór {title} musi miec tekst podzielony na linie. Wstrzymano tworzenie prezentacji.'**
+  String songMustHaveTextDividedIntoLines(Object title);
 
   /// No description provided for @termsAndConditions.
   ///

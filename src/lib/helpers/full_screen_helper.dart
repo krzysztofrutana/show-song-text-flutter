@@ -14,4 +14,12 @@ class FullScreenHelper {
   void setFullScreen(bool enabled) {
     FullScreen.setFullScreen(enabled);
   }
+
+  void addListener(FullScreenListener listener) {
+    FullScreen.addListener(listener);
+  }
+
+  void removeListener(FullScreenListener listener) {
+    FullScreen.removeListener(listener);
+  }
 }

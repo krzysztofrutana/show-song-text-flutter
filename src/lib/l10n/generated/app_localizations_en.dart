@@ -108,6 +108,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createPlaylist => 'Create playlist';
 
   @override
+  String get createPresentationError => 'Presentation lunch error';
+
+  @override
   String get currentIP => 'Current IP:';
 
   @override
@@ -281,6 +284,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get songsList => 'Songs list';
+
+  @override
+  String songMustHaveTextDividedIntoLines(Object title) {
+    return 'The song $title must have text divided into lines. Presentation creation has been suspended.';
+  }
 
   @override
   String get termsAndConditions => 'Terms and conditions';

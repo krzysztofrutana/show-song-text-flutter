@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_debouncer/flutter_debouncer.dart';
+import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/models/presentation_song_info.dart';
+import 'package:pomocnik_wokalisty/modules/presentation/models/send_to_client_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubic/server_cubic/server_cubit.dart';
 
@@ -19,7 +22,8 @@ class PresentationView extends StatefulWidget {
   State<PresentationView> createState() => _PresentationViewState();
 }
 
-class _PresentationViewState extends State<PresentationView> {
+class _PresentationViewState extends State<PresentationView>
+    with FullScreenListener {
   final Throttler _throttler = Throttler();
 
   late PageController _pageViewController;
@@ -30,23 +34,33 @@ class _PresentationViewState extends State<PresentationView> {
   late List<Song> songs;
   int _allSongsCount = 0;
 
+  bool _isInitialized = false;
+
   @override
   void initState() {
     songs = context.read<PresentatationBloc>().state.songs;
     _allSongsCount = songs.length;
     _pageViewController = PageController();
-
+    FullScreenHelper.instance.addListener(this);
     FullScreenHelper.instance.setFullScreen(true);
-
-    super.initState();
-
     _fontSize = LocalStorage.instance.getInt('fontSize') ?? 15;
 
-    _sendTextToClients(context);
+    super.initState();
+  }
+
+  @override
+  void onFullScreenChanged(bool enabled, SystemUiMode? systemUiMode) {
+    if (context.mounted) {
+      setState(() {
+        _isInitialized = enabled;
+        _presentationPages.clear();
+      });
+    }
   }
 
   @override
   void dispose() {
+    FullScreenHelper.instance.removeListener(this);
     FullScreenHelper.instance.setFullScreen(false);
     _pageViewController.dispose();
     super.dispose();
@@ -146,7 +160,7 @@ class _PresentationViewState extends State<PresentationView> {
                         : LayoutBuilder(
                             builder: (ctx, constraints) {
                               Future.delayed(Duration.zero, () {
-                                if (ctx.mounted) {
+                                if (ctx.mounted && _isInitialized) {
                                   _setPages(ctx, constraints);
                                 }
                                 setState(() {});
@@ -283,7 +297,11 @@ class _PresentationViewState extends State<PresentationView> {
   void _sendTextToClients(BuildContext context) {
     if (context.read<ServerCubit>().state.server.serverStarted &&
         _currentPageInfo != null) {
-      context.read<ServerCubit>().send(_currentPageInfo!.pageText);
+      var modelToSend = SendToClientModel(
+              text: _currentPageInfo!.pageText, title: _currentPageInfo!.title)
+          .toJson();
+
+      context.read<ServerCubit>().send(jsonEncode(modelToSend));
     }
   }
 
@@ -350,6 +368,33 @@ class _PresentationViewState extends State<PresentationView> {
 
       LineSplitter ls = LineSplitter();
       var textLinesToCheck = ls.convert(text);
+      if (textLinesToCheck.isEmpty || textLinesToCheck.length == 1) {
+        if (_presentationPages.isEmpty) {
+          var newPage = SingleChildScrollView(
+            child: Text.rich(
+              span,
+              style: style,
+              textAlign: TextAlign.left,
+              locale: Locale(Platform.localeName),
+              textScaler: TextScaler.linear(scaledFontSize / _fontSize),
+            ),
+          );
+
+          _presentationPages.add(PresentationSongInfo(
+              title: "",
+              songNumber: 1,
+              totalSongsCount: 1,
+              pageIndex: 0,
+              pageIndexInSongContext: 0,
+              totalPagesCountForSong: 1,
+              pageWidget: newPage,
+              pageText: "",
+              song: song));
+        }
+        _showTextErrorModal(song);
+
+        return;
+      }
 
       double charHeight = templatePainter.preferredLineHeight;
       int linesInPage = constraints.maxHeight ~/ charHeight;
@@ -408,7 +453,7 @@ class _PresentationViewState extends State<PresentationView> {
                 pageIndexInSongContext: iteration,
                 totalPagesCountForSong: -1,
                 pageWidget: newPage,
-                pageText: text,
+                pageText: checkSpan.text ?? "",
                 song: song));
 
             iteration++;
@@ -426,6 +471,8 @@ class _PresentationViewState extends State<PresentationView> {
     }
 
     _currentPageInfo = _presentationPages.firstOrNull;
+
+    _sendTextToClients(context);
   }
 
   List<String> removeFirstLineIfEmpty(List<String> textLines) {
@@ -437,5 +484,37 @@ class _PresentationViewState extends State<PresentationView> {
     }
 
     return textLines;
+  }
+
+  Future<void> _showTextErrorModal(Song song) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            LocalizationManager
+                .instance.appLocalization.createPresentationError,
+            style: TextStyle(fontSize: 20),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(LocalizationManager.instance.appLocalization
+                    .songMustHaveTextDividedIntoLines(song.title)),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(LocalizationManager.instance.appLocalization.ok),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

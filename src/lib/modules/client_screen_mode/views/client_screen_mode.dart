@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:encoder/encoder.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +11,7 @@ import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubic/client_screen_mode_cubic.dart';
+import 'package:pomocnik_wokalisty/modules/presentation/models/send_to_client_model.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubic/client_cubic/client_cubit.dart';
 
 class ClientScreenMode extends StatefulWidget {
@@ -20,6 +23,8 @@ class ClientScreenMode extends StatefulWidget {
 
 class _ClientScreenModeState extends State<ClientScreenMode>
     with InterstitialAds {
+  String _title = "";
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +72,12 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () => Navigator.of(context).pop(),
               ),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(_title),
+                ],
+              ),
             ),
             body: _getBody(state)),
       ),
@@ -108,7 +119,14 @@ class _ClientScreenModeState extends State<ClientScreenMode>
 
   void _onDataRecived(Uint8List data) {
     var text = String.fromCharCodes(data);
-    context.read<ClientScreenModeCubic>().setText(Encoder.decodeString(text));
+    String decodedString = Encoder.decodeString(text);
+    final Map<String, dynamic> jsonMap = jsonDecode(decodedString);
+    var model = SendToClientModel.fromJson(jsonMap);
+    context.read<ClientScreenModeCubic>().setText(model.text);
+
+    setState(() {
+      _title = model.title;
+    });
   }
 
   Future<void> _checkInitialData(BuildContext context) async {
