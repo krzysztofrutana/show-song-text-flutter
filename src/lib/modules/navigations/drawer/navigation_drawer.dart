@@ -333,6 +333,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
           builder: (parentContext) => ClientScreenMode(),
         ),
       );
+    } else if (item == NavigationPage.quickSearch) {
     } else {
       BlocProvider.of<NavigationDrawerBloc>(context).add(NavigateToEvent(item));
       Navigator.pop(context);

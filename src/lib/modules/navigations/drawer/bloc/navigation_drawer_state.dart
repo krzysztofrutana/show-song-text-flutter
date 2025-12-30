@@ -16,5 +16,6 @@ enum NavigationPage {
   playlistEdit,
   serverSettings,
   clientMode,
-  footer
+  footer,
+  quickSearch
 }

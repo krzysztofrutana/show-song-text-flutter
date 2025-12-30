@@ -129,10 +129,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editSong => 'Edit song';
 
   @override
+  String get enterAuthor => 'Enter author';
+
+  @override
   String get enterName => 'Enter a name';
 
   @override
   String get enterTheIpFromTheServerSettings => 'Enter the IP from the server settings';
+
+  @override
+  String get enterTitle => 'Enter title';
 
   @override
   String get error => 'Error';
@@ -247,10 +253,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicy => 'Privacy policy';
 
   @override
+  String get quickSearch => 'Quick search';
+
+  @override
   String get removingSongFromPlaylist => 'Removing a song from a playlist';
 
   @override
   String get reuseThisAddress => 'Reuse this address?';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get saveAndLunchPresentation => 'Save and present';
 
   @override
   String get search => 'Search';

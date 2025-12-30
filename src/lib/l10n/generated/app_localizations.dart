@@ -323,6 +323,12 @@ abstract class AppLocalizations {
   /// **'Edytuj utwór'**
   String get editSong;
 
+  /// No description provided for @enterAuthor.
+  ///
+  /// In pl, this message translates to:
+  /// **'Wprowadz wykonawcę'**
+  String get enterAuthor;
+
   /// No description provided for @enterName.
   ///
   /// In pl, this message translates to:
@@ -334,6 +340,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Wprowadź IP z ustawień serwera'**
   String get enterTheIpFromTheServerSettings;
+
+  /// No description provided for @enterTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Wprowadź tytuł'**
+  String get enterTitle;
 
   /// No description provided for @error.
   ///
@@ -539,6 +551,12 @@ abstract class AppLocalizations {
   /// **'Polityka prywatności'**
   String get privacyPolicy;
 
+  /// No description provided for @quickSearch.
+  ///
+  /// In pl, this message translates to:
+  /// **'Szybkie wyszukiwanie'**
+  String get quickSearch;
+
   /// No description provided for @removingSongFromPlaylist.
   ///
   /// In pl, this message translates to:
@@ -550,6 +568,18 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Czy ponownie użyć tego adresu?'**
   String get reuseThisAddress;
+
+  /// No description provided for @save.
+  ///
+  /// In pl, this message translates to:
+  /// **'Zapisz'**
+  String get save;
+
+  /// No description provided for @saveAndLunchPresentation.
+  ///
+  /// In pl, this message translates to:
+  /// **'Zapisz i prezentuj'**
+  String get saveAndLunchPresentation;
 
   /// No description provided for @search.
   ///

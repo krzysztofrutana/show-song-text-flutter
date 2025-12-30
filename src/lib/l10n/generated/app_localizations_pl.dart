@@ -129,10 +129,16 @@ class AppLocalizationsPl extends AppLocalizations {
   String get editSong => 'Edytuj utwór';
 
   @override
+  String get enterAuthor => 'Wprowadz wykonawcę';
+
+  @override
   String get enterName => 'Wprowadź nazwę';
 
   @override
   String get enterTheIpFromTheServerSettings => 'Wprowadź IP z ustawień serwera';
+
+  @override
+  String get enterTitle => 'Wprowadź tytuł';
 
   @override
   String get error => 'Błąd';
@@ -247,10 +253,19 @@ class AppLocalizationsPl extends AppLocalizations {
   String get privacyPolicy => 'Polityka prywatności';
 
   @override
+  String get quickSearch => 'Szybkie wyszukiwanie';
+
+  @override
   String get removingSongFromPlaylist => 'Usuwanie utworu z listy odtwarzania';
 
   @override
   String get reuseThisAddress => 'Czy ponownie użyć tego adresu?';
+
+  @override
+  String get save => 'Zapisz';
+
+  @override
+  String get saveAndLunchPresentation => 'Zapisz i prezentuj';
 
   @override
   String get search => 'Wyszukaj';

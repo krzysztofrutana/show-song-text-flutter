@@ -20,12 +20,16 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) =>
       BlocBuilder<NavigationDrawerBloc, NavigationDrawerState>(
           builder: (BuildContext context, NavigationDrawerState state) =>
-              Scaffold(
-                  drawer: MyNavigationDrawer(),
-                  appBar: AppBar(
-                    title: Text(_getTextForItem(state.navigationPage)),
-                  ),
-                  body: _bodyForState(state)));
+              SafeArea(
+                top: false,
+                bottom: true,
+                child: Scaffold(
+                    drawer: MyNavigationDrawer(),
+                    appBar: AppBar(
+                      title: Text(_getTextForItem(state.navigationPage)),
+                    ),
+                    body: _bodyForState(state)),
+              ));
 }
 
 String _getTextForItem(NavigationPage navigationPage) {
