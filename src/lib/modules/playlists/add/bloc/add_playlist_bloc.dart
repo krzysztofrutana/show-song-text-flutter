@@ -1,30 +1,62 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
 import 'package:uuid/uuid.dart';
 
 part 'add_playlist_event.dart';
 part 'add_playlist_state.dart';
 
 class AddPlaylistBloc extends Bloc<AddPlaylistEvent, AddPlaylistState> {
-  AddPlaylistBloc() : super(AddPlaylistInitial()) {
-    on<AddPlaylistEvent>((event, emit) {
-      if (event is PlaylistAddNameChange) {
-        emit(PlaylistAddWithName(event.name, state.playlist));
-      }
+  AddPlaylistBloc({PlaylistsRepository? playlistsRepository})
+      : _playlistsRepository = playlistsRepository ?? PlaylistsRepository(),
+        super(AddPlaylistInitial()) {
+    on<PlaylistAddNameChange>(_onNameChange);
+    on<PlaylistSetSelectedSongs>(_onSetSelectedSongs);
+    on<AddPlaylistSave>(_onSave);
+    on<AddPlaylistReset>(_onReset);
+    on<AddPlaylistUpdateAutovalidateMode>(_onUpdateAutovalidateMode);
+  }
 
-      if (event is PlaylistSetSelectedSongs) {
-        emit(PlaylistAddWithSongs(event.songsIds, state.playlist));
-      }
+  final PlaylistsRepository _playlistsRepository;
 
-      if (event is AddPlaylistSave) {
-        var box = DataCollections.playlists();
-        box.put(state.playlist.uuid, state.playlist);
-      }
+  void _onUpdateAutovalidateMode(
+    AddPlaylistUpdateAutovalidateMode event,
+    Emitter<AddPlaylistState> emit,
+  ) {
+    emit(state.copyWith(autovalidateMode: event.autovalidateMode));
+  }
 
-      if (event is AddPlaylistReset) {
-        emit(AddPlaylistInitial());
-      }
-    });
+  void _onNameChange(
+    PlaylistAddNameChange event,
+    Emitter<AddPlaylistState> emit,
+  ) {
+    emit(state.copyWith(
+      playlist: state.playlist.copyWith(name: event.name),
+    ));
+  }
+
+  void _onSetSelectedSongs(
+    PlaylistSetSelectedSongs event,
+    Emitter<AddPlaylistState> emit,
+  ) {
+    emit(state.copyWith(
+      playlist: state.playlist.copyWith(songsIds: event.songsIds),
+    ));
+  }
+
+  Future<void> _onSave(
+    AddPlaylistSave event,
+    Emitter<AddPlaylistState> emit,
+  ) async {
+    await _playlistsRepository.addPlaylist(state.playlist);
+  }
+
+  void _onReset(
+    AddPlaylistReset event,
+    Emitter<AddPlaylistState> emit,
+  ) {
+    emit(AddPlaylistInitial());
   }
 }

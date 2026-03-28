@@ -1,83 +1,133 @@
-import 'package:collection/collection.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
+import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 part 'songs_list_component_event.dart';
 part 'songs_list_component_state.dart';
 
 class SongsListComponentBloc
     extends Bloc<SongsListComponentEvent, SongsListComponentState> {
-  SongsListComponentBloc() : super(SongsListComponentInitialState()) {
-    on<SongsListComponentEvent>((event, emit) {
-      if (event is ReloadListEvent) {
-        var allsongs = DataCollections.songs().values.toList();
+  SongsListComponentBloc({
+    SongsRepository? songsRepository,
+    PlaylistsRepository? playlistsRepository,
+  })  : _songsRepository = songsRepository ?? sl<SongsRepository>(),
+        _playlistsRepository = playlistsRepository ?? sl<PlaylistsRepository>(),
+        super(const SongsListComponentInitialState()) {
+    on<LoadSongsEvent>(_onLoadSongs);
+    on<ReloadListEvent>(_onLoadSongs);
+    on<SearchSongsEvent>(
+      _onSearchSongs,
+      transformer: (events, mapper) =>
+          events.debounce(const Duration(milliseconds: 300)).switchMap(mapper),
+    );
+    on<ChooseSongChangeEvent>(_onChooseSongChange);
+    on<SelectSongEvent>(_onSelectSong);
+    on<UnselectSongEvent>(_onUnselectSong);
+    on<RemoveSelectedSongsEvent>(_onRemoveSelectedSongs);
+    on<ClearSelectedSongs>(_onClearSelectedSongs);
+  }
 
-        if (state.selectedSongs.isNotEmpty) {
-          for (var song in allsongs) {
-            if (state.selectedSongs.any((id) => id == song.uuid)) {
-              song.selected = true;
-            }
-          }
-        }
+  final SongsRepository _songsRepository;
+  final PlaylistsRepository _playlistsRepository;
 
-        emit(state.copyWith(data: allsongs));
+  void _onLoadSongs(
+    SongsListComponentEvent event,
+    Emitter<SongsListComponentState> emit,
+  ) {
+    emit(state.copyWith(status: SongsListStatus.loading));
+    try {
+      final allSongs = _songsRepository.getAllSongs();
+      final filteredSongs = _filterSongs(allSongs, state.searchQuery);
+      emit(state.copyWith(
+        status: SongsListStatus.success,
+        data: filteredSongs,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: SongsListStatus.error,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  void _onSearchSongs(
+    SearchSongsEvent event,
+    Emitter<SongsListComponentState> emit,
+  ) {
+    final allSongs = _songsRepository.getAllSongs();
+    final filteredSongs = _filterSongs(allSongs, event.query);
+    emit(state.copyWith(
+      searchQuery: event.query,
+      data: filteredSongs,
+    ));
+  }
+
+  List<Song> _filterSongs(List<Song> songs, String query) {
+    if (query.isEmpty) return songs;
+    final lowerQuery = query.toLowerCase();
+    return songs
+        .where((song) =>
+            song.title.toLowerCase().contains(lowerQuery) ||
+            song.author.toLowerCase().contains(lowerQuery))
+        .toList();
+  }
+
+  void _onChooseSongChange(
+    ChooseSongChangeEvent event,
+    Emitter<SongsListComponentState> emit,
+  ) {
+    emit(state.copyWith(chooseSongs: event.value));
+  }
+
+  void _onSelectSong(
+    SelectSongEvent event,
+    Emitter<SongsListComponentState> emit,
+  ) {
+    final updatedSelected = List<String>.from(state.selectedSongs);
+    if (!updatedSelected.contains(event.song.uuid)) {
+      updatedSelected.add(event.song.uuid);
+    }
+    emit(state.copyWith(selectedSongs: updatedSelected));
+  }
+
+  void _onUnselectSong(
+    UnselectSongEvent event,
+    Emitter<SongsListComponentState> emit,
+  ) {
+    final updatedSelected = List<String>.from(state.selectedSongs)
+      ..remove(event.song.uuid);
+    emit(state.copyWith(selectedSongs: updatedSelected));
+  }
+
+  Future<void> _onRemoveSelectedSongs(
+    RemoveSelectedSongsEvent event,
+    Emitter<SongsListComponentState> emit,
+  ) async {
+    for (final songUuid in state.selectedSongs) {
+      final playlistsWithSong = _playlistsRepository
+          .getAllPlaylists()
+          .where((playlist) => playlist.songsIds.contains(songUuid));
+
+      for (final playlist in playlistsWithSong) {
+        final updatedSongsIds = List<String>.from(playlist.songsIds)
+          ..remove(songUuid);
+        await _playlistsRepository
+            .updatePlaylist(playlist.copyWith(songsIds: updatedSongsIds));
       }
+      await _songsRepository.deleteSong(songUuid);
+    }
+    add(LoadSongsEvent());
+    add(ClearSelectedSongs());
+  }
 
-      if (event is FilterSongListComponentEvent) {
-        emit(state.copyWith(data: event.filteredList));
-      }
-
-      if (event is ChooseSongChangeEvent) {
-        emit(state.copyWith(chooseSongs: event.value));
-      }
-
-      if (event is SelectSongEvent) {
-        var currentSelectedSongs = state.selectedSongs;
-        var checkIfExist =
-            currentSelectedSongs.firstWhereOrNull((x) => x == event.song.uuid);
-        if (checkIfExist == null) {
-          currentSelectedSongs.add(event.song.uuid);
-        }
-        emit(state.copyWith(selectedSongs: currentSelectedSongs));
-      }
-
-      if (event is UnelectSongEvent) {
-        var currentSelectedSongs = state.selectedSongs;
-        var checkIfExist =
-            currentSelectedSongs.firstWhereOrNull((x) => x == event.song.uuid);
-        if (checkIfExist != null) {
-          currentSelectedSongs.remove(event.song.uuid);
-        }
-        emit(state.copyWith(selectedSongs: currentSelectedSongs));
-      }
-
-      if (event is RemoveSelectedSongsEvent) {
-        var songBox = DataCollections.songs();
-        var playlistBox = DataCollections.playlists();
-        for (var i = 0; i < state.selectedSongs.length; i++) {
-          var songUuid = state.selectedSongs[i];
-
-          var playlistsWithSong = playlistBox.values
-              .where((playlist) => playlist.songsIds.contains(songUuid));
-          for (var playlist in playlistsWithSong) {
-            playlist.songsIds.removeWhere((uuid) => uuid == songUuid);
-            playlistBox.put(playlist.uuid, playlist);
-          }
-          songBox.delete(songUuid);
-        }
-      }
-
-      if (event is ClearSelectedSongs) {
-        var allsongs = DataCollections.songs().values.toList();
-
-        for (var song in allsongs) {
-          if (state.selectedSongs.any((id) => id == song.uuid)) {
-            song.selected = false;
-          }
-        }
-        emit(state.copyWith(selectedSongs: []));
-      }
-    });
+  void _onClearSelectedSongs(
+    ClearSelectedSongs event,
+    Emitter<SongsListComponentState> emit,
+  ) {
+    emit(state.copyWith(selectedSongs: [], chooseSongs: false));
   }
 }

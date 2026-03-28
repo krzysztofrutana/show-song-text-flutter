@@ -8,12 +8,12 @@ import 'package:flutter_debouncer/flutter_debouncer.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/models/presentation_song_info.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/models/send_to_client_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
-import 'package:pomocnik_wokalisty/socket_connection/cubic/server_cubic/server_cubit.dart';
+import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
 
 class PresentationView extends StatefulWidget {
   const PresentationView({super.key});
@@ -38,7 +38,7 @@ class _PresentationViewState extends State<PresentationView>
 
   @override
   void initState() {
-    songs = context.read<PresentatationBloc>().state.songs;
+    songs = context.read<PresentationBloc>().state.songs;
     _allSongsCount = songs.length;
     _pageViewController = PageController();
     FullScreenHelper.instance.addListener(this);
@@ -68,7 +68,7 @@ class _PresentationViewState extends State<PresentationView>
 
   @override
   void deactivate() {
-    context.read<PresentatationBloc>().add(ClearPresentationStore());
+    context.read<PresentationBloc>().add(ClearPresentationStore());
     super.deactivate();
   }
 
@@ -78,7 +78,7 @@ class _PresentationViewState extends State<PresentationView>
       child: Focus(
         onKeyEvent: (node, event) {
           _throttler.throttle(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               onThrottle: () {
                 if (_currentPageInfo == null) {
                   return KeyEventResult.ignored;
@@ -130,7 +130,7 @@ class _PresentationViewState extends State<PresentationView>
                             _currentPageInfo != null
                                 ? '${_currentPageInfo!.songNumber}/${_currentPageInfo!.totalSongsCount}'
                                 : "",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black,
                               fontSize: 18,
                             )))
@@ -141,11 +141,10 @@ class _PresentationViewState extends State<PresentationView>
               children: [
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                     child: _presentationPages.isNotEmpty
                         ? PageView(
                             controller: _pageViewController,
-                            scrollDirection: Axis.horizontal,
                             onPageChanged: (index) {
                               setState(() {
                                 _currentPageInfo = _presentationPages[index];
@@ -177,7 +176,7 @@ class _PresentationViewState extends State<PresentationView>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: Icon(Icons.first_page),
+                  icon: const Icon(Icons.first_page),
                   onPressed: _currentPageInfo?.previewSongExist ?? false
                       ? () => _handlePreviousSong(context, true)
                       : null,
@@ -185,13 +184,13 @@ class _PresentationViewState extends State<PresentationView>
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.first_page),
+                      icon: const Icon(Icons.first_page),
                       onPressed: () {
                         _handleFirstPage(context);
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.navigate_before),
+                      icon: const Icon(Icons.navigate_before),
                       onPressed: () {
                         _handlePreviousPage(context);
                       },
@@ -200,19 +199,19 @@ class _PresentationViewState extends State<PresentationView>
                       _currentPageInfo != null
                           ? '${_currentPageInfo!.pageNumberInSongContext}/${_currentPageInfo!.totalPagesCountForSong}'
                           : '',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 18,
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.navigate_next),
+                      icon: const Icon(Icons.navigate_next),
                       onPressed: () {
                         _handleNextPage(context);
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.last_page),
+                      icon: const Icon(Icons.last_page),
                       onPressed: () {
                         _handleLastPage(context);
                       },
@@ -220,7 +219,7 @@ class _PresentationViewState extends State<PresentationView>
                   ],
                 ),
                 IconButton(
-                  icon: Icon(Icons.last_page_sharp),
+                  icon: const Icon(Icons.last_page_sharp),
                   onPressed: _currentPageInfo?.nextSongExist ?? false
                       ? () => _handleNextSong(context)
                       : null,
@@ -235,7 +234,7 @@ class _PresentationViewState extends State<PresentationView>
 
   void _handleFirstPage(BuildContext context) {
     setState(() {
-      var firstIndexForSong = _presentationPages.firstWhere((songInfo) =>
+      final firstIndexForSong = _presentationPages.firstWhere((songInfo) =>
           songInfo.songNumber == _currentPageInfo!.songNumber &&
           songInfo.pageIndexInSongContext == 0);
 
@@ -245,7 +244,7 @@ class _PresentationViewState extends State<PresentationView>
 
   void _handleLastPage(BuildContext context) {
     setState(() {
-      var lastIndexForSong = _presentationPages.firstWhere((songInfo) =>
+      final lastIndexForSong = _presentationPages.firstWhere((songInfo) =>
           songInfo.songNumber == _currentPageInfo!.songNumber &&
           songInfo.pageIndexInSongContext ==
               songInfo.totalPagesCountForSong - 1);
@@ -256,14 +255,14 @@ class _PresentationViewState extends State<PresentationView>
   void _handlePreviousPage(BuildContext context) {
     setState(() {
       _pageViewController.previousPage(
-          duration: Duration(microseconds: 500), curve: Curves.easeInOut);
+          duration: const Duration(microseconds: 500), curve: Curves.easeInOut);
     });
   }
 
   void _handlePreviousSong(BuildContext context, bool returnToFirstIndex) {
     if (returnToFirstIndex) {
       setState(() {
-        var lastIndexForSongPrevious = _presentationPages.firstWhere(
+        final lastIndexForSongPrevious = _presentationPages.firstWhere(
             (songInfo) =>
                 songInfo.songNumber == _currentPageInfo!.songNumber - 1 &&
                 songInfo.pageIndexInSongContext == 0);
@@ -277,7 +276,7 @@ class _PresentationViewState extends State<PresentationView>
   void _handleNextPage(BuildContext context) {
     setState(() {
       _pageViewController.nextPage(
-          duration: Duration(microseconds: 500), curve: Curves.easeInOut);
+          duration: const Duration(microseconds: 500), curve: Curves.easeInOut);
     });
   }
 
@@ -287,7 +286,7 @@ class _PresentationViewState extends State<PresentationView>
             _currentPageInfo!.totalPagesCountForSong - 1) {
       _handleNextPage(context);
     } else {
-      var firstIndexForNextSong = _presentationPages.firstWhere((songInfo) =>
+      final firstIndexForNextSong = _presentationPages.firstWhere((songInfo) =>
           songInfo.songNumber == _currentPageInfo!.songNumber + 1 &&
           songInfo.pageIndexInSongContext == 0);
       _pageViewController.jumpToPage(firstIndexForNextSong.pageIndex);
@@ -295,9 +294,9 @@ class _PresentationViewState extends State<PresentationView>
   }
 
   void _sendTextToClients(BuildContext context) {
-    if (context.read<ServerCubit>().state.server.serverStarted &&
+    if (context.read<ServerCubit>().state.serverStarted &&
         _currentPageInfo != null) {
-      var modelToSend = SendToClientModel(
+      final modelToSend = SendToClientModel(
               text: _currentPageInfo!.pageText, title: _currentPageInfo!.title)
           .toJson();
 
@@ -306,43 +305,42 @@ class _PresentationViewState extends State<PresentationView>
   }
 
   _setPages(BuildContext context, BoxConstraints constraints) {
-    var totalSongsCount = songs.length;
+    _presentationPages.clear();
+    final totalSongsCount = songs.length;
 
     for (var i = 0; i < songs.length; i++) {
-      var song = songs[i];
-      var title = song.title;
-      var songNumber = i + 1;
+      final song = songs[i];
+      final title = song.title;
+      final songNumber = i + 1;
 
-      var text = song.text.trim();
+      final text = song.text.trim();
 
       final scaledFontSize =
           MediaQuery.textScalerOf(context).scale(_fontSize.toDouble());
 
       final defaultTextStyle = DefaultTextStyle.of(context);
 
-      var style =
+      final style =
           defaultTextStyle.style.merge(TextStyle(fontSize: scaledFontSize));
 
-      var span = TextSpan(
+      final span = TextSpan(
         text: text,
         style: style,
       );
 
-      var templatePainter = TextPainter(
+      final templatePainter = TextPainter(
           text: span,
-          maxLines: null,
           textScaler: MediaQuery.textScalerOf(context),
           textDirection: TextDirection.ltr,
           textAlign: TextAlign.left,
-          locale: Locale(Platform.localeName),
-          strutStyle: null);
+          locale: Locale(Platform.localeName));
 
       templatePainter.layout(maxWidth: constraints.maxWidth);
 
       final overflowH = templatePainter.height > constraints.maxHeight;
 
       if (!overflowH) {
-        var newPage = SingleChildScrollView(
+        final newPage = SingleChildScrollView(
           child: Text.rich(
             span,
             style: style,
@@ -366,11 +364,11 @@ class _PresentationViewState extends State<PresentationView>
         continue;
       }
 
-      LineSplitter ls = LineSplitter();
+      final ls = const LineSplitter();
       var textLinesToCheck = ls.convert(text);
       if (textLinesToCheck.isEmpty || textLinesToCheck.length == 1) {
         if (_presentationPages.isEmpty) {
-          var newPage = SingleChildScrollView(
+          final newPage = SingleChildScrollView(
             child: Text.rich(
               span,
               style: style,
@@ -396,12 +394,20 @@ class _PresentationViewState extends State<PresentationView>
         return;
       }
 
-      double charHeight = templatePainter.preferredLineHeight;
-      int linesInPage = constraints.maxHeight ~/ charHeight;
+      final charHeight = templatePainter.preferredLineHeight;
+      if (charHeight <= 0) {
+        _showTextErrorModal(song);
+        continue;
+      }
+      final linesInPage = constraints.maxHeight ~/ charHeight;
+      if (linesInPage <= 0) {
+        _showTextErrorModal(song);
+        continue;
+      }
 
-      int iteration = 0;
+      var iteration = 0;
       while (textLinesToCheck.isNotEmpty) {
-        int linesForPageForLeftTextLines = linesInPage;
+        var linesForPageForLeftTextLines = linesInPage;
 
         if (linesForPageForLeftTextLines > textLinesToCheck.length) {
           linesForPageForLeftTextLines = textLinesToCheck.length;
@@ -410,21 +416,19 @@ class _PresentationViewState extends State<PresentationView>
         textLinesToCheck = removeFirstLineIfEmpty(textLinesToCheck);
 
         for (var i = linesForPageForLeftTextLines; i > 0; i--) {
-          var textLinesForPage = textLinesToCheck.take(i);
+          final textLinesForPage = textLinesToCheck.take(i);
 
-          var checkSpan = TextSpan(
+          final checkSpan = TextSpan(
             text: textLinesForPage.join("\n").trim(),
             style: style,
           );
 
-          var checkPainter = TextPainter(
+          final checkPainter = TextPainter(
               text: checkSpan,
-              maxLines: null,
               textScaler: MediaQuery.textScalerOf(context),
               textDirection: TextDirection.ltr,
               textAlign: TextAlign.left,
-              locale: Locale(Platform.localeName),
-              strutStyle: null);
+              locale: Locale(Platform.localeName));
 
           checkPainter.layout(maxWidth: constraints.maxWidth);
 
@@ -434,7 +438,7 @@ class _PresentationViewState extends State<PresentationView>
           if (!checkPainterOverflow) {
             textLinesToCheck = textLinesToCheck.skip(i).toList();
 
-            var newPage = SingleChildScrollView(
+            final newPage = SingleChildScrollView(
               child: Text.rich(
                 checkSpan,
                 style: style,
@@ -479,7 +483,7 @@ class _PresentationViewState extends State<PresentationView>
     if (textLines.isEmpty) return textLines;
 
     if (textLines[0].isEmpty) {
-      var newTextLines = textLines.skip(1).toList();
+      final newTextLines = textLines.skip(1).toList();
       return removeFirstLineIfEmpty(newTextLines);
     }
 
@@ -487,27 +491,27 @@ class _PresentationViewState extends State<PresentationView>
   }
 
   Future<void> _showTextErrorModal(Song song) {
+    final localizations = AppLocalizations.of(context)!;
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            LocalizationManager
-                .instance.appLocalization.createPresentationError,
-            style: TextStyle(fontSize: 20),
+            localizations.createPresentationError,
+            style: const TextStyle(fontSize: 20),
           ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(LocalizationManager.instance.appLocalization
-                    .songMustHaveTextDividedIntoLines(song.title)),
+                Text(
+                    localizations.songMustHaveTextDividedIntoLines(song.title)),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.ok),
+              child: Text(localizations.ok),
               onPressed: () {
                 Navigator.of(context).pop();
               },

@@ -238,7 +238,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get presentiaton => 'Prezentacja';
+  String get presentation => 'Prezentacja';
 
   @override
   String get presentationIsOnlyPossibleForOneList => 'Prezentacja możliwa tylko dla jednej listy';

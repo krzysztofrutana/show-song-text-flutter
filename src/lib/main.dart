@@ -5,89 +5,70 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:nested/nested.dart';
-import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
+import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart' as di;
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
-import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubic/client_screen_mode_cubic.dart';
+import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubit/client_screen_mode_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/home.dart';
 import 'package:pomocnik_wokalisty/modules/initialize_screen.dart';
+import 'package:pomocnik_wokalisty/modules/localization/bloc/localization_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
-import 'package:pomocnik_wokalisty/modules/playlists/edit/cubic/playlist_edit_cubit.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/edit/cubit/playlist_edit_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
-import 'package:pomocnik_wokalisty/modules/songs/views/add/cubic/songs_add_cubit.dart';
-import 'package:pomocnik_wokalisty/modules/songs/views/common/cubic/song_search_cubit.dart';
-import 'package:pomocnik_wokalisty/modules/songs/views/edit/cubic/songs_edit_cubit.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/common/cubit/song_search_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
-import 'package:pomocnik_wokalisty/socket_connection/cubic/client_cubic/client_cubit.dart';
-import 'package:pomocnik_wokalisty/socket_connection/cubic/server_cubic/server_cubit.dart';
+import 'package:pomocnik_wokalisty/socket_connection/cubit/client_cubit/client_cubit.dart';
+import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
 
 void main() async {
-  await DataCollections.initCollections();
+  WidgetsFlutterBinding.ensureInitialized();
 
+  await DataCollections.initCollections();
   await LocalStorage.init();
   EventsHub.init();
+  await di.init();
 
-  WidgetsFlutterBinding.ensureInitialized();
   await FullScreenHelper.init();
   if (Platform.isAndroid) MobileAds.instance.initialize();
 
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => MyAppState();
-
-  static MyAppState of(BuildContext context) =>
-      context.findAncestorStateOfType<MyAppState>()!;
-}
-
-class MyAppState extends State<MyApp> {
-  Locale _locale = Locale(Platform.localeName);
-
-  void setLocale(Locale value) {
-    setState(() {
-      _locale = value;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final String? language = LocalStorage.instance.getString('lang');
-    if (language != null && language.isNotEmpty) {
-      _locale = Locale(language);
-    }
     return MultiBlocProvider(
         providers: getBlockProviders,
-        child: MaterialApp(
-          locale: _locale,
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          onGenerateTitle: (ctx) {
-            return AppLocalizations.of(ctx)!.singersAssistant;
+        child: BlocBuilder<LocalizationCubit, LocalizationState>(
+          builder: (context, state) {
+            return MaterialApp(
+              locale: state.locale,
+              debugShowCheckedModeBanner: false,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              onGenerateTitle: (ctx) {
+                return AppLocalizations.of(ctx)!.singersAssistant;
+              },
+              home: const InitializeScreen(targetWidget: MyHomePage()),
+            );
           },
-          home: InitializeScreen(targetWidget: MyHomePage()),
         ));
   }
 
   List<SingleChildWidget> get getBlockProviders {
     return [
       BlocProvider(
+        create: (context) => LocalizationCubit(),
+      ),
+      BlocProvider(
         create: (context) => NavigationDrawerBloc(),
-      ),
-      BlocProvider(
-        create: (context) => SongsAddCubit(),
-      ),
-      BlocProvider(
-        create: (context) => SongsEditCubit(),
       ),
       BlocProvider(
         create: (context) => SongsListComponentBloc(),
@@ -108,10 +89,10 @@ class MyAppState extends State<MyApp> {
         create: (context) => ClientCubit(),
       ),
       BlocProvider(
-        create: (context) => PresentatationBloc(),
+        create: (context) => PresentationBloc(),
       ),
       BlocProvider(
-        create: (context) => ClientScreenModeCubic(),
+        create: (context) => ClientScreenModeCubit(),
       ),
       BlocProvider(
         create: (context) => SongSearchCubit(),
@@ -131,35 +112,33 @@ class _MyHomePageState extends State<MyHomePage> {
   bool canPop = false;
   @override
   Widget build(BuildContext context) {
-    LocalizationManager.instance.setLocalization(context);
     return PopScope(
         canPop: false,
         onPopInvokedWithResult: (bool didPop, Object? result) async {
           if (didPop) {
             return;
           }
-          final bool shouldPop = await _showBackDialog() ?? false;
+          final shouldPop = await _showBackDialog(context) ?? false;
           if (context.mounted && shouldPop) {
             SystemNavigator.pop();
           }
         },
-        child: Home());
+        child: const Home());
   }
 
-  Future<bool?> _showBackDialog() {
+  Future<bool?> _showBackDialog(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
-              LocalizationManager.instance.appLocalization.exitApplication),
-          content: Text(LocalizationManager
-              .instance.appLocalization.areYouSureYouWantToLeaveTheApplication),
+          title: Text(localizations.exitApplication),
+          content: Text(localizations.areYouSureYouWantToLeaveTheApplication),
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
                   textStyle: Theme.of(context).textTheme.labelLarge),
-              child: Text(LocalizationManager.instance.appLocalization.cancel),
+              child: Text(localizations.cancel),
               onPressed: () {
                 Navigator.pop(context, false);
               },
@@ -167,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
             TextButton(
               style: TextButton.styleFrom(
                   textStyle: Theme.of(context).textTheme.labelLarge),
-              child: Text(LocalizationManager.instance.appLocalization.leave),
+              child: Text(localizations.leave),
               onPressed: () {
                 Navigator.pop(context, true);
               },

@@ -1,32 +1,32 @@
-import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
+import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
 
 mixin SongAddValidator {
-  String? validateAuthor(String? value) {
+  String? validateAuthor(String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
-      return LocalizationManager.instance.appLocalization.authorIsRequired;
+      return localizations.authorIsRequired;
     }
 
     return null;
   }
 
-  String? validateTitle(String? value) {
+  String? validateTitle(String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
-      return LocalizationManager.instance.appLocalization.titleIsRequired;
+      return localizations.titleIsRequired;
     }
 
-    var box = DataCollections.songs();
-    if (box.values.any((s) => s.title == value)) {
-      return LocalizationManager
-          .instance.appLocalization.thereIsAlreadySongWithThisTitle;
+    final songsRepository = sl<SongsRepository>();
+    if (songsRepository.getAllSongs().any((s) => s.title == value)) {
+      return localizations.thereIsAlreadySongWithThisTitle;
     }
 
     return null;
   }
 
-  String? validateText(String? value) {
+  String? validateText(String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
-      return LocalizationManager.instance.appLocalization.textIsRequired;
+      return localizations.textIsRequired;
     }
 
     return null;

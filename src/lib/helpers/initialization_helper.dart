@@ -75,6 +75,6 @@ class AdMobInitializationHelper {
   }
 
   Future<bool> canRequestAds() async {
-    return await ConsentInformation.instance.canRequestAds();
+    return ConsentInformation.instance.canRequestAds();
   }
 }

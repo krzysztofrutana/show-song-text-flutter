@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pomocnik_wokalisty/helpers/initialization_helper.dart';
 
 class InitializeScreen extends StatefulWidget {
-  final Widget targetWidget;
-
   const InitializeScreen({super.key, required this.targetWidget});
+
+  final Widget targetWidget;
 
   @override
   State<InitializeScreen> createState() => _InitializeScreenState();

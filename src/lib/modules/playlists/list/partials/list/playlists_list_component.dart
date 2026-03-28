@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/playlist_edit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
@@ -16,82 +15,75 @@ class PlaylistsListComponent extends StatefulWidget {
 class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
   @override
   void initState() {
-    var box = DataCollections.playlists();
-    var allData = box.values.toList();
-
-    context
-        .read<PlaylistsListComponentBloc>()
-        .add(FilterPlaylistsListComponentEvent(filteredList: allData));
-
     super.initState();
+    context.read<PlaylistsListComponentBloc>().add(LoadPlaylistsEvent());
   }
 
   @override
   void deactivate() {
     context.read<PlaylistsListComponentBloc>().add(ClearSelectedPlaylists());
-
-    context
-        .read<PlaylistsListComponentBloc>()
-        .add(ChoosePlaylistChangeEvent(value: false));
-
     super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return BlocBuilder<PlaylistsListComponentBloc, PlaylistsListComponentState>(
         builder: (context, state) {
-      final list = context.read<PlaylistsListComponentBloc>().state.data;
+      if (state.status == PlaylistsListStatus.loading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final list = state.data;
       return Column(
         children: [
-          searchAppBar(context),
+          const SearchAppBar(),
           Flexible(
-              flex: 1,
               child: list.isEmpty
                   ? SizedBox(
                       height: 200,
                       width: double.infinity,
-                      child: Text(
-                          LocalizationManager
-                              .instance.appLocalization.noPlaylists,
+                      child: Text(localizations.noPlaylists,
                           textAlign: TextAlign.center),
                     )
                   : Container(
                       padding: const EdgeInsets.all(16),
                       child: ListView.separated(
                         separatorBuilder: (context, index) => const Divider(),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
                         itemCount: list.length,
-                        physics: const ScrollPhysics(),
                         itemBuilder: (context, index) {
                           final playlist = list[index];
 
-                          return state.choosePlaylists
-                              ? CheckboxListTile(
-                                  value: playlist.selected,
-                                  onChanged: (newValue) => setState(() =>
-                                      _onPlaylistCheckboxClick(
-                                          playlist, newValue)),
-                                  title: DefaultTextStyle(
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          color: Colors.black),
-                                      child: Text(playlist.name)))
-                              : ListTile(
-                                  title: Text(playlist.name),
-                                  titleTextStyle: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: Colors.black),
-                                  onTap: () => _redirectToPlaylistEdit(
-                                      context, playlist),
-                                  onLongPress: () => context
-                                      .read<PlaylistsListComponentBloc>()
-                                      .add(ChoosePlaylistChangeEvent(
-                                          value: true)),
-                                );
+                          if (state.choosePlaylists) {
+                            return CheckboxListTile(
+                              activeColor: Colors.red,
+                              value: state.selectedPlaylists
+                                  .contains(playlist.uuid),
+                              onChanged: (newValue) =>
+                                  _onPlaylistCheckboxClick(playlist, newValue),
+                              title: Text(
+                                playlist.name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.black),
+                              ),
+                            );
+                          } else {
+                            return ListTile(
+                              title: Text(playlist.name),
+                              titleTextStyle: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.black),
+                              onTap: () =>
+                                  _redirectToPlaylistEdit(context, playlist),
+                              onLongPress: () => context
+                                  .read<PlaylistsListComponentBloc>()
+                                  .add(ChoosePlaylistChangeEvent(value: true)),
+                            );
+                          }
                         },
                       ),
                     )),
@@ -100,16 +92,16 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
     });
   }
 
-  bool _onPlaylistCheckboxClick(Playlist playlist, bool? newValue) {
+  void _onPlaylistCheckboxClick(Playlist playlist, bool? newValue) {
     if (newValue == true) {
-      BlocProvider.of<PlaylistsListComponentBloc>(context)
+      context
+          .read<PlaylistsListComponentBloc>()
           .add(SelectPlaylistEvent(playlist: playlist));
     } else {
-      BlocProvider.of<PlaylistsListComponentBloc>(context)
+      context
+          .read<PlaylistsListComponentBloc>()
           .add(UnelectPlaylistEvent(playlist: playlist));
     }
-
-    return playlist.selected = newValue ?? false;
   }
 
   void _redirectToPlaylistEdit(BuildContext context, Playlist playlist) {
@@ -121,50 +113,26 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
   }
 }
 
-Widget searchAppBar(BuildContext context) {
-  final PlaylistListController searchController =
-      PlaylistListController(context: context);
+class SearchAppBar extends StatelessWidget {
+  const SearchAppBar({super.key});
 
-  return Container(
-    padding: const EdgeInsets.all(16),
-    child: TextField(
-      onChanged: (value) => searchController.onChange(value),
-      decoration: InputDecoration(
-        labelText: LocalizationManager.instance.appLocalization.search,
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(25))),
-        prefixIcon: Icon(Icons.search),
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: TextField(
+        onChanged: (value) => context
+            .read<PlaylistsListComponentBloc>()
+            .add(SearchPlaylistsEvent(value)),
+        decoration: InputDecoration(
+          labelText: localizations.search,
+          border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(25))),
+          prefixIcon: const Icon(Icons.search),
+        ),
       ),
-    ),
-  );
-}
-
-class PlaylistListController {
-  //We need a buildContext to interact with our bloc
-  final BuildContext context;
-
-  late List<Playlist> allData;
-  PlaylistListController({required this.context}) {
-    var box = DataCollections.playlists();
-    allData = box.values.toList();
-  }
-
-  onChange(String value) {
-    value = value.toLowerCase();
-
-    if (value.isEmpty) {
-      context
-          .read<PlaylistsListComponentBloc>()
-          .add(FilterPlaylistsListComponentEvent(filteredList: allData));
-      return;
-    }
-
-    List<Playlist> filteredList = allData
-        .where((playlist) => playlist.name.toLowerCase().contains(value))
-        .toList();
-
-    context
-        .read<PlaylistsListComponentBloc>()
-        .add(FilterPlaylistsListComponentEvent(filteredList: filteredList));
+    );
   }
 }

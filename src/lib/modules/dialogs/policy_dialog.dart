@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 
 class PolicyDialog extends StatelessWidget {
   const PolicyDialog({super.key, this.radius = 8, required this.mdFileName});
@@ -18,7 +18,8 @@ class PolicyDialog extends StatelessWidget {
         children: [
           Expanded(
             child: FutureBuilder<String>(
-              future: Future.delayed(Duration(milliseconds: 150)).then((value) {
+              future: Future.delayed(const Duration(milliseconds: 150))
+                  .then((value) {
                 return rootBundle.loadString('assets/markdown/$mdFileName');
               }),
               builder: (context, snapshot) {
@@ -26,12 +27,12 @@ class PolicyDialog extends StatelessWidget {
                   return Markdown(data: snapshot.data!);
                 }
 
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               },
             ),
           ),
           MaterialButton(
-            padding: EdgeInsets.all(0),
+            padding: const EdgeInsets.all(0),
             color: Colors.red,
             onPressed: () => Navigator.of(context).pop(),
             shape: RoundedRectangleBorder(
@@ -47,8 +48,8 @@ class PolicyDialog extends StatelessWidget {
               height: 50,
               width: double.infinity,
               child: Text(
-                LocalizationManager.instance.appLocalization.ok,
-                style: TextStyle(
+                AppLocalizations.of(context)!.ok,
+                style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),

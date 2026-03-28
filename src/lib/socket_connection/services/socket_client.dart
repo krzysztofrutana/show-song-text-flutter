@@ -1,23 +1,44 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'dart:typed_data';
 
+import 'package:pomocnik_wokalisty/socket_connection/services/socket_constants.dart';
+
 class Client {
-  late Socket socket;
+  Socket? _socket;
   bool isConnected = false;
   bool connectionError = false;
 
-  Future<void> connect(
-      Function(Uint8List) onData, Function(dynamic) onError, String ip) async {
+  final _dataController = StreamController<String>.broadcast();
+  Stream<String> get dataStream => _dataController.stream;
+
+  Future<void> connect(String ip) async {
     connectionError = false;
     try {
-      socket = await Socket.connect(ip, 55555, timeout: Duration(seconds: 5));
-      socket.listen(
-        onData,
-        onError: onError,
+      _socket = await Socket.connect(ip, SocketConstants.defaultPort,
+          timeout: SocketConstants.connectTimeout);
+
+      _socket?.cast<List<int>>().transform(utf8.decoder).transform(const LineSplitter()).listen(
+        (line) {
+          if (!_dataController.isClosed) {
+            _dataController.add(line);
+          }
+        },
+        onError: (e) {
+          connectionError = true;
+          if (!_dataController.isClosed) {
+            _dataController.addError(e);
+          }
+        },
         onDone: () {
-          socket.destroy();
+          _socket?.destroy();
+          _socket = null;
+          isConnected = false;
+          if (!_dataController.isClosed) {
+            _dataController.addError('Connection closed');
+          }
         },
         cancelOnError: false,
       );
@@ -30,9 +51,24 @@ class Client {
     }
   }
 
+  void send(Uint8List data) {
+    if (isConnected && _socket != null) {
+      _socket?.add(data);
+    }
+  }
+
   Future<void> stop() async {
-    await socket.close();
+    await _socket?.close();
+    _socket = null;
     isConnected = false;
     connectionError = false;
+  }
+
+  void dispose() {
+    if (isConnected) {
+      _socket?.destroy();
+      _socket = null;
+    }
+    _dataController.close();
   }
 }

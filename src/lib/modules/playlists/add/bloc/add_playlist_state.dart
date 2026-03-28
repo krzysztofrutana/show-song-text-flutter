@@ -1,30 +1,35 @@
 part of 'add_playlist_bloc.dart';
 
-sealed class AddPlaylistState {
-  late Playlist playlist;
+class AddPlaylistState extends Equatable {
+  const AddPlaylistState({
+    required this.playlist,
+    this.autovalidateMode = AutovalidateMode.disabled,
+  });
+
+  final Playlist playlist;
+  final AutovalidateMode autovalidateMode;
+
+  AddPlaylistState copyWith({
+    Playlist? playlist,
+    AutovalidateMode? autovalidateMode,
+  }) {
+    return AddPlaylistState(
+      playlist: playlist ?? this.playlist,
+      autovalidateMode: autovalidateMode ?? this.autovalidateMode,
+    );
+  }
+
+  @override
+  List<Object?> get props => [playlist, autovalidateMode];
 }
 
 final class AddPlaylistInitial extends AddPlaylistState {
-  AddPlaylistInitial({Playlist? playlistState}) {
-    if (playlistState == null) {
-      var uuid = const Uuid();
-      playlist = Playlist(uuid: uuid.v8(), name: '', songsIds: []);
-    } else {
-      playlist = playlistState;
-    }
-  }
-}
-
-final class PlaylistAddWithSongs extends AddPlaylistInitial {
-  PlaylistAddWithSongs(List<String> songsIds, Playlist beforePlaylistState)
-      : super(playlistState: beforePlaylistState) {
-    playlist.songsIds = songsIds;
-  }
-}
-
-final class PlaylistAddWithName extends AddPlaylistInitial {
-  PlaylistAddWithName(String name, Playlist beforePlaylistState)
-      : super(playlistState: beforePlaylistState) {
-    playlist.name = name;
-  }
+  AddPlaylistInitial()
+      : super(
+          playlist: Playlist(
+            uuid: const Uuid().v8(),
+            name: '',
+            songsIds: const [],
+          ),
+        );
 }

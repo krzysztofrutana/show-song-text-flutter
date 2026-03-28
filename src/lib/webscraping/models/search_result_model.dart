@@ -16,35 +16,35 @@ enum ResultState {
 }
 
 class FindedSongModel {
-  String fullName;
-  String title;
-  String? artist;
-  String? text;
-  String link;
-
   FindedSongModel(
       {required this.fullName,
       required this.title,
       this.artist,
       this.text,
       required this.link});
+
+  String fullName;
+  String title;
+  String? artist;
+  String? text;
+  String link;
 }
 
 class FindedArtistModel {
+  FindedArtistModel(
+      {required this.encodeName, required this.name, required this.link});
+
   String encodeName;
   String name;
   String link;
-
-  FindedArtistModel(
-      {required this.encodeName, required this.name, required this.link});
 }
 
 class SearchResultModel {
+  SearchResultModel({required this.song, required this.state});
+
   SongToFindModel song;
   ResultState state;
   String? text;
   List<FindedSongModel> songsToChoose = [];
   List<FindedArtistModel> artistToChoose = [];
-
-  SearchResultModel({required this.song, required this.state});
 }

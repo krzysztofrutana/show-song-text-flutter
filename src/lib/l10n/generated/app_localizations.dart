@@ -521,11 +521,11 @@ abstract class AppLocalizations {
   /// **'Pozycja: {position}'**
   String position(Object position);
 
-  /// No description provided for @presentiaton.
+  /// No description provided for @presentation.
   ///
   /// In pl, this message translates to:
   /// **'Prezentacja'**
-  String get presentiaton;
+  String get presentation;
 
   /// No description provided for @presentationIsOnlyPossibleForOneList.
   ///

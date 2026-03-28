@@ -1,35 +1,50 @@
 part of 'songs_list_component_bloc.dart';
 
-abstract class SongsListComponentEvent {}
+abstract class SongsListComponentEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
-class FilterSongListComponentEvent extends SongsListComponentEvent {
-  final List<Song> filteredList;
+class LoadSongsEvent extends SongsListComponentEvent {}
 
-  FilterSongListComponentEvent({required this.filteredList});
+class SearchSongsEvent extends SongsListComponentEvent {
+  SearchSongsEvent(this.query);
+
+  final String query;
+
+  @override
+  List<Object?> get props => [query];
 }
 
 class ChooseSongChangeEvent extends SongsListComponentEvent {
+  ChooseSongChangeEvent({required this.value});
+
   final bool value;
 
-  ChooseSongChangeEvent({required this.value});
+  @override
+  List<Object?> get props => [value];
 }
 
 class SelectSongEvent extends SongsListComponentEvent {
+  SelectSongEvent({required this.song});
+
   final Song song;
 
-  SelectSongEvent({required this.song});
+  @override
+  List<Object?> get props => [song];
 }
 
-class UnelectSongEvent extends SongsListComponentEvent {
+class UnselectSongEvent extends SongsListComponentEvent {
+  UnselectSongEvent({required this.song});
+
   final Song song;
 
-  UnelectSongEvent({required this.song});
+  @override
+  List<Object?> get props => [song];
 }
 
 class RemoveSelectedSongsEvent extends SongsListComponentEvent {}
 
-class ReloadListEvent extends SongsListComponentEvent {
-  ReloadListEvent();
-}
+class ReloadListEvent extends SongsListComponentEvent {}
 
 class ClearSelectedSongs extends SongsListComponentEvent {}

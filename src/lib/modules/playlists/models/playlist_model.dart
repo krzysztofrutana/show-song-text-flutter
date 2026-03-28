@@ -1,19 +1,37 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 part 'playlist_model.g.dart';
 
 @HiveType(typeId: 2)
-class Playlist {
+class Playlist extends Equatable {
+  const Playlist({
+    required this.uuid,
+    required this.name,
+    required this.songsIds,
+  });
+
   @HiveField(0)
-  String uuid;
+  final String uuid;
 
   @HiveField(1)
-  String name;
+  final String name;
 
   @HiveField(2)
-  List<String> songsIds;
+  final List<String> songsIds;
 
-  bool selected = false;
+  Playlist copyWith({
+    String? uuid,
+    String? name,
+    List<String>? songsIds,
+  }) {
+    return Playlist(
+      uuid: uuid ?? this.uuid,
+      name: name ?? this.name,
+      songsIds: songsIds ?? this.songsIds,
+    );
+  }
 
-  Playlist({required this.uuid, required this.name, required this.songsIds});
+  @override
+  List<Object?> get props => [uuid, name, songsIds];
 }

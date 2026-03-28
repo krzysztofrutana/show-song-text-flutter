@@ -2,16 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 
 class PresentationSongInfo {
-  String title;
-  int songNumber;
-  int totalSongsCount;
-  int pageIndex;
-  int pageIndexInSongContext;
-  int totalPagesCountForSong;
-  Widget pageWidget;
-  String pageText;
-  Song song;
-
   PresentationSongInfo(
       {required this.title,
       required this.songNumber,
@@ -22,6 +12,16 @@ class PresentationSongInfo {
       required this.pageWidget,
       required this.pageText,
       required this.song});
+
+  String title;
+  int songNumber;
+  int totalSongsCount;
+  int pageIndex;
+  int pageIndexInSongContext;
+  int totalPagesCountForSong;
+  Widget pageWidget;
+  String pageText;
+  Song song;
 
   int get pageNumberInSongContext {
     return pageIndexInSongContext + 1;

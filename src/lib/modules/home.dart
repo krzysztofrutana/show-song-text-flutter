@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/navigation_drawer.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/playlists_list_view.dart';
@@ -17,35 +17,38 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<NavigationDrawerBloc, NavigationDrawerState>(
-          builder: (BuildContext context, NavigationDrawerState state) =>
-              SafeArea(
-                top: false,
-                bottom: true,
-                child: Scaffold(
-                    drawer: MyNavigationDrawer(),
-                    appBar: AppBar(
-                      title: Text(_getTextForItem(state.navigationPage)),
-                    ),
-                    body: _bodyForState(state)),
-              ));
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return BlocBuilder<NavigationDrawerBloc, NavigationDrawerState>(
+        builder: (BuildContext context, NavigationDrawerState state) =>
+            SafeArea(
+              top: false,
+              child: Scaffold(
+                  drawer: const MyNavigationDrawer(),
+                  appBar: AppBar(
+                    title: Text(
+                        _getTextForItem(state.navigationPage, localizations)),
+                  ),
+                  body: _bodyForState(state)),
+            ));
+  }
 }
 
-String _getTextForItem(NavigationPage navigationPage) {
+String _getTextForItem(
+    NavigationPage navigationPage, AppLocalizations localizations) {
   switch (navigationPage) {
     case NavigationPage.songsList:
-      return LocalizationManager.instance.appLocalization.songsList;
+      return localizations.songsList;
     case NavigationPage.songsAdd:
-      return LocalizationManager.instance.appLocalization.addSong;
+      return localizations.addSong;
     case NavigationPage.songsEdit:
-      return LocalizationManager.instance.appLocalization.editSong;
+      return localizations.editSong;
     case NavigationPage.playlistList:
-      return LocalizationManager.instance.appLocalization.playlists;
+      return localizations.playlists;
     case NavigationPage.playlistEdit:
-      return LocalizationManager.instance.appLocalization.editPlaylist;
+      return localizations.editPlaylist;
     case NavigationPage.serverSettings:
-      return LocalizationManager.instance.appLocalization.presentationSettings;
+      return localizations.presentationSettings;
     default:
       return '-';
   }

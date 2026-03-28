@@ -2,14 +2,18 @@ import 'dart:async';
 import 'dart:io';
 import 'package:encoder/encoder.dart';
 import 'package:network_info_plus/network_info_plus.dart';
-import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
+import 'package:pomocnik_wokalisty/socket_connection/services/socket_constants.dart';
 
 class Server {
-  late ServerSocket server;
+  ServerSocket? _server;
   final info = NetworkInfo();
   String? ip;
-  List<Socket> activeClienst = [];
+  final List<Socket> _activeClients = [];
+  List<Socket> get activeClients => List.unmodifiable(_activeClients);
   bool serverStarted = false;
+
+  final _connectionController = StreamController<String>.broadcast();
+  Stream<String> get connectionStream => _connectionController.stream;
 
   Future<void> init() async {
     ip = await info.getWifiIP();
@@ -20,39 +24,55 @@ class Server {
 
     if (ip == null) return;
 
-    server = await ServerSocket.bind(ip, 55555);
+    try {
+      _server = await ServerSocket.bind(ip, SocketConstants.defaultPort);
 
-    server.listen((client) {
-      handleConnection(client);
-    });
+      _server?.listen((client) {
+        handleConnection(client);
+      });
 
-    serverStarted = true;
+      serverStarted = true;
+    } catch (e) {
+      serverStarted = false;
+      _connectionController.add('error:Could not start server on $ip:${SocketConstants.defaultPort} - $e');
+    }
   }
 
   void handleConnection(Socket client) {
-    activeClienst.add(client);
-    EventsHub.instance.emit('client_connected', client.remoteAddress.address);
+    _activeClients.add(client);
+    _connectionController.add('connected:${client.remoteAddress.address}');
 
     client.listen((event) {}, onDone: () {
-      activeClienst.remove(client);
-      EventsHub.instance
-          .emit('client_disconnected', client.remoteAddress.address);
+      _activeClients.remove(client);
+      if (!_connectionController.isClosed) {
+        _connectionController.add('disconnected:${client.remoteAddress.address}');
+      }
     }, onError: (error) {
-      activeClienst.remove(client);
-      EventsHub.instance
-          .emit('client_disconnected', client.remoteAddress.address);
+      _activeClients.remove(client);
+      if (!_connectionController.isClosed) {
+        _connectionController.add('disconnected:${client.remoteAddress.address}');
+      }
     });
   }
 
   void send(String message) {
-    for (var client in activeClienst) {
-      client.write(Encoder.encodeString(message));
+    for (var client in _activeClients) {
+      client.writeln(Encoder.encodeString(message));
     }
   }
 
   Future<void> stop() async {
-    await server.close();
-    activeClienst.clear();
+    await _server?.close();
+    _server = null;
+    for (var client in _activeClients) {
+      await client.close();
+    }
+    _activeClients.clear();
     serverStarted = false;
+  }
+
+  Future<void> dispose() async {
+    await stop();
+    await _connectionController.close();
   }
 }

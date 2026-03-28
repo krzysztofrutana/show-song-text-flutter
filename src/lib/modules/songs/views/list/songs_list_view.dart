@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/connection_helper.dart';
-import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
+import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/songs_add.dart';
-import 'package:pomocnik_wokalisty/modules/songs/views/common/cubic/song_search_cubit.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/common/cubit/song_search_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/models/search_dialog_result_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/views/dialogs/search_dialog.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
@@ -27,6 +29,9 @@ class SongsList extends StatefulWidget {
 }
 
 class _SongsListState extends State<SongsList> with InterstitialAds {
+  final _quickSearchFormKey = GlobalKey<FormState>();
+  final _playlistFormKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -53,7 +58,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                         children: [
                           FloatingActionButton(
                               heroTag: "quickSearch",
-                              backgroundColor: Colors.black45,
+                              backgroundColor: Colors.orange,
                               foregroundColor: Colors.white,
                               child: const Icon(
                                 Icons.manage_search,
@@ -82,6 +87,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
             if (iconSize > 20) iconSize = 20;
             if (fontSize > 14) fontSize = 14;
 
+            final localizations = AppLocalizations.of(context)!;
             return Visibility(
               visible: state.chooseSongs == true,
               child: SizedBox(
@@ -90,18 +96,19 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Expanded(
-                      child: MaterialButton(
-                        minWidth: 0,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: TextButton(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          spacing: 10,
                           children: [
-                            Icon(Icons.cancel_outlined, size: iconSize),
-                            Text(
-                                LocalizationManager
-                                    .instance.appLocalization.cancel,
-                                style: TextStyle(fontSize: fontSize),
+                            Icon(
+                              Icons.cancel_outlined,
+                              size: iconSize,
+                              color: Colors.black,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(localizations.cancel,
+                                style: TextStyle(
+                                    fontSize: fontSize, color: Colors.black),
                                 textAlign: TextAlign.center)
                           ],
                         ),
@@ -117,20 +124,19 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                       ),
                     ),
                     Expanded(
-                      child: MaterialButton(
-                          minWidth: 0,
-                          padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: TextButton(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            spacing: 10,
                             children: [
                               ImageIcon(
-                                  AssetImage('assets/images/icons/delete.png'),
+                                  color: Colors.black,
+                                  const AssetImage(
+                                      'assets/images/icons/delete.png'),
                                   size: iconSize),
-                              Text(
-                                  LocalizationManager
-                                      .instance.appLocalization.delete,
-                                  style: TextStyle(fontSize: fontSize),
+                              const SizedBox(height: 10),
+                              Text(localizations.delete,
+                                  style: TextStyle(
+                                      fontSize: fontSize, color: Colors.black),
                                   textAlign: TextAlign.center)
                             ],
                           ),
@@ -138,19 +144,19 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                               _showDeleteConfirmModal(internalContext)),
                     ),
                     Expanded(
-                      child: MaterialButton(
-                        minWidth: 0,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: TextButton(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ImageIcon(
-                                AssetImage('assets/images/icons/playlist.png'),
+                                color: Colors.black,
+                                const AssetImage(
+                                    'assets/images/icons/playlist.png'),
                                 size: iconSize),
-                            Text(
-                                LocalizationManager
-                                    .instance.appLocalization.createPlaylist,
-                                style: TextStyle(fontSize: fontSize),
+                            const SizedBox(height: 10),
+                            Text(localizations.createPlaylist,
+                                style: TextStyle(
+                                    fontSize: fontSize, color: Colors.black),
                                 textAlign: TextAlign.center)
                           ],
                         ),
@@ -159,20 +165,21 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                       ),
                     ),
                     Expanded(
-                      child: MaterialButton(
-                        minWidth: 0,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: TextButton(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ImageIcon(
-                              AssetImage('assets/images/icons/playlist.png'),
+                              color: Colors.black,
+                              const AssetImage(
+                                  'assets/images/icons/playlist.png'),
                               size: iconSize,
                             ),
+                            const SizedBox(height: 10),
                             Text(
-                              LocalizationManager.instance.appLocalization
-                                  .addToPlaylistSentence,
-                              style: TextStyle(fontSize: fontSize),
+                              localizations.addToPlaylistSentence,
+                              style: TextStyle(
+                                  fontSize: fontSize, color: Colors.black),
                               textAlign: TextAlign.center,
                             )
                           ],
@@ -182,22 +189,22 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                       ),
                     ),
                     Expanded(
-                      child: MaterialButton(
-                        minWidth: 0,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
+                      child: TextButton(
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            spacing: 10,
                             children: [
                               ImageIcon(
-                                AssetImage(
+                                color: Colors.black,
+                                const AssetImage(
                                     'assets/images/icons/presentation.png'),
                                 size: iconSize,
                               ),
-                              Text(
-                                  LocalizationManager
-                                      .instance.appLocalization.presentiaton,
-                                  style: TextStyle(fontSize: fontSize),
+                              const SizedBox(height: 10),
+                              Text(localizations.presentation,
+                                  style: TextStyle(
+                                    fontSize: fontSize,
+                                    color: Colors.black,
+                                  ),
                                   textAlign: TextAlign.center)
                             ]),
                         onPressed: () =>
@@ -221,46 +228,39 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   Future<void> _showDeleteConfirmModal(BuildContext parentContext) async {
-    var selectedSongsLength =
+    final localizations = AppLocalizations.of(context)!;
+    final selectedSongsLength =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs.length;
 
     if (selectedSongsLength == 0) {
-      return showNoSongsSelectedDialog(LocalizationManager
-          .instance.appLocalization.youMustMarkSongsToBeDeleted);
+      return showNoSongsSelectedDialog(
+          localizations.youMustMarkSongsToBeDeleted);
     } else {
       return showDialog<void>(
         context: context,
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
-                LocalizationManager.instance.appLocalization.deletingSongs),
+            title: Text(localizations.deletingSongs),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text(LocalizationManager.instance.appLocalization
-                      .areYouSureYouWantDeleteSelectedSongs),
-                  Text(LocalizationManager.instance.appLocalization
-                      .numberOfSongs(selectedSongsLength)),
+                  Text(localizations.areYouSureYouWantDeleteSelectedSongs),
+                  Text(localizations.numberOfSongs(selectedSongsLength)),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child:
-                    Text(LocalizationManager.instance.appLocalization.cancel),
+                child: Text(localizations.cancel),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               TextButton(
-                child: Text(LocalizationManager.instance.appLocalization.yes),
+                child: Text(localizations.yes),
                 onPressed: () {
                   parentContext
                       .read<SongsListComponentBloc>()
                       .add(RemoveSelectedSongsEvent());
-
-                  parentContext
-                      .read<SongsListComponentBloc>()
-                      .add(ReloadListEvent());
 
                   Navigator.of(context).pop();
                 },
@@ -273,7 +273,8 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   Future<void> _showCreatePlaylistModal(BuildContext parentContext) async {
-    var selectedSongs =
+    final localizations = AppLocalizations.of(context)!;
+    final selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
 
     parentContext
@@ -281,65 +282,64 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
         .add(PlaylistSetSelectedSongs(selectedSongs));
 
     if (selectedSongs.isEmpty) {
-      return showNoSongsSelectedDialog(LocalizationManager
-          .instance.appLocalization.toCreatePlaylistYouNeedToSelectSongs);
+      return showNoSongsSelectedDialog(
+          localizations.toCreatePlaylistYouNeedToSelectSongs);
     } else {
       return showDialog<void>(
         context: context,
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
-                LocalizationManager.instance.appLocalization.addingPlaylist),
+            title: Text(localizations.addingPlaylist),
             content: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListBody(
-                    children: <Widget>[
-                      Text(LocalizationManager.instance.appLocalization
-                          .numberOfSongs(selectedSongs.length)),
-                      TextFormField(
-                          decoration: InputDecoration(
-                              hintText: LocalizationManager
-                                  .instance.appLocalization.enterName,
-                              labelText: LocalizationManager
-                                  .instance.appLocalization.name),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return LocalizationManager
-                                  .instance.appLocalization.nameIsRequired;
-                            }
-                            return null;
-                          },
-                          onChanged: (value) => parentContext
-                              .read<AddPlaylistBloc>()
-                              .add(PlaylistAddNameChange(value)))
-                    ],
-                  ),
-                ],
+              child: Form(
+                key: _playlistFormKey,
+                child: Column(
+                  children: [
+                    ListBody(
+                      children: <Widget>[
+                        Text(localizations.numberOfSongs(selectedSongs.length)),
+                        TextFormField(
+                            decoration: InputDecoration(
+                                hintText: localizations.enterName,
+                                labelText: localizations.name),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return localizations.nameIsRequired;
+                              }
+                              return null;
+                            },
+                            onChanged: (value) => parentContext
+                                .read<AddPlaylistBloc>()
+                                .add(PlaylistAddNameChange(value)))
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child:
-                    Text(LocalizationManager.instance.appLocalization.cancel),
+                child: Text(localizations.cancel),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               TextButton(
-                child: Text(LocalizationManager.instance.appLocalization.yes),
+                child: Text(localizations.yes),
                 onPressed: () {
-                  parentContext.read<AddPlaylistBloc>().add(AddPlaylistSave());
-                  parentContext.read<AddPlaylistBloc>().add(AddPlaylistReset());
+                  if (_playlistFormKey.currentState!.validate()) {
+                    parentContext
+                        .read<AddPlaylistBloc>()
+                        .add(AddPlaylistSave());
+                    parentContext
+                        .read<AddPlaylistBloc>()
+                        .add(AddPlaylistReset());
 
-                  parentContext
-                      .read<SongsListComponentBloc>()
-                      .add(ClearSelectedSongs());
+                    parentContext
+                        .read<SongsListComponentBloc>()
+                        .add(ClearSelectedSongs());
 
-                  parentContext
-                      .read<SongsListComponentBloc>()
-                      .add(ChooseSongChangeEvent(value: false));
-
-                  Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  }
                 },
               ),
             ],
@@ -351,27 +351,23 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
 
   Future<void> _showAddSelectedToExistPlaylistModal(
       BuildContext parentContext) async {
-    var selectedSongs =
+    final localizations = AppLocalizations.of(context)!;
+    final selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
 
-    var playlists = DataCollections.playlists();
-
-    parentContext
-        .read<AddPlaylistBloc>()
-        .add(PlaylistSetSelectedSongs(selectedSongs));
+    final playlists = PlaylistsRepository().getAllPlaylists();
 
     if (selectedSongs.isEmpty) {
-      return showNoSongsSelectedDialog(LocalizationManager
-          .instance.appLocalization.toAddToPlaylistSelectSongs);
+      return showNoSongsSelectedDialog(
+          localizations.toAddToPlaylistSelectSongs);
     } else {
       return showDialog<void>(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-            title: Text(
-                LocalizationManager.instance.appLocalization.addingToPlaylist),
+            title: Text(localizations.addingToPlaylist),
             children: _getPlaylistsOptions(
-                playlists.values, selectedSongs, parentContext, context),
+                playlists, selectedSongs, parentContext, context),
           );
         },
       );
@@ -379,14 +375,15 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   Future<void> showNoSongsSelectedDialog(String message) {
+    final localizations = AppLocalizations.of(context)!;
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            LocalizationManager.instance.appLocalization.noSongsSelected,
-            style: TextStyle(fontSize: 20),
+            localizations.noSongsSelected,
+            style: const TextStyle(fontSize: 20),
           ),
           content: SingleChildScrollView(
             child: ListBody(
@@ -397,7 +394,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.cancel),
+              child: Text(localizations.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
           ],
@@ -430,107 +427,112 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   void _addSongsToPlaylist(String playlistId, List<String> selectedSongs) {
-    var playlists = DataCollections.playlists();
-    var playlist = playlists.get(playlistId);
+    final playlistsRepository = sl<PlaylistsRepository>();
+    final playlist = playlistsRepository.getPlaylist(playlistId);
 
-    playlist!.songsIds.addAll(selectedSongs);
-
-    playlists.put(playlist.uuid, playlist);
+    if (playlist != null) {
+      final updatedSongsIds = List<String>.from(playlist.songsIds)
+        ..addAll(selectedSongs);
+      playlistsRepository
+          .updatePlaylist(playlist.copyWith(songsIds: updatedSongsIds));
+    }
   }
 
   void _runPresentationForSelected(BuildContext parentContext) async {
-    var selectedSongs =
+    final localizations = AppLocalizations.of(context)!;
+    final selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
 
     if (selectedSongs.isEmpty) {
-      return showNoSongsSelectedDialog(LocalizationManager
-          .instance.appLocalization.toRunPresentationSelectSongs);
+      return showNoSongsSelectedDialog(
+          localizations.toRunPresentationSelectSongs);
     }
-    var box = DataCollections.songs();
-    var songs =
-        box.values.where((song) => selectedSongs.contains(song.uuid)).toList();
+    final songsRepository = sl<SongsRepository>();
+    final allSongs = songsRepository.getAllSongs();
 
-    List<Song> toPresentation = List.empty(growable: true);
+    final toPresentation = List<Song>.empty(growable: true);
 
     for (var selectedSongId in selectedSongs) {
-      var song = songs.firstWhereOrNull((x) => x.uuid == selectedSongId);
+      final song = allSongs.firstWhereOrNull((x) => x.uuid == selectedSongId);
       if (song != null) {
         toPresentation.add(song);
       }
     }
 
     parentContext
-        .read<PresentatationBloc>()
+        .read<PresentationBloc>()
         .add(SongsPresentation(songs: toPresentation));
 
     showInterstitialAds();
 
     Navigator.of(parentContext).push(
       MaterialPageRoute(
-        builder: (parentContext) => PresentationView(),
+        builder: (parentContext) => const PresentationView(),
       ),
     );
   }
 
   Future<void> _showQuickAddModal(BuildContext parentContext) async {
-    Song newSong =
+    final localizations = AppLocalizations.of(context)!;
+    var newSong =
         Song(uuid: const Uuid().v8(), author: "", title: "", text: "");
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(LocalizationManager.instance.appLocalization.quickSearch),
+          title: Text(localizations.quickSearch),
           content: SingleChildScrollView(
-            child: Column(
-              children: [
-                ListBody(
-                  children: <Widget>[
-                    TextFormField(
-                        decoration: InputDecoration(
-                            hintText: LocalizationManager
-                                .instance.appLocalization.enterAuthor,
-                            labelText: LocalizationManager
-                                .instance.appLocalization.author),
-                        validator: (value) {
-                          if (newSong.title.isEmpty &&
-                              (value == null || value.isEmpty)) {
-                            return LocalizationManager
-                                .instance.appLocalization.authorIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => newSong.author = value),
-                    TextFormField(
-                        decoration: InputDecoration(
-                            hintText: LocalizationManager
-                                .instance.appLocalization.enterTitle,
-                            labelText: LocalizationManager
-                                .instance.appLocalization.title),
-                        validator: (value) {
-                          if (newSong.author.isEmpty &&
-                              (value == null || value.isEmpty)) {
-                            return LocalizationManager
-                                .instance.appLocalization.titleIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => newSong.author = value)
-                  ],
-                ),
-              ],
+            child: Form(
+              key: _quickSearchFormKey,
+              child: Column(
+                children: [
+                  ListBody(
+                    children: <Widget>[
+                      TextFormField(
+                          decoration: InputDecoration(
+                              hintText: localizations.enterAuthor,
+                              labelText: localizations.author),
+                          validator: (value) {
+                            if (newSong.title.isEmpty &&
+                                (value == null || value.trim().isEmpty)) {
+                              return localizations.authorIsRequired;
+                            }
+                            return null;
+                          },
+                          onChanged: (value) =>
+                              newSong = newSong.copyWith(author: value)),
+                      TextFormField(
+                          decoration: InputDecoration(
+                              hintText: localizations.enterTitle,
+                              labelText: localizations.title),
+                          validator: (value) {
+                            if (newSong.author.isEmpty &&
+                                (value == null || value.trim().isEmpty)) {
+                              return localizations.titleIsRequired;
+                            }
+                            return null;
+                          },
+                          onChanged: (value) =>
+                              newSong = newSong.copyWith(title: value))
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.cancel),
+              child: Text(localizations.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.search),
+              child: Text(localizations.search),
               onPressed: () {
-                _onSearchClick(parentContext, newSong);
-                Navigator.of(context).pop();
+                if (_quickSearchFormKey.currentState!.validate()) {
+                  _onSearchClick(parentContext, newSong);
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],
@@ -540,19 +542,21 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   Future<void> _onSearchClick(BuildContext builderContext, Song newSong) async {
+    final localizations = AppLocalizations.of(builderContext)!;
     if (!await ConnectionHelper.checkIfDeviceIsConnectedToInternet()) {
-      _showNotConnectedInfo();
+      _showNotConnectedInfo(localizations);
       return;
     }
 
     if (newSong.author.isEmpty && newSong.title.isEmpty) {
-      return _showInvalidSearchData();
+      _showInvalidSearchData(localizations);
+      return;
     }
 
-    var songToFind = SongToFindModel(newSong.author, newSong.title);
+    final songToFind = SongToFindModel(newSong.author, newSong.title);
 
     if (builderContext.mounted) {
-      var searchResult = await showDialog<SearchDialogResultModel>(
+      final searchResult = await showDialog<SearchDialogResultModel>(
         context: builderContext,
         builder: (_) {
           return BlocProvider.value(
@@ -569,15 +573,15 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
 
         if (newSong.author.isEmpty &&
             (searchResult.author != null && searchResult.author!.isNotEmpty)) {
-          newSong.author = searchResult.author!;
+          newSong = newSong.copyWith(author: searchResult.author);
         }
 
         if (newSong.title.isEmpty &&
             (searchResult.title != null && searchResult.title!.isNotEmpty)) {
-          newSong.title = searchResult.title!;
+          newSong = newSong.copyWith(title: searchResult.title);
         }
 
-        newSong.text = searchResult.text!;
+        newSong = newSong.copyWith(text: searchResult.text);
 
         if (builderContext.mounted) {
           _quickSearchResultPreviewModal(builderContext, newSong);
@@ -586,118 +590,122 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
     }
   }
 
-  void _showNotConnectedInfo() {
+  void _showNotConnectedInfo(AppLocalizations localizations) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(LocalizationManager
-          .instance.appLocalization.noActiveInternetConnection),
+      content: Text(localizations.noActiveInternetConnection),
     ));
   }
 
-  void _showInvalidSearchData() {
+  void _showInvalidSearchData(AppLocalizations localizations) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(LocalizationManager
-          .instance.appLocalization.toSearchForTextYouNeedAtLeastTitleOrAuthor),
+      content: Text(localizations.toSearchForTextYouNeedAtLeastTitleOrAuthor),
     ));
   }
+
+  final _previewFormKey = GlobalKey<FormState>();
 
   Future<void> _quickSearchResultPreviewModal(
       BuildContext parentContext, Song newSong) async {
+    final localizations = AppLocalizations.of(context)!;
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(LocalizationManager.instance.appLocalization.quickSearch),
+          title: Text(localizations.quickSearch),
           content: SingleChildScrollView(
-            child: Column(
-              children: [
-                ListBody(
-                  children: <Widget>[
-                    TextFormField(
-                        initialValue: newSong.author,
-                        decoration: InputDecoration(
-                            labelText: LocalizationManager
-                                .instance.appLocalization.author),
-                        validator: (value) {
-                          if (newSong.title.isEmpty &&
-                              (value == null || value.isEmpty)) {
-                            return LocalizationManager
-                                .instance.appLocalization.authorIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => newSong.author = value),
-                    TextFormField(
-                        initialValue: newSong.title,
-                        decoration: InputDecoration(
-                            labelText: LocalizationManager
-                                .instance.appLocalization.title),
-                        validator: (value) {
-                          if (newSong.author.isEmpty &&
-                              (value == null || value.isEmpty)) {
-                            return LocalizationManager
-                                .instance.appLocalization.titleIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => newSong.author = value),
-                    SizedBox(height: 10),
-                    TextFormField(
-                        initialValue: newSong.text,
-                        minLines: 12,
-                        maxLines: null,
-                        decoration: InputDecoration(
-                            labelText: LocalizationManager
-                                .instance.appLocalization.text,
-                            alignLabelWithHint: true,
-                            border: OutlineInputBorder()),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return LocalizationManager
-                                .instance.appLocalization.textIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => newSong.text = value),
-                  ],
-                ),
-              ],
+            child: Form(
+              key: _previewFormKey,
+              child: Column(
+                children: [
+                  ListBody(
+                    children: <Widget>[
+                      TextFormField(
+                          initialValue: newSong.author,
+                          decoration:
+                              InputDecoration(labelText: localizations.author),
+                          validator: (value) {
+                            if (newSong.title.isEmpty &&
+                                (value == null || value.trim().isEmpty)) {
+                              return localizations.authorIsRequired;
+                            }
+                            return null;
+                          },
+                          onChanged: (value) =>
+                              newSong = newSong.copyWith(author: value)),
+                      TextFormField(
+                          initialValue: newSong.title,
+                          decoration:
+                              InputDecoration(labelText: localizations.title),
+                          validator: (value) {
+                            if (newSong.author.isEmpty &&
+                                (value == null || value.trim().isEmpty)) {
+                              return localizations.titleIsRequired;
+                            }
+                            return null;
+                          },
+                          onChanged: (value) =>
+                              newSong = newSong.copyWith(title: value)),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                          initialValue: newSong.text,
+                          minLines: 12,
+                          maxLines: null,
+                          decoration: InputDecoration(
+                              labelText: localizations.text,
+                              alignLabelWithHint: true,
+                              border: const OutlineInputBorder()),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return localizations.textIsRequired;
+                            }
+                            return null;
+                          },
+                          onChanged: (value) =>
+                              newSong = newSong.copyWith(text: value)),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.cancel),
+              child: Text(localizations.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.save),
+              child: Text(localizations.save),
               onPressed: () {
-                _saveSong(newSong);
-                parentContext
-                    .read<SongsListComponentBloc>()
-                    .add(ReloadListEvent());
-                Navigator.of(context).pop();
+                if (_previewFormKey.currentState!.validate()) {
+                  _saveSong(newSong);
+                  parentContext
+                      .read<SongsListComponentBloc>()
+                      .add(ReloadListEvent());
+                  Navigator.of(context).pop();
+                }
               },
             ),
             TextButton(
-              child: Text(LocalizationManager
-                  .instance.appLocalization.saveAndLunchPresentation),
+              child: Text(localizations.saveAndLunchPresentation),
               onPressed: () {
-                _saveSong(newSong);
-                parentContext
-                    .read<SongsListComponentBloc>()
-                    .add(ReloadListEvent());
-                parentContext
-                    .read<PresentatationBloc>()
-                    .add(SongsPresentation(songs: [newSong]));
+                if (_previewFormKey.currentState!.validate()) {
+                  _saveSong(newSong);
+                  parentContext
+                      .read<SongsListComponentBloc>()
+                      .add(ReloadListEvent());
+                  parentContext
+                      .read<PresentationBloc>()
+                      .add(SongsPresentation(songs: [newSong]));
 
-                Navigator.of(context).pop();
+                  Navigator.of(context).pop();
 
-                Navigator.of(parentContext).push(
-                  MaterialPageRoute(
-                    builder: (parentContext) => PresentationView(),
-                  ),
-                );
+                  Navigator.of(parentContext).push(
+                    MaterialPageRoute(
+                      builder: (parentContext) => const PresentationView(),
+                    ),
+                  );
+                }
               },
             ),
           ],
@@ -707,7 +715,6 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   void _saveSong(Song newSong) {
-    var box = DataCollections.songs();
-    box.put(newSong.uuid, newSong);
+    sl<SongsRepository>().addSong(newSong);
   }
 }

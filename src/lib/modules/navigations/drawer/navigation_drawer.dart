@@ -7,11 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/helpers/initialization_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
-import 'package:pomocnik_wokalisty/main.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/views/client_screen_mode.dart';
 import 'package:pomocnik_wokalisty/modules/dialogs/policy_dialog.dart';
+import 'package:pomocnik_wokalisty/modules/localization/bloc/localization_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 
 class MyNavigationDrawer extends StatefulWidget {
@@ -31,13 +30,13 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
         label: "PL",
         leadingIcon: CountryFlag.fromLanguageCode(
           'pl',
-          theme: ImageTheme(shape: Circle(), height: 25, width: 25),
+          theme: const ImageTheme(shape: Circle(), height: 25, width: 25),
         )),
     DropdownMenuEntry<String>(
         value: 'en',
         label: "EN",
         leadingIcon: CountryFlag.fromLanguageCode('en',
-            theme: ImageTheme(shape: Circle(), height: 25, width: 25))),
+            theme: const ImageTheme(shape: Circle(), height: 25, width: 25))),
   ];
 
   String _selectedLanguage = '';
@@ -51,20 +50,21 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    var items = _getNavigationItems();
+    final localizations = AppLocalizations.of(context)!;
+    final items = _getNavigationItems(context);
     return BlocBuilder<NavigationDrawerBloc, NavigationDrawerState>(
         builder: (context, state) {
       return Drawer(
         child: Column(
           children: [
-            _makeHeaderItem(),
+            _makeHeaderItem(context),
             Expanded(
                 child: ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: items.length,
                     itemBuilder: (context, index) =>
                         _makeListItem(items[index], state))),
-            _makeFooterItem(context)
+            _makeFooterItem(context, localizations)
           ],
         ),
       );
@@ -78,31 +78,32 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
     return await preferences.getInt('IABTCF_gdprApplies') == 1;
   }
 
-  List<_NavigationItem> _getNavigationItems() {
+  List<_NavigationItem> _getNavigationItems(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return [
       _NavigationItem(
           false,
           false,
           NavigationPage.songsList,
-          LocalizationManager.instance.appLocalization.songsList,
+          localizations.songsList,
           const AssetImage('assets/images/icons/note.png')),
       _NavigationItem(
           false,
           false,
           NavigationPage.playlistList,
-          LocalizationManager.instance.appLocalization.playlists,
+          localizations.playlists,
           const AssetImage('assets/images/icons/playlist.png')),
       _NavigationItem(
           false,
           false,
           NavigationPage.serverSettings,
-          LocalizationManager.instance.appLocalization.presentationSettings,
+          localizations.presentationSettings,
           const AssetImage('assets/images/icons/settings.png')),
       _NavigationItem(
           false,
           false,
           NavigationPage.clientMode,
-          LocalizationManager.instance.appLocalization.clientMode,
+          localizations.clientMode,
           const AssetImage('assets/images/icons/presentation.png')),
     ];
   }
@@ -113,9 +114,9 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
           .firstWhere((x) => x.value == _selectedLanguage);
     }
 
-    final String? language = LocalStorage.instance.getString('lang');
+    final language = LocalStorage.instance.getString('lang');
     if (language == null || language.isEmpty) {
-      Locale platformLanguage = Locale(Platform.localeName);
+      final platformLanguage = Locale(Platform.localeName);
       if (AppLocalizations.supportedLocales.contains(platformLanguage)) {
         if (Platform.localeName == 'pl') {
           LocalStorage.instance
@@ -131,7 +132,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
       _selectedLanguage = _supportedLanguageList.last.value;
       return _supportedLanguageList.last;
     } else {
-      var option =
+      final option =
           _supportedLanguageList.firstWhere((x) => x.value == language);
       _selectedLanguage = option.value;
 
@@ -141,44 +142,44 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
 
   Widget _getSelectedLanguageIcon() {
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       child: CountryFlag.fromLanguageCode(_selectedLanguage,
-          theme: ImageTheme(shape: Circle(), height: 8, width: 8)),
+          theme: const ImageTheme(shape: Circle(), height: 8, width: 8)),
     );
   }
 
-  Widget _makeHeaderItem() => DrawerHeader(
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/logo/logo.png'),
-                radius: 35,
-              ),
+  Widget _makeHeaderItem(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return DrawerHeader(
+      child: Column(
+        children: [
+          const Align(
+            alignment: Alignment.topCenter,
+            child: CircleAvatar(
+              backgroundImage: AssetImage('assets/images/logo/logo.png'),
+              radius: 35,
             ),
-            SizedBox(height: 10),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Text(
-                  LocalizationManager.instance.appLocalization.singersAssistant,
-                  style:
-                      TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold)),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Text("by Krzysztof Rutana",
-                  style:
-                      TextStyle(fontSize: 11.0, fontWeight: FontWeight.bold)),
-            )
-          ],
-        ),
-      );
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Text(localizations.singersAssistant,
+                style: const TextStyle(
+                    fontSize: 15.0, fontWeight: FontWeight.bold)),
+          ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: Text("by Krzysztof Rutana",
+                style: TextStyle(fontSize: 11.0, fontWeight: FontWeight.bold)),
+          )
+        ],
+      ),
+    );
+  }
 
   Widget _makeListItem(_NavigationItem data, NavigationDrawerState state) =>
       Card(
-        shape: const ContinuousRectangleBorder(borderRadius: BorderRadius.zero),
-        borderOnForeground: true,
+        shape: const ContinuousRectangleBorder(),
         elevation: 0,
         margin: EdgeInsets.zero,
         child: Builder(
@@ -193,40 +194,39 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
         ),
       );
 
-  Widget _makeFooterItem(BuildContext context) => Builder(builder: (context) {
+  Widget _makeFooterItem(
+          BuildContext context, AppLocalizations localizations) =>
+      Builder(builder: (context) {
         return Column(
           children: [
             Align(
               alignment: FractionalOffset.bottomCenter,
               child: Column(children: <Widget>[
-                Divider(),
+                const Divider(),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(bottom: 5),
+                      padding: const EdgeInsets.only(bottom: 5),
                       child: DropdownMenu<String>(
-                        inputDecorationTheme: InputDecorationTheme(
+                        inputDecorationTheme: const InputDecorationTheme(
                           enabledBorder: InputBorder.none,
                           labelStyle: TextStyle(fontSize: 14),
                         ),
                         width: 160,
-                        textStyle: TextStyle(fontSize: 14),
+                        textStyle: const TextStyle(fontSize: 14),
                         initialSelection: _getDefaultLanguage().value,
                         dropdownMenuEntries: _supportedLanguageList,
                         leadingIcon: _getSelectedLanguageIcon(),
-                        label: Text(LocalizationManager
-                            .instance.appLocalization.language),
+                        label: Text(localizations.language),
                         onSelected: (value) {
-                          setState(() {
-                            MyApp.of(context).setLocale(Locale.fromSubtags(
-                                languageCode: value.toString()));
-
-                            LocalStorage.instance
-                                .setString('lang', value.toString());
-                            _selectedLanguage = value.toString();
-                          });
+                          if (value != null) {
+                            context.read<LocalizationCubit>().setLocale(
+                                Locale.fromSubtags(languageCode: value));
+                            setState(() {
+                              _selectedLanguage = value;
+                            });
+                          }
                         },
                       ),
                     ),
@@ -240,40 +240,39 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                   textAlign: TextAlign.center,
                   text: TextSpan(children: [
                     TextSpan(
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
-                        text: LocalizationManager
-                            .instance.appLocalization.privacyPolicy,
+                        text: localizations.privacyPolicy,
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             showDialog(
                                 context: context,
                                 builder: (context) {
-                                  var language = _getDefaultLanguage().value;
+                                  final language = _getDefaultLanguage().value;
                                   return PolicyDialog(
                                       mdFileName:
                                           'privacy_policy_$language.md');
                                 });
                           }),
                     TextSpan(
-                        style: TextStyle(fontSize: 12, color: Colors.black),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.black),
                         text:
-                            ' ${LocalizationManager.instance.appLocalization.and} '),
+                            ' ${localizations.and} '),
                     TextSpan(
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
-                        text: LocalizationManager
-                            .instance.appLocalization.termsAndConditions,
+                        text: localizations.termsAndConditions,
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             showDialog(
                                 context: context,
                                 builder: (context) {
-                                  var language = _getDefaultLanguage().value;
+                                  final language = _getDefaultLanguage().value;
                                   return PolicyDialog(
                                       mdFileName:
                                           'terms_and_conditions_$language.md');
@@ -291,12 +290,11 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                       textAlign: TextAlign.center,
                       text: TextSpan(children: [
                         TextSpan(
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black),
-                            text: LocalizationManager
-                                .instance.appLocalization.changePrivacyPolicy,
+                            text: localizations.changePrivacyPolicy,
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async {
                                 Navigator.of(context).pop();
@@ -309,13 +307,9 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
 
                                 scafooldMessenger.showSnackBar(SnackBar(
                                     content: didChangePreferences
-                                        ? Text(LocalizationManager
-                                            .instance
-                                            .appLocalization
+                                        ? Text(localizations
                                             .yourPrivacyChoisesHasBeenUpdated)
-                                        : Text(LocalizationManager
-                                            .instance
-                                            .appLocalization
+                                        : Text(localizations
                                             .anErrorOccurredWhileTryingToChangeYourPrivacyPreferences)));
                               }),
                       ])),
@@ -330,7 +324,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
     if (item == NavigationPage.clientMode) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (parentContext) => ClientScreenMode(),
+          builder: (parentContext) => const ClientScreenMode(),
         ),
       );
     } else if (item == NavigationPage.quickSearch) {
@@ -342,10 +336,11 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
 }
 
 class _NavigationItem {
+  _NavigationItem(this.header, this.footer, this.item, this.title, this.icon);
+
   final bool header;
   final NavigationPage item;
   final String title;
   final AssetImage icon;
   final bool footer;
-  _NavigationItem(this.header, this.footer, this.item, this.title, this.icon);
 }

@@ -8,7 +8,7 @@ class ConnectionHelper {
   ];
 
   static Future<bool> checkIfDeviceIsConnectedToInternet() async {
-    var connectivityResult = await Connectivity().checkConnectivity();
+    final connectivityResult = await Connectivity().checkConnectivity();
 
     for (var item in connectivityResult) {
       if (validResult.contains(item)) {

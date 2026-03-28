@@ -23,7 +23,7 @@ mixin InterstitialAds {
   void _loadAd() async {
     InterstitialAd.load(
         adUnitId: AdHelper.interstatialAdUnitId,
-        request: AdRequest(),
+        request: const AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
           interstitialAd = ad;
           ad.fullScreenContentCallback =

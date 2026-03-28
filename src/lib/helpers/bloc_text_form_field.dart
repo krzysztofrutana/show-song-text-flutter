@@ -4,16 +4,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BlocTextFormField<TBloc extends StateStreamable<TState>, TState>
     extends StatefulWidget {
-  const BlocTextFormField(
-      {required this.selector,
-      this.initialValue,
-      this.onChanged,
-      this.decoration,
-      this.keyboardType,
-      this.inputFormatters,
-      super.key,
-      this.validator,
-      required this.bloc});
+  const BlocTextFormField({
+    required this.selector,
+    this.initialValue,
+    this.onChanged,
+    this.decoration,
+    this.keyboardType,
+    this.inputFormatters,
+    super.key,
+    this.validator,
+    required this.bloc,
+    this.minLines,
+    this.maxLines = 1,
+    this.textInputAction,
+    this.focusNode,
+    this.onFieldSubmitted,
+    this.autofocus = false,
+    this.onTapOutside,
+  });
 
   final String? initialValue;
   final void Function(String)? onChanged;
@@ -23,6 +31,13 @@ class BlocTextFormField<TBloc extends StateStreamable<TState>, TState>
   final List<TextInputFormatter>? inputFormatters;
   final FormFieldValidator<String>? validator;
   final TBloc bloc;
+  final int? minLines;
+  final int? maxLines;
+  final TextInputAction? textInputAction;
+  final FocusNode? focusNode;
+  final ValueChanged<String>? onFieldSubmitted;
+  final bool autofocus;
+  final TapRegionCallback? onTapOutside;
 
   @override
   State<BlocTextFormField<TBloc, TState>> createState() =>
@@ -31,8 +46,6 @@ class BlocTextFormField<TBloc extends StateStreamable<TState>, TState>
 
 class _BlocTextFormFieldState<TBloc extends StateStreamable<TState>, TState>
     extends State<BlocTextFormField<TBloc, TState>> {
-  _BlocTextFormFieldState();
-
   late TextEditingController _controller;
 
   @override
@@ -40,7 +53,7 @@ class _BlocTextFormFieldState<TBloc extends StateStreamable<TState>, TState>
     return BlocListener<TBloc, TState>(
       bloc: widget.bloc,
       listener: (context, state) {
-        String? text = widget.selector(state);
+        final text = widget.selector(state);
 
         if (text != null && text != _controller.text) {
           _controller.text = text;
@@ -51,10 +64,17 @@ class _BlocTextFormFieldState<TBloc extends StateStreamable<TState>, TState>
       child: TextFormField(
         controller: _controller,
         decoration: widget.decoration,
-        onTapOutside: (e) => FocusManager.instance.primaryFocus?.unfocus(),
+        onTapOutside: widget.onTapOutside ??
+            (e) => FocusManager.instance.primaryFocus?.unfocus(),
         keyboardType: widget.keyboardType,
         inputFormatters: widget.inputFormatters,
         validator: widget.validator,
+        minLines: widget.minLines,
+        maxLines: widget.maxLines,
+        textInputAction: widget.textInputAction,
+        focusNode: widget.focusNode,
+        onFieldSubmitted: widget.onFieldSubmitted,
+        autofocus: widget.autofocus,
       ),
     );
   }
@@ -62,7 +82,8 @@ class _BlocTextFormFieldState<TBloc extends StateStreamable<TState>, TState>
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.initialValue);
+    final initialText = widget.initialValue ?? widget.selector(widget.bloc.state);
+    _controller = TextEditingController(text: initialText);
     _controller.addListener(_changed);
   }
 

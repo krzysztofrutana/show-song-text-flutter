@@ -21,11 +21,11 @@ class TextHelper {
 
   static String deleteStartAndEndEmptyLines(String text) {
     text = text.replaceAll('\\n', '\n');
-    List<String> textLines = text.split('\n');
-    List<String> result = text.split('\n');
+    final textLines = text.split('\n');
+    final result = text.split('\n');
 
     for (var i = 0; i < textLines.length; i++) {
-      var line = textLines[i];
+      final line = textLines[i];
 
       if (line.isEmpty) {
         result.remove(line);
@@ -35,7 +35,7 @@ class TextHelper {
     }
 
     for (var i = textLines.length - 1; i > 0; i--) {
-      var line = textLines[i];
+      final line = textLines[i];
 
       if (line.isEmpty) {
         result.remove(line);
@@ -44,10 +44,10 @@ class TextHelper {
       }
     }
 
-    StringBuffer sb = StringBuffer();
+    final sb = StringBuffer();
 
     for (var i = 0; i < result.length; i++) {
-      var line = result[i];
+      final line = result[i];
 
       if (i < result.length - 1) {
         sb.write('$line\n');
@@ -62,9 +62,9 @@ class TextHelper {
   static String deleteLines(
       String text, int linesCountToRemove, bool startFromBottom) {
     text = text.replaceAll('\\n', '\n');
-    List<String> result = [];
+    var result = <String>[];
 
-    List<String> textLines = text.split('\n');
+    final textLines = text.split('\n');
 
     if (startFromBottom) {
       result = textLines.take(textLines.length - linesCountToRemove).toList();
@@ -72,7 +72,7 @@ class TextHelper {
       result = textLines.skip(linesCountToRemove).toList();
     }
 
-    StringBuffer sb = StringBuffer();
+    final sb = StringBuffer();
 
     for (var line in result) {
       sb.write('$line\n');

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/partials/playlistsList/models/playlist_include_song_model.dart';
 
 class SongPlaylistsListComponent extends StatefulWidget {
-  final String songId;
   const SongPlaylistsListComponent({super.key, required this.songId});
+  final String songId;
 
   @override
   State<SongPlaylistsListComponent> createState() =>
@@ -27,23 +28,21 @@ class _SongPlaylistsListComponentState
   Widget build(BuildContext context) {
     return InputDecorator(
       decoration: InputDecoration(
-          labelText: LocalizationManager
-              .instance.appLocalization.playlistsToWhichSongHasBeenAdded,
+          labelText:
+              AppLocalizations.of(context)!.playlistsToWhichSongHasBeenAdded,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(0))),
       child: playlists.isEmpty
           ? Center(
               heightFactor: 2,
               child: SizedBox(
                 width: double.infinity,
-                child: Text(
-                    LocalizationManager.instance.appLocalization.noPlaylists,
+                child: Text(AppLocalizations.of(context)!.noPlaylists,
                     textAlign: TextAlign.center),
               ),
             )
           : Container(
               padding: const EdgeInsets.all(4),
               child: ListView.builder(
-                scrollDirection: Axis.vertical,
                 shrinkWrap: true,
                 itemCount: playlists.length,
                 physics: const ScrollPhysics(),
@@ -51,7 +50,7 @@ class _SongPlaylistsListComponentState
                   final playlistModel = playlists[index];
                   return ListTile(
                     title: Text(playlistModel.playlist.name),
-                    subtitle: Text(LocalizationManager.instance.appLocalization
+                    subtitle: Text(AppLocalizations.of(context)!
                         .position(playlistModel.position + 1)),
                     titleTextStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -61,7 +60,7 @@ class _SongPlaylistsListComponentState
                         onPressed: () {
                           _removeSongFromPlaylis(playlistModel, context);
                         },
-                        icon: Icon(Icons.remove_circle_outline)),
+                        icon: const Icon(Icons.remove_circle_outline)),
                   );
                 },
               ),
@@ -72,13 +71,14 @@ class _SongPlaylistsListComponentState
   void initPlaylistsList() {
     setState(() {
       playlists = [];
-      var playlistsIncludeSong = DataCollections.playlists()
-          .values
+      final repository = sl<PlaylistsRepository>();
+      final playlistsIncludeSong = repository
+          .getAllPlaylists()
           .where((playlist) =>
               playlist.songsIds.any((songId) => songId == widget.songId))
           .toList();
 
-      for (var playlist in playlistsIncludeSong) {
+      for (final playlist in playlistsIncludeSong) {
         for (var i = 0; i < playlist.songsIds.length; i++) {
           if (playlist.songsIds[i] == widget.songId) {
             playlists
@@ -91,17 +91,17 @@ class _SongPlaylistsListComponentState
 
   _removeSongFromPlaylis(
       PlaylistIncludeSongModel playlistModel, BuildContext parentContext) {
+    final localizations = AppLocalizations.of(parentContext)!;
     return showDialog<void>(
       context: parentContext,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(LocalizationManager
-              .instance.appLocalization.removingSongFromPlaylist),
+          title: Text(localizations.removingSongFromPlaylist),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(LocalizationManager.instance.appLocalization
+                Text(localizations
                     .areYouSureYouWantRemoveCurrentSongFromPlaylistAtPosition(
                         playlistModel.playlist.name,
                         playlistModel.position + 1)),
@@ -110,21 +110,23 @@ class _SongPlaylistsListComponentState
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.cancel),
+              child: Text(localizations.cancel),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.yes),
-              onPressed: () {
-                playlistModel.playlist.songsIds
-                    .removeAt(playlistModel.position);
-                var playlistsBox = DataCollections.playlists();
-                playlistsBox.put(
-                    playlistModel.playlist.uuid, playlistModel.playlist);
+              child: Text(localizations.yes),
+              onPressed: () async {
+                final repository = sl<PlaylistsRepository>();
+                final updated = playlistModel.playlist.copyWith(
+                    songsIds: List<String>.from(playlistModel.playlist.songsIds)
+                      ..removeAt(playlistModel.position));
+                await repository.updatePlaylist(updated);
 
                 initPlaylistsList();
 
-                Navigator.of(context).pop();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               },
             ),
           ],

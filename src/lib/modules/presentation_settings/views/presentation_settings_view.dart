@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
-import 'package:pomocnik_wokalisty/modules/presentation_settings/cubic/presentation_settings_cubic.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
+import 'package:pomocnik_wokalisty/modules/presentation_settings/cubit/presentation_settings_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/presentation_settings/helpers/presentation_settings_validator.dart';
-import 'package:pomocnik_wokalisty/socket_connection/cubic/server_cubic/server_cubit.dart';
+import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
 
 class PresentationSettings extends StatefulWidget
     with PresentationSettingsValidator {
@@ -17,27 +16,16 @@ class PresentationSettings extends StatefulWidget
 
 class _PresentationSettingsState extends State<PresentationSettings>
     with PresentationSettingsValidator {
-  final PresentationSettingsCubic _presentationSettingsCubic =
-      PresentationSettingsCubic()..initSettings();
-
-  final _formKey = GlobalKey<FormState>();
+  final PresentationSettingsCubit _presentationSettingsCubit =
+      PresentationSettingsCubit()..initSettings();
 
   @override
   void initState() {
     super.initState();
-    EventsHub.instance.on('client_connected',
-        (String ip) => context.read<ServerCubit>().clientConnected());
-
-    EventsHub.instance.on('client_disconnected',
-        (String ip) => context.read<ServerCubit>().clientDisconnected());
+    context.read<ServerCubit>().refreshIp();
   }
 
-  @override
-  void deactivate() {
-    EventsHub.instance.off<String>(type: 'client_connected');
-    EventsHub.instance.off<String>(type: 'client_disconnected');
-    super.deactivate();
-  }
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -45,24 +33,24 @@ class _PresentationSettingsState extends State<PresentationSettings>
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            getFormSection(),
+            getFormSection(context),
             const SizedBox(height: 20.0),
-            getServerSection()
+            getServerSection(context)
           ],
         ));
   }
 
-  InputDecorator getFormSection() {
+  InputDecorator getFormSection(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return InputDecorator(
         decoration: InputDecoration(
-            labelText:
-                LocalizationManager.instance.appLocalization.presentationScreen,
+            labelText: localizations.presentationScreen,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
             contentPadding:
-                EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 50)),
-        child: BlocSelector<PresentationSettingsCubic,
+                const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 50)),
+        child: BlocSelector<PresentationSettingsCubit,
             PresentationSettingsStateBase, AutovalidateMode>(
-          bloc: _presentationSettingsCubic,
+          bloc: _presentationSettingsCubit,
           selector: (state) => state.autovalidateMode,
           builder: (context, AutovalidateMode autovalidateMode) {
             return Form(
@@ -71,29 +59,27 @@ class _PresentationSettingsState extends State<PresentationSettings>
               child: Column(
                 children: [
                   TextFormField(
-                    initialValue: _presentationSettingsCubic.state.fontSize,
+                    initialValue: _presentationSettingsCubit.state.fontSize,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    validator: (value) => validateFontSize(value),
+                    validator: (value) => validateFontSize(value, localizations),
                     onChanged: (value) => _onFontSizeChange(value, context),
                     decoration: InputDecoration(
-                      labelText:
-                          LocalizationManager.instance.appLocalization.fontSize,
-                      border: OutlineInputBorder(),
+                      labelText: localizations.fontSize,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 20.0),
-                  BlocBuilder<PresentationSettingsCubic,
+                  BlocBuilder<PresentationSettingsCubit,
                       PresentationSettingsStateBase>(
-                    bloc: _presentationSettingsCubic,
+                    bloc: _presentationSettingsCubit,
                     buildWhen: (previous, current) =>
                         double.tryParse(current.fontSize) != null,
                     builder: (context, state) => Text(
-                      LocalizationManager
-                          .instance.appLocalization.thisWillBeTheFontSize,
+                      localizations.thisWillBeTheFontSize,
                       style: TextStyle(
                           fontSize: double.parse(
-                              _presentationSettingsCubic.state.fontSize)),
+                              _presentationSettingsCubit.state.fontSize)),
                     ),
                   )
                 ],
@@ -103,74 +89,56 @@ class _PresentationSettingsState extends State<PresentationSettings>
         ));
   }
 
-  BlocBuilder<ServerCubit, ServerStateBase> getServerSection() {
-    return BlocBuilder<ServerCubit, ServerStateBase>(
+  Widget getServerSection(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return BlocBuilder<ServerCubit, ServerState>(
       builder: (context, state) => InputDecorator(
         decoration: InputDecoration(
-            labelText:
-                LocalizationManager.instance.appLocalization.serverSettings,
+            labelText: localizations.serverSettings,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
             contentPadding:
-                EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 30)),
-        child: FutureBuilder(
-            future: state.server.init(),
-            builder: (context, snapshot) {
-              Widget child;
-              if (snapshot.connectionState == ConnectionState.done) {
-                child = Column(children: [
-                  Text(LocalizationManager.instance.appLocalization.currentIP),
-                  Text(
-                    state.server.ip ??
-                        LocalizationManager
-                            .instance.appLocalization.wifiHotspotDisabled,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  const SizedBox(height: 10.0),
-                  state.server.serverStarted
-                      ? Text(LocalizationManager.instance.appLocalization
-                          .numberOfConnectedDevices(
-                              state.server.activeClienst.length))
-                      : Text(LocalizationManager
-                          .instance.appLocalization.serverDown),
-                  state.server.serverStarted
-                      ? IconButton(
-                          iconSize: 40,
-                          color: Colors.red,
-                          onPressed: context.read<ServerCubit>().stop,
-                          icon: Icon(Icons.stop_circle_outlined))
-                      : IconButton(
-                          iconSize: 40,
-                          color: Colors.green,
-                          onPressed: context.read<ServerCubit>().start,
-                          icon: Icon(Icons.play_arrow_outlined)),
-                ]);
-              } else if (snapshot.hasError) {
-                child = Text(LocalizationManager.instance.appLocalization
-                    .errorWithMessage(snapshot.error!));
-              } else {
-                child =
-                    Text(LocalizationManager.instance.appLocalization.loading);
-              }
-              return child;
-            }),
+                const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 30)),
+        child: Column(children: [
+          Text(localizations.currentIP),
+          Text(
+            state.ip ?? localizations.wifiHotspotDisabled,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          const SizedBox(height: 10.0),
+          state.serverStarted
+              ? Text(localizations
+                  .numberOfConnectedDevices(state.activeClientsCount))
+              : Text(localizations.serverDown),
+          state.serverStarted
+              ? IconButton(
+                  iconSize: 40,
+                  color: Colors.red,
+                  onPressed: () => context.read<ServerCubit>().stop(),
+                  icon: const Icon(Icons.stop_circle_outlined))
+              : IconButton(
+                  iconSize: 40,
+                  color: Colors.green,
+                  onPressed: () => context.read<ServerCubit>().start(),
+                  icon: const Icon(Icons.play_arrow_outlined)),
+        ]),
       ),
     );
   }
 
   void _onFontSizeChange(String value, BuildContext context) {
     if (_formKey.currentState!.validate()) {
-      _presentationSettingsCubic.setFontSize(value);
+      _presentationSettingsCubit.setFontSize(value);
       _showConfirmSaveToast(context);
     } else {
-      _presentationSettingsCubic
+      _presentationSettingsCubit
           .updateAutovalidateMode(AutovalidateMode.always);
     }
   }
 
   void _showConfirmSaveToast(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-          LocalizationManager.instance.appLocalization.settingsHaveBeenSaved),
+      content: Text(localizations.settingsHaveBeenSaved),
     ));
   }
 }

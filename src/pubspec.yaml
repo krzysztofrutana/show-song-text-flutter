@@ -13,10 +13,8 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   flutter_bloc: ^9.0.0
-  bloc_test: ^10.0.0
   standard_searchbar: ^2.1.1
   hive_flutter: ^1.1.0
-  build_runner: ^2.4.13
   uuid: ^4.5.1
   collection: ^1.18.0
   lan_scanner: ^2.0.0
@@ -38,19 +36,23 @@ dependencies:
   country_flags: ^4.0.1
   google_mobile_ads: ^6.0.0
   async_preferences: ^1.1.0
+  get_it: ^8.0.2
+  stream_transform: ^2.1.0
   flutter_markdown: ^0.7.7+1
   flutter_app_name_localization: ^0.0.6
-  flutter_launcher_icons: ^0.14.4
-  mocktail: ^1.0.4
   nested: ^1.0.0
+  equatable: ^2.0.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   hive_generator: ^2.0.1
-
   flutter_lints: ^5.0.0
+  bloc_test: ^10.0.0
+  mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.14.4
+  build_runner: ^2.4.13
 
 flutter:
   uses-material-design: true

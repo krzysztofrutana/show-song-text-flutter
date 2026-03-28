@@ -34,7 +34,7 @@ mixin Ads {
         ),
       );
     }
-    return Stack();
+    return const Stack();
   }
 
   void _loadAd(int Function() getWidth, Function setStateBaner) async {

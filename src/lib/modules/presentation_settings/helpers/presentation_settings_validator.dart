@@ -1,19 +1,16 @@
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 
 mixin PresentationSettingsValidator {
-  String? validateFontSize(String? value) {
+  String? validateFontSize(String? value, AppLocalizations localizations) {
     if (value == null || value.isEmpty) {
-      return LocalizationManager
-          .instance.appLocalization.fontSizeMustBeGreaterThan5;
+      return localizations.fontSizeMustBeGreaterThan5;
     }
     if (int.tryParse(value) == null) {
-      return LocalizationManager
-          .instance.appLocalization.theValueEnteredIsNotNumber;
+      return localizations.theValueEnteredIsNotNumber;
     }
 
     if (int.parse(value) < 5) {
-      return LocalizationManager
-          .instance.appLocalization.fontSizeMustBeGreaterThan5;
+      return localizations.fontSizeMustBeGreaterThan5;
     }
 
     return null;

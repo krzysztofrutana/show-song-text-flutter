@@ -1,9 +1,9 @@
 part of 'navigation_drawer_bloc.dart';
 
 class NavigationDrawerState {
-  final NavigationPage navigationPage;
-
   const NavigationDrawerState(this.navigationPage);
+
+  final NavigationPage navigationPage;
 }
 
 enum NavigationPage {

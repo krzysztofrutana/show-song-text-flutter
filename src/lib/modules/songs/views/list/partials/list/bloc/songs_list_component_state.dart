@@ -1,28 +1,53 @@
 part of 'songs_list_component_bloc.dart';
 
-class SongsListComponentState {
-  List<String> selectedSongs = [];
-  bool chooseSongs = false;
-  List<Song> data = [];
+enum SongsListStatus { initial, loading, success, error }
 
-  SongsListComponentState(
-      {required this.data,
-      required this.chooseSongs,
-      required this.selectedSongs});
+class SongsListComponentState extends Equatable {
+  const SongsListComponentState({
+    required this.data,
+    required this.chooseSongs,
+    required this.selectedSongs,
+    this.status = SongsListStatus.initial,
+    this.errorMessage = '',
+    this.searchQuery = '',
+  });
 
-  SongsListComponentState copyWith(
-      {List<String>? selectedSongs, bool? chooseSongs, List<Song>? data}) {
+  final List<String> selectedSongs;
+  final bool chooseSongs;
+  final List<Song> data;
+  final SongsListStatus status;
+  final String errorMessage;
+  final String searchQuery;
+
+  SongsListComponentState copyWith({
+    List<String>? selectedSongs,
+    bool? chooseSongs,
+    List<Song>? data,
+    SongsListStatus? status,
+    String? errorMessage,
+    String? searchQuery,
+  }) {
     return SongsListComponentState(
-        data: data ?? this.data,
-        chooseSongs: chooseSongs ?? this.chooseSongs,
-        selectedSongs: selectedSongs ?? this.selectedSongs);
+      data: data ?? this.data,
+      chooseSongs: chooseSongs ?? this.chooseSongs,
+      selectedSongs: selectedSongs ?? this.selectedSongs,
+      status: status ?? this.status,
+      errorMessage: errorMessage ?? this.errorMessage,
+      searchQuery: searchQuery ?? this.searchQuery,
+    );
   }
+
+  @override
+  List<Object?> get props =>
+      [data, chooseSongs, selectedSongs, status, errorMessage, searchQuery];
 }
 
 final class SongsListComponentInitialState extends SongsListComponentState {
-  SongsListComponentInitialState()
+  const SongsListComponentInitialState()
       : super(
-            data: DataCollections.songs().values.toList(),
-            chooseSongs: false,
-            selectedSongs: []);
+          data: const [],
+          chooseSongs: false,
+          selectedSongs: const [],
+          status: SongsListStatus.initial,
+        );
 }

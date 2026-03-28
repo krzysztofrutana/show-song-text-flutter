@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
-import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
-import 'package:pomocnik_wokalisty/helpers/localization_manager.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/add/views/add_playlist_dialog.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/playlists_list_component.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
 
@@ -31,8 +33,9 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
-        body: PlaylistsListComponent(),
+        body: const PlaylistsListComponent(),
         floatingActionButton: BlocBuilder<PlaylistsListComponentBloc,
                 PlaylistsListComponentState>(
             builder: (context, state) => Visibility(
@@ -63,18 +66,19 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Expanded(
-                      child: MaterialButton(
-                          minWidth: 0,
-                          padding: EdgeInsets.all(0),
+                      child: TextButton(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            spacing: 10,
                             children: [
-                              Icon(Icons.cancel_outlined, size: iconSize),
-                              Text(
-                                  LocalizationManager
-                                      .instance.appLocalization.cancel,
-                                  style: TextStyle(fontSize: fontSize))
+                              Icon(
+                                Icons.cancel_outlined,
+                                size: iconSize,
+                                color: Colors.black,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(localizations.cancel,
+                                  style: TextStyle(
+                                      fontSize: fontSize, color: Colors.black))
                             ],
                           ),
                           onPressed: () {
@@ -88,42 +92,39 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                           }),
                     ),
                     Expanded(
-                      child: MaterialButton(
-                          minWidth: 0,
-                          padding: EdgeInsets.all(0),
+                      child: TextButton(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            spacing: 10,
                             children: [
                               ImageIcon(
-                                AssetImage('assets/images/icons/delete.png'),
+                                color: Colors.black,
+                                const AssetImage(
+                                    'assets/images/icons/delete.png'),
                                 size: iconSize,
                               ),
-                              Text(
-                                  LocalizationManager
-                                      .instance.appLocalization.delete,
-                                  style: TextStyle(fontSize: fontSize))
+                              const SizedBox(height: 10),
+                              Text(localizations.delete,
+                                  style: TextStyle(
+                                      fontSize: fontSize, color: Colors.black))
                             ],
                           ),
                           onPressed: () =>
                               _showDeleteConfirmModal(internalContext)),
                     ),
                     Expanded(
-                      child: MaterialButton(
-                        minWidth: 0,
-                        padding: EdgeInsets.all(0),
+                      child: TextButton(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          spacing: 10,
                           children: [
                             ImageIcon(
-                                AssetImage(
+                                color: Colors.black,
+                                const AssetImage(
                                     'assets/images/icons/presentation.png'),
                                 size: iconSize),
-                            Text(
-                                LocalizationManager
-                                    .instance.appLocalization.presentiaton,
-                                style: TextStyle(fontSize: fontSize))
+                            const SizedBox(height: 10),
+                            Text(localizations.presentation,
+                                style: TextStyle(
+                                    fontSize: fontSize, color: Colors.black))
                           ],
                         ),
                         onPressed: () =>
@@ -139,7 +140,8 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
   }
 
   Future<void> _showDeleteConfirmModal(BuildContext parentContext) async {
-    var selectedPlaylistsLength = parentContext
+    final localizations = AppLocalizations.of(context)!;
+    final selectedPlaylistsLength = parentContext
         .read<PlaylistsListComponentBloc>()
         .state
         .selectedPlaylists
@@ -152,22 +154,21 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(
-              LocalizationManager.instance.appLocalization.noPlaylistsSelected,
-              style: TextStyle(fontSize: 20),
+              localizations.noPlaylistsSelected,
+              style: const TextStyle(fontSize: 20),
             ),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
                   Text(
-                    LocalizationManager.instance.appLocalization
-                        .youShouldMarkThePlaylistsToBeDeleted,
+                    localizations.youShouldMarkThePlaylistsToBeDeleted,
                   ),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: Text(LocalizationManager.instance.appLocalization.ok),
+                child: Text(localizations.ok),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -180,26 +181,23 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
-                LocalizationManager.instance.appLocalization.deletingPlaylists),
+            title: Text(localizations.deletingPlaylists),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text(LocalizationManager.instance.appLocalization
-                      .areYouSureYouWantDeletSelectedLists),
-                  Text(LocalizationManager.instance.appLocalization
-                      .numberOfPlaylists(selectedPlaylistsLength)),
+                  Text(localizations.areYouSureYouWantDeletSelectedLists),
+                  Text(
+                      localizations.numberOfPlaylists(selectedPlaylistsLength)),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child:
-                    Text(LocalizationManager.instance.appLocalization.cancel),
+                child: Text(localizations.cancel),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               TextButton(
-                child: Text(LocalizationManager.instance.appLocalization.yes),
+                child: Text(localizations.yes),
                 onPressed: () {
                   parentContext
                       .read<PlaylistsListComponentBloc>()
@@ -222,64 +220,19 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
   Future<void> _showCreatePlaylistModal(BuildContext parentContext) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title:
-              Text(LocalizationManager.instance.appLocalization.addingPlaylist),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                ListBody(
-                  children: <Widget>[
-                    TextFormField(
-                        decoration: InputDecoration(
-                          hintText: LocalizationManager
-                              .instance.appLocalization.enterName,
-                          labelText:
-                              LocalizationManager.instance.appLocalization.name,
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return LocalizationManager
-                                .instance.appLocalization.nameIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged: (value) => parentContext
-                            .read<AddPlaylistBloc>()
-                            .add(PlaylistAddNameChange(value)))
-                  ],
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.cancel),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text(LocalizationManager.instance.appLocalization.yes),
-              onPressed: () {
-                parentContext.read<AddPlaylistBloc>().add(AddPlaylistSave());
-                parentContext.read<AddPlaylistBloc>().add(AddPlaylistReset());
-
-                parentContext
-                    .read<PlaylistsListComponentBloc>()
-                    .add(ReloadListEvent());
-
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+        return BlocProvider.value(
+          value: parentContext.read<AddPlaylistBloc>(),
+          child: AddPlaylistDialog(),
         );
       },
     );
   }
 
   void _runPresentationForSelected(BuildContext parentContext) async {
-    var selectedPlaylistsLength = parentContext
+    final localizations = AppLocalizations.of(parentContext)!;
+    final selectedPlaylistsLength = parentContext
         .read<PlaylistsListComponentBloc>()
         .state
         .selectedPlaylists
@@ -292,20 +245,19 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(
-              LocalizationManager.instance.appLocalization.noPlaylistsSelected,
-              style: TextStyle(fontSize: 20),
+              localizations.noPlaylistsSelected,
+              style: const TextStyle(fontSize: 20),
             ),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text(LocalizationManager.instance.appLocalization
-                      .pleaseSelectPlaylistForPresentation),
+                  Text(localizations.pleaseSelectPlaylistForPresentation),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: Text(LocalizationManager.instance.appLocalization.ok),
+                child: Text(localizations.ok),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -319,21 +271,19 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text(
-              LocalizationManager.instance.appLocalization
-                  .presentationIsOnlyPossibleForOneList,
-              style: TextStyle(fontSize: 20),
+              localizations.presentationIsOnlyPossibleForOneList,
+              style: const TextStyle(fontSize: 20),
             ),
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text(LocalizationManager.instance.appLocalization
-                      .pleaseSelectOnlyOneListForPresentation),
+                  Text(localizations.pleaseSelectOnlyOneListForPresentation),
                 ],
               ),
             ),
             actions: <Widget>[
               TextButton(
-                child: Text(LocalizationManager.instance.appLocalization.ok),
+                child: Text(localizations.ok),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -341,12 +291,13 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         },
       );
     } else {
-      var selectedPlaylists = parentContext
+      final selectedPlaylists = parentContext
           .read<PlaylistsListComponentBloc>()
           .state
           .selectedPlaylists;
 
-      var playlist = DataCollections.playlists().get(selectedPlaylists[0]);
+      final playlist =
+          sl<PlaylistsRepository>().getPlaylist(selectedPlaylists[0]);
 
       if (playlist == null) {
         return showDialog<void>(
@@ -355,20 +306,20 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text(
-                LocalizationManager.instance.appLocalization.error,
-                style: TextStyle(fontSize: 20),
+                localizations.error,
+                style: const TextStyle(fontSize: 20),
               ),
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text(LocalizationManager.instance.appLocalization
+                    Text(localizations
                         .anErrorOccurredWhileRetrievingListInformation),
                   ],
                 ),
               ),
               actions: <Widget>[
                 TextButton(
-                  child: Text(LocalizationManager.instance.appLocalization.ok),
+                  child: Text(localizations.ok),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
@@ -378,14 +329,14 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
       }
 
       parentContext
-          .read<PresentatationBloc>()
+          .read<PresentationBloc>()
           .add(PlaylistPresentation(playlist: playlist));
 
       showInterstitialAds();
 
       Navigator.of(parentContext).push(
         MaterialPageRoute(
-          builder: (parentContext) => PresentationView(),
+          builder: (parentContext) => const PresentationView(),
         ),
       );
     }
