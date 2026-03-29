@@ -105,7 +105,6 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                               size: iconSize,
                               color: Colors.black,
                             ),
-                            const SizedBox(height: 10),
                             Text(localizations.cancel,
                                 style: TextStyle(
                                     fontSize: fontSize, color: Colors.black),
@@ -133,7 +132,6 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                                   const AssetImage(
                                       'assets/images/icons/delete.png'),
                                   size: iconSize),
-                              const SizedBox(height: 10),
                               Text(localizations.delete,
                                   style: TextStyle(
                                       fontSize: fontSize, color: Colors.black),
@@ -153,7 +151,6 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                                 const AssetImage(
                                     'assets/images/icons/playlist.png'),
                                 size: iconSize),
-                            const SizedBox(height: 10),
                             Text(localizations.createPlaylist,
                                 style: TextStyle(
                                     fontSize: fontSize, color: Colors.black),
@@ -175,7 +172,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                                   'assets/images/icons/playlist.png'),
                               size: iconSize,
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 5),
                             Text(
                               localizations.addToPlaylistSentence,
                               style: TextStyle(
@@ -199,8 +196,8 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                                     'assets/images/icons/presentation.png'),
                                 size: iconSize,
                               ),
-                              const SizedBox(height: 10),
-                              Text(localizations.presentation,
+                              const SizedBox(height: 5),
+                              Text(localizations.showText,
                                   style: TextStyle(
                                     fontSize: fontSize,
                                     color: Colors.black,
@@ -263,6 +260,10 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                       .add(RemoveSelectedSongsEvent());
 
                   Navigator.of(context).pop();
+
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(localizations.deletedSuccessfully),
+                  ));
                 },
               ),
             ],
@@ -339,6 +340,10 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                         .add(ClearSelectedSongs());
 
                     Navigator.of(context).pop();
+
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(localizations.createdPlaylist),
+                    ));
                   }
                 },
               ),
@@ -408,6 +413,8 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
       List<String> selectedSongs,
       BuildContext parentContext,
       BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return playlists
         .map((playlist) => SimpleDialogOption(
             child: Text(playlist.name),
@@ -422,6 +429,10 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                   .add(ChooseSongChangeEvent(value: false));
 
               Navigator.of(context).pop();
+
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(localizations.addedSelectedToPlaylist),
+              ));
             }))
         .toList();
   }
@@ -494,7 +505,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                               hintText: localizations.enterAuthor,
                               labelText: localizations.author),
                           validator: (value) {
-                            if (newSong.title.isEmpty &&
+                            if (newSong.author.isEmpty &&
                                 (value == null || value.trim().isEmpty)) {
                               return localizations.authorIsRequired;
                             }
@@ -507,7 +518,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                               hintText: localizations.enterTitle,
                               labelText: localizations.title),
                           validator: (value) {
-                            if (newSong.author.isEmpty &&
+                            if (newSong.title.isEmpty &&
                                 (value == null || value.trim().isEmpty)) {
                               return localizations.titleIsRequired;
                             }

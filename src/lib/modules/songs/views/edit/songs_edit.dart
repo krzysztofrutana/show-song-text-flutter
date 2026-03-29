@@ -78,12 +78,12 @@ class _SongsEditState extends State<SongsEdit>
                 actions: [
                   IconButton(
                       padding: const EdgeInsets.all(10),
-                      iconSize: 35,
+                      iconSize: 30,
                       icon: const Icon(Icons.search),
                       onPressed: () => _onSearchClick(context, cubit)),
                   IconButton(
                     padding: const EdgeInsets.all(10),
-                    iconSize: 35,
+                    iconSize: 30,
                     icon: const Icon(Icons.save),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
@@ -113,8 +113,8 @@ class _SongsEditState extends State<SongsEdit>
                                         SongsEditState>(
                                       bloc: cubit,
                                       selector: (state) => state.author,
-                                      validator: (value) => validateAuthor(
-                                          value, localizations),
+                                      validator: (value) =>
+                                          validateAuthor(value, localizations),
                                       onChanged: cubit.updateAuthor,
                                       textInputAction: TextInputAction.next,
                                       decoration: InputDecoration(

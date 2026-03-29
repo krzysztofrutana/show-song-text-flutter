@@ -71,7 +71,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
                 actions: [
                   IconButton(
                     padding: const EdgeInsets.all(10),
-                    iconSize: 35,
+                    iconSize: 30,
                     icon: const ImageIcon(
                       AssetImage('assets/images/icons/presentation.png'),
                       size: 30,
@@ -81,7 +81,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
                   ),
                   IconButton(
                     padding: const EdgeInsets.all(10),
-                    iconSize: 35,
+                    iconSize: 30,
                     icon: const Icon(Icons.save),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {

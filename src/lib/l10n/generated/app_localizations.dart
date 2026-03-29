@@ -119,6 +119,12 @@ abstract class AppLocalizations {
   /// **'Dodaj do playlisty'**
   String get addToPlaylistSentence;
 
+  /// No description provided for @addedSelectedToPlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Dodano zaznaczone utwory do playlisty'**
+  String get addedSelectedToPlaylist;
+
   /// No description provided for @addingToPlaylist.
   ///
   /// In pl, this message translates to:
@@ -281,6 +287,12 @@ abstract class AppLocalizations {
   /// **'Utwórz playlistę'**
   String get createPlaylist;
 
+  /// No description provided for @createdPlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Utworzono nową playlistę'**
+  String get createdPlaylist;
+
   /// No description provided for @createPresentationError.
   ///
   /// In pl, this message translates to:
@@ -310,6 +322,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Usuwanie utworów'**
   String get deletingSongs;
+
+  /// No description provided for @deletedSuccessfully.
+  ///
+  /// In pl, this message translates to:
+  /// **'Usunięto pomyślnie'**
+  String get deletedSuccessfully;
 
   /// No description provided for @editPlaylist.
   ///
@@ -521,12 +539,6 @@ abstract class AppLocalizations {
   /// **'Pozycja: {position}'**
   String position(Object position);
 
-  /// No description provided for @presentation.
-  ///
-  /// In pl, this message translates to:
-  /// **'Prezentacja'**
-  String get presentation;
-
   /// No description provided for @presentationIsOnlyPossibleForOneList.
   ///
   /// In pl, this message translates to:
@@ -622,6 +634,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Ustawienia zostały zapisane'**
   String get settingsHaveBeenSaved;
+
+  /// No description provided for @showText.
+  ///
+  /// In pl, this message translates to:
+  /// **'Wyświetl tekst'**
+  String get showText;
 
   /// No description provided for @singersAssistant.
   ///
@@ -788,7 +806,7 @@ abstract class AppLocalizations {
   /// No description provided for @yourPrivacyChoisesHasBeenUpdated.
   ///
   /// In pl, this message translates to:
-  /// **'Your privacy choises has been updated'**
+  /// **'Twoje ustawienia prywatności zostały zaktualizowane'**
   String get yourPrivacyChoisesHasBeenUpdated;
 }
 

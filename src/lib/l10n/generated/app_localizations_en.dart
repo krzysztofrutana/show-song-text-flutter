@@ -21,6 +21,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addToPlaylistSentence => 'Add to playlist';
 
   @override
+  String get addedSelectedToPlaylist => 'Added selected songs to playlist';
+
+  @override
   String get addingToPlaylist => 'Adding to playlist';
 
   @override
@@ -108,6 +111,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createPlaylist => 'Create playlist';
 
   @override
+  String get createdPlaylist => 'Created new playlist';
+
+  @override
   String get createPresentationError => 'Presentation lunch error';
 
   @override
@@ -121,6 +127,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deletingSongs => 'Deleting songs';
+
+  @override
+  String get deletedSuccessfully => 'Successfully deleted';
 
   @override
   String get editPlaylist => 'Edit playlist';
@@ -238,9 +247,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get presentation => 'Presentation';
-
-  @override
   String get presentationIsOnlyPossibleForOneList => 'Presentation is only possible for one playlist';
 
   @override
@@ -287,6 +293,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsHaveBeenSaved => 'The settings have been saved';
+
+  @override
+  String get showText => 'Show text';
 
   @override
   String get singersAssistant => 'Singer assistant';

@@ -48,7 +48,7 @@ mixin Ads {
 
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
-      request: const AdRequest(),
+      request: AdRequest(),
       size: size,
       listener: BannerAdListener(
         onAdLoaded: (ad) {

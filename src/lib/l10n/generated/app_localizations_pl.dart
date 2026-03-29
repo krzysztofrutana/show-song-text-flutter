@@ -21,6 +21,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get addToPlaylistSentence => 'Dodaj do playlisty';
 
   @override
+  String get addedSelectedToPlaylist => 'Dodano zaznaczone utwory do playlisty';
+
+  @override
   String get addingToPlaylist => 'Dodawanie do playlisty';
 
   @override
@@ -108,6 +111,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get createPlaylist => 'Utwórz playlistę';
 
   @override
+  String get createdPlaylist => 'Utworzono nową playlistę';
+
+  @override
   String get createPresentationError => 'Błąd uruchamiania prezentacji';
 
   @override
@@ -121,6 +127,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get deletingSongs => 'Usuwanie utworów';
+
+  @override
+  String get deletedSuccessfully => 'Usunięto pomyślnie';
 
   @override
   String get editPlaylist => 'Edytuj listę odtwarzania';
@@ -238,9 +247,6 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get presentation => 'Prezentacja';
-
-  @override
   String get presentationIsOnlyPossibleForOneList => 'Prezentacja możliwa tylko dla jednej listy';
 
   @override
@@ -287,6 +293,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsHaveBeenSaved => 'Ustawienia zostały zapisane';
+
+  @override
+  String get showText => 'Wyświetl tekst';
 
   @override
   String get singersAssistant => 'Pomocnik wokalisty';
@@ -372,5 +381,5 @@ class AppLocalizationsPl extends AppLocalizations {
   String get youShouldMarkThePlaylistsToBeDeleted => 'Należy zaznaczyć listy do usunięcia';
 
   @override
-  String get yourPrivacyChoisesHasBeenUpdated => 'Your privacy choises has been updated';
+  String get yourPrivacyChoisesHasBeenUpdated => 'Twoje ustawienia prywatności zostały zaktualizowane';
 }

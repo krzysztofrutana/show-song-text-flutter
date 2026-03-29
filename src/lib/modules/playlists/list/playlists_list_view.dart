@@ -75,7 +75,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                                 size: iconSize,
                                 color: Colors.black,
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 5),
                               Text(localizations.cancel,
                                   style: TextStyle(
                                       fontSize: fontSize, color: Colors.black))
@@ -102,7 +102,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                                     'assets/images/icons/delete.png'),
                                 size: iconSize,
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 5),
                               Text(localizations.delete,
                                   style: TextStyle(
                                       fontSize: fontSize, color: Colors.black))
@@ -121,8 +121,8 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                                 const AssetImage(
                                     'assets/images/icons/presentation.png'),
                                 size: iconSize),
-                            const SizedBox(height: 10),
-                            Text(localizations.presentation,
+                            const SizedBox(height: 5),
+                            Text(localizations.showText,
                                 style: TextStyle(
                                     fontSize: fontSize, color: Colors.black))
                           ],
@@ -208,6 +208,10 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                       .add(ReloadListEvent());
 
                   Navigator.of(context).pop();
+
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(localizations.deletedSuccessfully),
+                  ));
                 },
               ),
             ],
