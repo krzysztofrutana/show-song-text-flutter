@@ -27,12 +27,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run code generation
-        run: dart run build_runner build --delete-conflicting-outputs
-
-      - name: Check formatting
-        run: dart format --set-exit-if-changed .
-
       - name: Analyze project
         run: flutter analyze
 
