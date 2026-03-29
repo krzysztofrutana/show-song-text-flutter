@@ -407,9 +407,9 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
 }
 
 Future<String> _getActualVersion() async {
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  String version = packageInfo.version;
-  String code = packageInfo.buildNumber;
+  final packageInfo = await PackageInfo.fromPlatform();
+  final version = packageInfo.version;
+  final code = packageInfo.buildNumber;
   return '$version+$code';
 }
 

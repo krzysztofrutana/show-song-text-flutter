@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_debouncer/flutter_debouncer.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
-import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';

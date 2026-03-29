@@ -8,7 +8,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
-import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubit/client_screen_mode_cubit.dart';
