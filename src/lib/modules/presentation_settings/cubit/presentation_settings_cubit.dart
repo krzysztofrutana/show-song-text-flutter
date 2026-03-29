@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'presentation_settings_state.dart';
@@ -9,7 +9,7 @@ class PresentationSettingsCubit extends Cubit<PresentationSettingsStateBase> {
   PresentationSettingsCubit() : super(PresentationSettingsInitial());
 
   void initSettings() async {
-    final fontSize = LocalStorage.instance.getInt('fontSize') ?? 15;
+    final fontSize = sl<SharedPreferences>().getInt('fontSize') ?? 15;
 
     emit(state.copyWith(fontSize: fontSize.toString()));
   }

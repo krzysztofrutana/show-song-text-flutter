@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 
 part 'song_model.g.dart';
 
@@ -24,12 +24,7 @@ class Song extends Equatable {
   @HiveField(3)
   final String text;
 
-  Song copyWith({
-    String? uuid,
-    String? title,
-    String? author,
-    String? text,
-  }) {
+  Song copyWith({String? uuid, String? title, String? author, String? text}) {
     return Song(
       uuid: uuid ?? this.uuid,
       title: title ?? this.title,

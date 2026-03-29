@@ -11,13 +11,13 @@ mixin Ads {
   BannerAd? bannerAd;
 
   void initAds(
-      int Function() getWidth, void Function(BannerAd?) setStateBaner) {
+    int Function() getWidth,
+    void Function(BannerAd?) setStateBaner,
+  ) {
     try {
       _initializeMobileAdsSDK(getWidth, setStateBaner);
     } catch (e) {
-      debugPrint(
-        "Error when loading ads: $e",
-      );
+      debugPrint("Error when loading ads: $e");
     }
   }
 
@@ -48,7 +48,7 @@ mixin Ads {
 
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
-      request: AdRequest(),
+      request: const AdRequest(),
       size: size,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
@@ -64,7 +64,9 @@ mixin Ads {
   }
 
   void _initializeMobileAdsSDK(
-      int Function() getWidth, Function setStateBaner) async {
+    int Function() getWidth,
+    Function setStateBaner,
+  ) async {
     if (!Platform.isAndroid) return;
 
     if (_isMobileAdsInitializeCalled) {

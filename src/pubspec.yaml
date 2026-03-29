@@ -5,7 +5,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 0.9.1+1
 
 environment:
-  sdk: ^3.6.2
+  sdk: ^3.7.2
 
 dependencies:
   flutter:
@@ -14,7 +14,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_bloc: ^9.0.0
   standard_searchbar: ^2.1.1
-  hive_flutter: ^1.1.0
+  hive_ce_flutter: ^1.1.0
   uuid: ^4.5.1
   collection: ^1.18.0
   lan_scanner: ^2.0.0
@@ -42,12 +42,13 @@ dependencies:
   flutter_app_name_localization: ^0.0.6
   nested: ^1.0.0
   equatable: ^2.0.7
+  package_info_plus: ^9.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  hive_generator: ^2.0.1
+  hive_ce_generator: ^1.8.1
   flutter_lints: ^5.0.0
   bloc_test: ^10.0.0
   mocktail: ^1.0.4

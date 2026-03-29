@@ -45,58 +45,37 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-        providers: getBlockProviders,
-        child: BlocBuilder<LocalizationCubit, LocalizationState>(
-          builder: (context, state) {
-            return MaterialApp(
-              locale: state.locale,
-              debugShowCheckedModeBanner: false,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              onGenerateTitle: (ctx) {
-                return AppLocalizations.of(ctx)!.singersAssistant;
-              },
-              home: const InitializeScreen(targetWidget: MyHomePage()),
-            );
-          },
-        ));
+      providers: getBlockProviders,
+      child: BlocBuilder<LocalizationCubit, LocalizationState>(
+        builder: (context, state) {
+          return MaterialApp(
+            locale: state.locale,
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            onGenerateTitle: (ctx) {
+              return AppLocalizations.of(ctx)!.singersAssistant;
+            },
+            home: const InitializeScreen(targetWidget: MyHomePage()),
+          );
+        },
+      ),
+    );
   }
 
   List<SingleChildWidget> get getBlockProviders {
     return [
-      BlocProvider(
-        create: (context) => LocalizationCubit(),
-      ),
-      BlocProvider(
-        create: (context) => NavigationDrawerBloc(),
-      ),
-      BlocProvider(
-        create: (context) => SongsListComponentBloc(),
-      ),
-      BlocProvider(
-        create: (context) => AddPlaylistBloc(),
-      ),
-      BlocProvider(
-        create: (context) => PlaylistsListComponentBloc(),
-      ),
-      BlocProvider(
-        create: (context) => PlaylistEditCubit(),
-      ),
-      BlocProvider(
-        create: (context) => ServerCubit(),
-      ),
-      BlocProvider(
-        create: (context) => ClientCubit(),
-      ),
-      BlocProvider(
-        create: (context) => PresentationBloc(),
-      ),
-      BlocProvider(
-        create: (context) => ClientScreenModeCubit(),
-      ),
-      BlocProvider(
-        create: (context) => SongSearchCubit(),
-      ),
+      BlocProvider(create: (context) => LocalizationCubit()),
+      BlocProvider(create: (context) => NavigationDrawerBloc()),
+      BlocProvider(create: (context) => SongsListComponentBloc()),
+      BlocProvider(create: (context) => AddPlaylistBloc()),
+      BlocProvider(create: (context) => PlaylistsListComponentBloc()),
+      BlocProvider(create: (context) => PlaylistEditCubit()),
+      BlocProvider(create: (context) => ServerCubit()),
+      BlocProvider(create: (context) => ClientCubit()),
+      BlocProvider(create: (context) => PresentationBloc()),
+      BlocProvider(create: (context) => ClientScreenModeCubit()),
+      BlocProvider(create: (context) => SongSearchCubit()),
     ];
   }
 }
@@ -113,17 +92,18 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (bool didPop, Object? result) async {
-          if (didPop) {
-            return;
-          }
-          final shouldPop = await _showBackDialog(context) ?? false;
-          if (context.mounted && shouldPop) {
-            SystemNavigator.pop();
-          }
-        },
-        child: const Home());
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) {
+          return;
+        }
+        final shouldPop = await _showBackDialog(context) ?? false;
+        if (context.mounted && shouldPop) {
+          SystemNavigator.pop();
+        }
+      },
+      child: const Home(),
+    );
   }
 
   Future<bool?> _showBackDialog(BuildContext context) {
@@ -137,7 +117,8 @@ class _MyHomePageState extends State<MyHomePage> {
           actions: <Widget>[
             TextButton(
               style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge),
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
               child: Text(localizations.cancel),
               onPressed: () {
                 Navigator.pop(context, false);
@@ -145,7 +126,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge),
+                textStyle: Theme.of(context).textTheme.labelLarge,
+              ),
               child: Text(localizations.leave),
               onPressed: () {
                 Navigator.pop(context, true);

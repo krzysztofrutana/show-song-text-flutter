@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/adapters.dart';
 
 part 'playlist_model.g.dart';
 
@@ -20,11 +20,7 @@ class Playlist extends Equatable {
   @HiveField(2)
   final List<String> songsIds;
 
-  Playlist copyWith({
-    String? uuid,
-    String? name,
-    List<String>? songsIds,
-  }) {
+  Playlist copyWith({String? uuid, String? name, List<String>? songsIds}) {
     return Playlist(
       uuid: uuid ?? this.uuid,
       name: name ?? this.name,

@@ -8,12 +8,14 @@ import 'package:flutter_debouncer/flutter_debouncer.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/models/presentation_song_info.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/models/send_to_client_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PresentationView extends StatefulWidget {
   const PresentationView({super.key});
@@ -27,8 +29,9 @@ class _PresentationViewState extends State<PresentationView>
   final Throttler _throttler = Throttler();
 
   late PageController _pageViewController;
-  final List<PresentationSongInfo> _presentationPages =
-      List.empty(growable: true);
+  final List<PresentationSongInfo> _presentationPages = List.empty(
+    growable: true,
+  );
   PresentationSongInfo? _currentPageInfo;
   int _fontSize = 12;
   late List<Song> songs;
@@ -43,7 +46,7 @@ class _PresentationViewState extends State<PresentationView>
     _pageViewController = PageController();
     FullScreenHelper.instance.addListener(this);
     FullScreenHelper.instance.setFullScreen(true);
-    _fontSize = LocalStorage.instance.getInt('fontSize') ?? 15;
+    _fontSize = sl<SharedPreferences>().getInt('fontSize') ?? 15;
 
     super.initState();
   }
@@ -78,96 +81,99 @@ class _PresentationViewState extends State<PresentationView>
       child: Focus(
         onKeyEvent: (node, event) {
           _throttler.throttle(
-              duration: const Duration(milliseconds: 200),
-              onThrottle: () {
-                if (_currentPageInfo == null) {
-                  return KeyEventResult.ignored;
-                }
+            duration: const Duration(milliseconds: 200),
+            onThrottle: () {
+              if (_currentPageInfo == null) {
+                return KeyEventResult.ignored;
+              }
 
-                if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-                  if (_currentPageInfo!.nextPageExist) {
-                    _handleNextPage(context);
-                  } else if (!_currentPageInfo!.nextPageExist &&
-                      _currentPageInfo!.nextSongExist) {
-                    _handleNextSong(context);
-                  }
-
-                  return KeyEventResult.handled;
-                } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-                  if (_currentPageInfo!.previewPageExist) {
-                    _handlePreviousPage(context);
-                  } else if (!_currentPageInfo!.previewPageExist &&
-                      _currentPageInfo!.previewSongExist) {
-                    _handlePreviousSong(context, false);
-                  }
-
-                  return KeyEventResult.handled;
-                } else if (event.logicalKey == LogicalKeyboardKey.exit) {
-                  Navigator.of(context).pop();
-
-                  return KeyEventResult.handled;
+              if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                if (_currentPageInfo!.nextPageExist) {
+                  _handleNextPage(context);
+                } else if (!_currentPageInfo!.nextPageExist &&
+                    _currentPageInfo!.nextSongExist) {
+                  _handleNextSong(context);
                 }
 
                 return KeyEventResult.handled;
-              });
+              } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                if (_currentPageInfo!.previewPageExist) {
+                  _handlePreviousPage(context);
+                } else if (!_currentPageInfo!.previewPageExist &&
+                    _currentPageInfo!.previewSongExist) {
+                  _handlePreviousSong(context, false);
+                }
+
+                return KeyEventResult.handled;
+              } else if (event.logicalKey == LogicalKeyboardKey.exit) {
+                Navigator.of(context).pop();
+
+                return KeyEventResult.handled;
+              }
+
+              return KeyEventResult.handled;
+            },
+          );
 
           return KeyEventResult.ignored;
         },
         child: SafeArea(
           child: Scaffold(
             appBar: AppBar(
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(_currentPageInfo?.title ?? ""),
-                    Visibility(
-                        visible: _allSongsCount > 1 && _currentPageInfo != null,
-                        child: Text(
-                            _currentPageInfo != null
-                                ? '${_currentPageInfo!.songNumber}/${_currentPageInfo!.totalSongsCount}'
-                                : "",
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                            )))
-                  ],
-                ),
-                centerTitle: true),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(_currentPageInfo?.title ?? ""),
+                  Visibility(
+                    visible: _allSongsCount > 1 && _currentPageInfo != null,
+                    child: Text(
+                      _currentPageInfo != null
+                          ? '${_currentPageInfo!.songNumber}/${_currentPageInfo!.totalSongsCount}'
+                          : "",
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+                  ),
+                ],
+              ),
+              centerTitle: true,
+            ),
             body: Column(
               children: [
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                    child: _presentationPages.isNotEmpty
-                        ? PageView(
-                            controller: _pageViewController,
-                            onPageChanged: (index) {
-                              setState(() {
-                                _currentPageInfo = _presentationPages[index];
-                              });
-                              _sendTextToClients(context);
-                            },
-                            children: [
-                              for (var songPage in _presentationPages)
-                                songPage.pageWidget,
-                            ],
-                          )
-                        : LayoutBuilder(
-                            builder: (ctx, constraints) {
-                              Future.delayed(Duration.zero, () {
-                                if (ctx.mounted && _isInitialized) {
-                                  _setPages(ctx, constraints);
-                                }
-                                setState(() {});
-                              });
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            },
-                          ),
+                    child:
+                        _presentationPages.isNotEmpty
+                            ? PageView(
+                              controller: _pageViewController,
+                              onPageChanged: (index) {
+                                setState(() {
+                                  _currentPageInfo = _presentationPages[index];
+                                });
+                                _sendTextToClients(context);
+                              },
+                              children: [
+                                for (var songPage in _presentationPages)
+                                  songPage.pageWidget,
+                              ],
+                            )
+                            : LayoutBuilder(
+                              builder: (ctx, constraints) {
+                                Future.delayed(Duration.zero, () {
+                                  if (ctx.mounted && _isInitialized) {
+                                    _setPages(ctx, constraints);
+                                  }
+                                  setState(() {});
+                                });
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+                            ),
                   ),
                 ),
               ],
@@ -177,9 +183,10 @@ class _PresentationViewState extends State<PresentationView>
               children: [
                 IconButton(
                   icon: const Icon(Icons.first_page),
-                  onPressed: _currentPageInfo?.previewSongExist ?? false
-                      ? () => _handlePreviousSong(context, true)
-                      : null,
+                  onPressed:
+                      _currentPageInfo?.previewSongExist ?? false
+                          ? () => _handlePreviousSong(context, true)
+                          : null,
                 ),
                 Row(
                   children: [
@@ -199,10 +206,7 @@ class _PresentationViewState extends State<PresentationView>
                       _currentPageInfo != null
                           ? '${_currentPageInfo!.pageNumberInSongContext}/${_currentPageInfo!.totalPagesCountForSong}'
                           : '',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     IconButton(
                       icon: const Icon(Icons.navigate_next),
@@ -220,9 +224,10 @@ class _PresentationViewState extends State<PresentationView>
                 ),
                 IconButton(
                   icon: const Icon(Icons.last_page_sharp),
-                  onPressed: _currentPageInfo?.nextSongExist ?? false
-                      ? () => _handleNextSong(context)
-                      : null,
+                  onPressed:
+                      _currentPageInfo?.nextSongExist ?? false
+                          ? () => _handleNextSong(context)
+                          : null,
                 ),
               ],
             ),
@@ -234,9 +239,11 @@ class _PresentationViewState extends State<PresentationView>
 
   void _handleFirstPage(BuildContext context) {
     setState(() {
-      final firstIndexForSong = _presentationPages.firstWhere((songInfo) =>
-          songInfo.songNumber == _currentPageInfo!.songNumber &&
-          songInfo.pageIndexInSongContext == 0);
+      final firstIndexForSong = _presentationPages.firstWhere(
+        (songInfo) =>
+            songInfo.songNumber == _currentPageInfo!.songNumber &&
+            songInfo.pageIndexInSongContext == 0,
+      );
 
       _pageViewController.jumpToPage(firstIndexForSong.pageIndex);
     });
@@ -244,10 +251,12 @@ class _PresentationViewState extends State<PresentationView>
 
   void _handleLastPage(BuildContext context) {
     setState(() {
-      final lastIndexForSong = _presentationPages.firstWhere((songInfo) =>
-          songInfo.songNumber == _currentPageInfo!.songNumber &&
-          songInfo.pageIndexInSongContext ==
-              songInfo.totalPagesCountForSong - 1);
+      final lastIndexForSong = _presentationPages.firstWhere(
+        (songInfo) =>
+            songInfo.songNumber == _currentPageInfo!.songNumber &&
+            songInfo.pageIndexInSongContext ==
+                songInfo.totalPagesCountForSong - 1,
+      );
       _pageViewController.jumpToPage(lastIndexForSong.pageIndex);
     });
   }
@@ -255,7 +264,9 @@ class _PresentationViewState extends State<PresentationView>
   void _handlePreviousPage(BuildContext context) {
     setState(() {
       _pageViewController.previousPage(
-          duration: const Duration(microseconds: 500), curve: Curves.easeInOut);
+        duration: const Duration(microseconds: 500),
+        curve: Curves.easeInOut,
+      );
     });
   }
 
@@ -263,9 +274,10 @@ class _PresentationViewState extends State<PresentationView>
     if (returnToFirstIndex) {
       setState(() {
         final lastIndexForSongPrevious = _presentationPages.firstWhere(
-            (songInfo) =>
-                songInfo.songNumber == _currentPageInfo!.songNumber - 1 &&
-                songInfo.pageIndexInSongContext == 0);
+          (songInfo) =>
+              songInfo.songNumber == _currentPageInfo!.songNumber - 1 &&
+              songInfo.pageIndexInSongContext == 0,
+        );
         _pageViewController.jumpToPage(lastIndexForSongPrevious.pageIndex);
       });
     } else {
@@ -276,7 +288,9 @@ class _PresentationViewState extends State<PresentationView>
   void _handleNextPage(BuildContext context) {
     setState(() {
       _pageViewController.nextPage(
-          duration: const Duration(microseconds: 500), curve: Curves.easeInOut);
+        duration: const Duration(microseconds: 500),
+        curve: Curves.easeInOut,
+      );
     });
   }
 
@@ -286,9 +300,11 @@ class _PresentationViewState extends State<PresentationView>
             _currentPageInfo!.totalPagesCountForSong - 1) {
       _handleNextPage(context);
     } else {
-      final firstIndexForNextSong = _presentationPages.firstWhere((songInfo) =>
-          songInfo.songNumber == _currentPageInfo!.songNumber + 1 &&
-          songInfo.pageIndexInSongContext == 0);
+      final firstIndexForNextSong = _presentationPages.firstWhere(
+        (songInfo) =>
+            songInfo.songNumber == _currentPageInfo!.songNumber + 1 &&
+            songInfo.pageIndexInSongContext == 0,
+      );
       _pageViewController.jumpToPage(firstIndexForNextSong.pageIndex);
     }
   }
@@ -296,9 +312,11 @@ class _PresentationViewState extends State<PresentationView>
   void _sendTextToClients(BuildContext context) {
     if (context.read<ServerCubit>().state.serverStarted &&
         _currentPageInfo != null) {
-      final modelToSend = SendToClientModel(
-              text: _currentPageInfo!.pageText, title: _currentPageInfo!.title)
-          .toJson();
+      final modelToSend =
+          SendToClientModel(
+            text: _currentPageInfo!.pageText,
+            title: _currentPageInfo!.title,
+          ).toJson();
 
       context.read<ServerCubit>().send(jsonEncode(modelToSend));
     }
@@ -315,25 +333,25 @@ class _PresentationViewState extends State<PresentationView>
 
       final text = song.text.trim();
 
-      final scaledFontSize =
-          MediaQuery.textScalerOf(context).scale(_fontSize.toDouble());
+      final scaledFontSize = MediaQuery.textScalerOf(
+        context,
+      ).scale(_fontSize.toDouble());
 
       final defaultTextStyle = DefaultTextStyle.of(context);
 
-      final style =
-          defaultTextStyle.style.merge(TextStyle(fontSize: scaledFontSize));
-
-      final span = TextSpan(
-        text: text,
-        style: style,
+      final style = defaultTextStyle.style.merge(
+        TextStyle(fontSize: scaledFontSize),
       );
 
+      final span = TextSpan(text: text, style: style);
+
       final templatePainter = TextPainter(
-          text: span,
-          textScaler: MediaQuery.textScalerOf(context),
-          textDirection: TextDirection.ltr,
-          textAlign: TextAlign.left,
-          locale: Locale(Platform.localeName));
+        text: span,
+        textScaler: MediaQuery.textScalerOf(context),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.left,
+        locale: Locale(Platform.localeName),
+      );
 
       templatePainter.layout(maxWidth: constraints.maxWidth);
 
@@ -350,7 +368,8 @@ class _PresentationViewState extends State<PresentationView>
           ),
         );
 
-        _presentationPages.add(PresentationSongInfo(
+        _presentationPages.add(
+          PresentationSongInfo(
             title: title,
             songNumber: songNumber,
             totalSongsCount: totalSongsCount,
@@ -360,7 +379,9 @@ class _PresentationViewState extends State<PresentationView>
             totalPagesCountForSong: 1,
             pageWidget: newPage,
             pageText: text,
-            song: song));
+            song: song,
+          ),
+        );
         continue;
       }
 
@@ -378,7 +399,8 @@ class _PresentationViewState extends State<PresentationView>
             ),
           );
 
-          _presentationPages.add(PresentationSongInfo(
+          _presentationPages.add(
+            PresentationSongInfo(
               title: "",
               songNumber: 1,
               totalSongsCount: 1,
@@ -387,7 +409,9 @@ class _PresentationViewState extends State<PresentationView>
               totalPagesCountForSong: 1,
               pageWidget: newPage,
               pageText: "",
-              song: song));
+              song: song,
+            ),
+          );
         }
         _showTextErrorModal(song);
 
@@ -424,11 +448,12 @@ class _PresentationViewState extends State<PresentationView>
           );
 
           final checkPainter = TextPainter(
-              text: checkSpan,
-              textScaler: MediaQuery.textScalerOf(context),
-              textDirection: TextDirection.ltr,
-              textAlign: TextAlign.left,
-              locale: Locale(Platform.localeName));
+            text: checkSpan,
+            textScaler: MediaQuery.textScalerOf(context),
+            textDirection: TextDirection.ltr,
+            textAlign: TextAlign.left,
+            locale: Locale(Platform.localeName),
+          );
 
           checkPainter.layout(maxWidth: constraints.maxWidth);
 
@@ -447,18 +472,22 @@ class _PresentationViewState extends State<PresentationView>
               ),
             );
 
-            _presentationPages.add(PresentationSongInfo(
+            _presentationPages.add(
+              PresentationSongInfo(
                 title: title,
                 songNumber: songNumber,
                 totalSongsCount: totalSongsCount,
-                pageIndex: _presentationPages.isNotEmpty
-                    ? _presentationPages.length
-                    : 0,
+                pageIndex:
+                    _presentationPages.isNotEmpty
+                        ? _presentationPages.length
+                        : 0,
                 pageIndexInSongContext: iteration,
                 totalPagesCountForSong: -1,
                 pageWidget: newPage,
                 pageText: checkSpan.text ?? "",
-                song: song));
+                song: song,
+              ),
+            );
 
             iteration++;
             break;
@@ -467,11 +496,13 @@ class _PresentationViewState extends State<PresentationView>
       }
     }
 
-    for (var songInfo in _presentationPages
-        .where((songInfo) => songInfo.totalPagesCountForSong == -1)) {
-      songInfo.totalPagesCountForSong = _presentationPages
-          .where((x) => x.songNumber == songInfo.songNumber)
-          .length;
+    for (var songInfo in _presentationPages.where(
+      (songInfo) => songInfo.totalPagesCountForSong == -1,
+    )) {
+      songInfo.totalPagesCountForSong =
+          _presentationPages
+              .where((x) => x.songNumber == songInfo.songNumber)
+              .length;
     }
 
     _currentPageInfo = _presentationPages.firstOrNull;
@@ -505,7 +536,8 @@ class _PresentationViewState extends State<PresentationView>
             child: ListBody(
               children: <Widget>[
                 Text(
-                    localizations.songMustHaveTextDividedIntoLines(song.title)),
+                  localizations.songMustHaveTextDividedIntoLines(song.title),
+                ),
               ],
             ),
           ),

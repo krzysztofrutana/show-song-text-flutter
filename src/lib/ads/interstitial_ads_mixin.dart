@@ -6,11 +6,16 @@ import 'package:pomocnik_wokalisty/helpers/ad_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/initialization_helper.dart';
 
 mixin InterstitialAds {
+  static int _showAdCounter = 0;
   final _consentManager = AdMobInitializationHelper();
   bool _isMobileAdsInitializeCalled = false;
   InterstitialAd? interstitialAd;
 
   void showInterstitialAds() {
+    _showAdCounter++;
+    if (_showAdCounter < 3) return;
+    _showAdCounter = 0;
+
     try {
       interstitialAd?.show();
     } catch (e) {

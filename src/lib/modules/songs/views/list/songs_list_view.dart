@@ -47,181 +47,203 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: const SongsListComponent(),
-        floatingActionButton:
-            BlocBuilder<SongsListComponentBloc, SongsListComponentState>(
-                builder: (context, state) => Visibility(
-                      visible: state.chooseSongs == false,
+      body: const SongsListComponent(),
+      floatingActionButton:
+          BlocBuilder<SongsListComponentBloc, SongsListComponentState>(
+            builder:
+                (context, state) => Visibility(
+                  visible: state.chooseSongs == false,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    spacing: 10,
+                    children: [
+                      FloatingActionButton(
+                        heroTag: "quickSearch",
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        child: const Icon(Icons.manage_search, size: 30),
+                        onPressed: () => _showQuickAddModal(context),
+                      ),
+                      FloatingActionButton(
+                        heroTag: "add",
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        child: const Icon(Icons.add, size: 30),
+                        onPressed: () => _redirectToSongsAdd(context),
+                      ),
+                    ],
+                  ),
+                ),
+          ),
+      bottomNavigationBar: BlocBuilder<
+        SongsListComponentBloc,
+        SongsListComponentState
+      >(
+        builder: (internalContext, state) {
+          final size = MediaQuery.of(context).size;
+          var iconSize = size.width * 0.07; // skalowanie ikony
+          var fontSize = size.width * 0.03; // skalowanie tekstu
+
+          if (iconSize > 20) iconSize = 20;
+          if (fontSize > 14) fontSize = 14;
+
+          final localizations = AppLocalizations.of(context)!;
+          return Visibility(
+            visible: state.chooseSongs == true,
+            child: SizedBox(
+              height: size.height * 0.1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Expanded(
+                    child: TextButton(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        spacing: 10,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          FloatingActionButton(
-                              heroTag: "quickSearch",
-                              backgroundColor: Colors.orange,
-                              foregroundColor: Colors.white,
-                              child: const Icon(
-                                Icons.manage_search,
-                                size: 30,
-                              ),
-                              onPressed: () => _showQuickAddModal(context)),
-                          FloatingActionButton(
-                              heroTag: "add",
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              child: const Icon(
-                                Icons.add,
-                                size: 30,
-                              ),
-                              onPressed: () => _redirectToSongsAdd(context)),
+                          Icon(
+                            Icons.cancel_outlined,
+                            size: iconSize,
+                            color: Colors.black,
+                          ),
+                          Text(
+                            localizations.cancel,
+                            style: TextStyle(
+                              fontSize: fontSize,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ],
                       ),
-                    )),
-        bottomNavigationBar:
-            BlocBuilder<SongsListComponentBloc, SongsListComponentState>(
-          builder: (internalContext, state) {
-            final size = MediaQuery.of(context).size;
-            var iconSize = size.width * 0.07; // skalowanie ikony
-            var fontSize = size.width * 0.03; // skalowanie tekstu
+                      onPressed: () {
+                        internalContext.read<SongsListComponentBloc>().add(
+                          ClearSelectedSongs(),
+                        );
 
-            if (iconSize > 20) iconSize = 20;
-            if (fontSize > 14) fontSize = 14;
-
-            final localizations = AppLocalizations.of(context)!;
-            return Visibility(
-              visible: state.chooseSongs == true,
-              child: SizedBox(
-                height: size.height * 0.1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.cancel_outlined,
-                              size: iconSize,
-                              color: Colors.black,
-                            ),
-                            Text(localizations.cancel,
-                                style: TextStyle(
-                                    fontSize: fontSize, color: Colors.black),
-                                textAlign: TextAlign.center)
-                          ],
-                        ),
-                        onPressed: () {
-                          internalContext
-                              .read<SongsListComponentBloc>()
-                              .add(ClearSelectedSongs());
-
-                          internalContext
-                              .read<SongsListComponentBloc>()
-                              .add(ChooseSongChangeEvent(value: false));
-                        },
-                      ),
+                        internalContext.read<SongsListComponentBloc>().add(
+                          ChooseSongChangeEvent(value: false),
+                        );
+                      },
                     ),
-                    Expanded(
-                      child: TextButton(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ImageIcon(
-                                  color: Colors.black,
-                                  const AssetImage(
-                                      'assets/images/icons/delete.png'),
-                                  size: iconSize),
-                              Text(localizations.delete,
-                                  style: TextStyle(
-                                      fontSize: fontSize, color: Colors.black),
-                                  textAlign: TextAlign.center)
-                            ],
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ImageIcon(
+                            color: Colors.black,
+                            const AssetImage('assets/images/icons/delete.png'),
+                            size: iconSize,
                           ),
-                          onPressed: () =>
-                              _showDeleteConfirmModal(internalContext)),
-                    ),
-                    Expanded(
-                      child: TextButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ImageIcon(
-                                color: Colors.black,
-                                const AssetImage(
-                                    'assets/images/icons/playlist.png'),
-                                size: iconSize),
-                            Text(localizations.createPlaylist,
-                                style: TextStyle(
-                                    fontSize: fontSize, color: Colors.black),
-                                textAlign: TextAlign.center)
-                          ],
-                        ),
-                        onPressed: () =>
-                            _showCreatePlaylistModal(internalContext),
-                      ),
-                    ),
-                    Expanded(
-                      child: TextButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ImageIcon(
+                          Text(
+                            localizations.delete,
+                            style: TextStyle(
+                              fontSize: fontSize,
                               color: Colors.black,
-                              const AssetImage(
-                                  'assets/images/icons/playlist.png'),
-                              size: iconSize,
                             ),
-                            const SizedBox(height: 5),
-                            Text(
-                              localizations.addToPlaylistSentence,
-                              style: TextStyle(
-                                  fontSize: fontSize, color: Colors.black),
-                              textAlign: TextAlign.center,
-                            )
-                          ],
-                        ),
-                        onPressed: () => _showAddSelectedToExistPlaylistModal(
-                            internalContext),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
+                      onPressed: () => _showDeleteConfirmModal(internalContext),
                     ),
-                    Expanded(
-                      child: TextButton(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ImageIcon(
-                                color: Colors.black,
-                                const AssetImage(
-                                    'assets/images/icons/presentation.png'),
-                                size: iconSize,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(localizations.showText,
-                                  style: TextStyle(
-                                    fontSize: fontSize,
-                                    color: Colors.black,
-                                  ),
-                                  textAlign: TextAlign.center)
-                            ]),
-                        onPressed: () =>
-                            _runPresentationForSelected(internalContext),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ImageIcon(
+                            color: Colors.black,
+                            const AssetImage(
+                              'assets/images/icons/playlist.png',
+                            ),
+                            size: iconSize,
+                          ),
+                          Text(
+                            localizations.createPlaylist,
+                            style: TextStyle(
+                              fontSize: fontSize,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                    )
-                  ],
-                ),
+                      onPressed:
+                          () => _showCreatePlaylistModal(internalContext),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ImageIcon(
+                            color: Colors.black,
+                            const AssetImage(
+                              'assets/images/icons/playlist.png',
+                            ),
+                            size: iconSize,
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            localizations.addToPlaylistSentence,
+                            style: TextStyle(
+                              fontSize: fontSize,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                      onPressed:
+                          () => _showAddSelectedToExistPlaylistModal(
+                            internalContext,
+                          ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ImageIcon(
+                            color: Colors.black,
+                            const AssetImage(
+                              'assets/images/icons/presentation.png',
+                            ),
+                            size: iconSize,
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            localizations.showText,
+                            style: TextStyle(
+                              fontSize: fontSize,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                      onPressed:
+                          () => _runPresentationForSelected(internalContext),
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
-        ));
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _redirectToSongsAdd(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => SongsAdd(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => SongsAdd()));
   }
 
   Future<void> _showDeleteConfirmModal(BuildContext parentContext) async {
@@ -231,7 +253,8 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
 
     if (selectedSongsLength == 0) {
       return showNoSongsSelectedDialog(
-          localizations.youMustMarkSongsToBeDeleted);
+        localizations.youMustMarkSongsToBeDeleted,
+      );
     } else {
       return showDialog<void>(
         context: context,
@@ -255,15 +278,15 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
               TextButton(
                 child: Text(localizations.yes),
                 onPressed: () {
-                  parentContext
-                      .read<SongsListComponentBloc>()
-                      .add(RemoveSelectedSongsEvent());
+                  parentContext.read<SongsListComponentBloc>().add(
+                    RemoveSelectedSongsEvent(),
+                  );
 
                   Navigator.of(context).pop();
 
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(localizations.deletedSuccessfully),
-                  ));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(localizations.deletedSuccessfully)),
+                  );
                 },
               ),
             ],
@@ -278,13 +301,14 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
     final selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
 
-    parentContext
-        .read<AddPlaylistBloc>()
-        .add(PlaylistSetSelectedSongs(selectedSongs));
+    parentContext.read<AddPlaylistBloc>().add(
+      PlaylistSetSelectedSongs(selectedSongs),
+    );
 
     if (selectedSongs.isEmpty) {
       return showNoSongsSelectedDialog(
-          localizations.toCreatePlaylistYouNeedToSelectSongs);
+        localizations.toCreatePlaylistYouNeedToSelectSongs,
+      );
     } else {
       return showDialog<void>(
         context: context,
@@ -301,18 +325,21 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                       children: <Widget>[
                         Text(localizations.numberOfSongs(selectedSongs.length)),
                         TextFormField(
-                            decoration: InputDecoration(
-                                hintText: localizations.enterName,
-                                labelText: localizations.name),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return localizations.nameIsRequired;
-                              }
-                              return null;
-                            },
-                            onChanged: (value) => parentContext
-                                .read<AddPlaylistBloc>()
-                                .add(PlaylistAddNameChange(value)))
+                          decoration: InputDecoration(
+                            hintText: localizations.enterName,
+                            labelText: localizations.name,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return localizations.nameIsRequired;
+                            }
+                            return null;
+                          },
+                          onChanged:
+                              (value) => parentContext
+                                  .read<AddPlaylistBloc>()
+                                  .add(PlaylistAddNameChange(value)),
+                        ),
                       ],
                     ),
                   ],
@@ -328,22 +355,22 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                 child: Text(localizations.yes),
                 onPressed: () {
                   if (_playlistFormKey.currentState!.validate()) {
-                    parentContext
-                        .read<AddPlaylistBloc>()
-                        .add(AddPlaylistSave());
-                    parentContext
-                        .read<AddPlaylistBloc>()
-                        .add(AddPlaylistReset());
+                    parentContext.read<AddPlaylistBloc>().add(
+                      AddPlaylistSave(),
+                    );
+                    parentContext.read<AddPlaylistBloc>().add(
+                      AddPlaylistReset(),
+                    );
 
-                    parentContext
-                        .read<SongsListComponentBloc>()
-                        .add(ClearSelectedSongs());
+                    parentContext.read<SongsListComponentBloc>().add(
+                      ClearSelectedSongs(),
+                    );
 
                     Navigator.of(context).pop();
 
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(localizations.createdPlaylist),
-                    ));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(localizations.createdPlaylist)),
+                    );
                   }
                 },
               ),
@@ -355,7 +382,8 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   Future<void> _showAddSelectedToExistPlaylistModal(
-      BuildContext parentContext) async {
+    BuildContext parentContext,
+  ) async {
     final localizations = AppLocalizations.of(context)!;
     final selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
@@ -364,7 +392,8 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
 
     if (selectedSongs.isEmpty) {
       return showNoSongsSelectedDialog(
-          localizations.toAddToPlaylistSelectSongs);
+        localizations.toAddToPlaylistSelectSongs,
+      );
     } else {
       return showDialog<void>(
         context: context,
@@ -372,7 +401,11 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
           return SimpleDialog(
             title: Text(localizations.addingToPlaylist),
             children: _getPlaylistsOptions(
-                playlists, selectedSongs, parentContext, context),
+              playlists,
+              selectedSongs,
+              parentContext,
+              context,
+            ),
           );
         },
       );
@@ -391,11 +424,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
             style: const TextStyle(fontSize: 20),
           ),
           content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(message),
-              ],
-            ),
+            child: ListBody(children: <Widget>[Text(message)]),
           ),
           actions: <Widget>[
             TextButton(
@@ -409,31 +438,35 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   List<SimpleDialogOption> _getPlaylistsOptions(
-      Iterable<Playlist> playlists,
-      List<String> selectedSongs,
-      BuildContext parentContext,
-      BuildContext context) {
+    Iterable<Playlist> playlists,
+    List<String> selectedSongs,
+    BuildContext parentContext,
+    BuildContext context,
+  ) {
     final localizations = AppLocalizations.of(context)!;
 
     return playlists
-        .map((playlist) => SimpleDialogOption(
+        .map(
+          (playlist) => SimpleDialogOption(
             child: Text(playlist.name),
             onPressed: () {
               _addSongsToPlaylist(playlist.uuid, selectedSongs);
 
-              parentContext
-                  .read<SongsListComponentBloc>()
-                  .add(ClearSelectedSongs());
-              parentContext
-                  .read<SongsListComponentBloc>()
-                  .add(ChooseSongChangeEvent(value: false));
+              parentContext.read<SongsListComponentBloc>().add(
+                ClearSelectedSongs(),
+              );
+              parentContext.read<SongsListComponentBloc>().add(
+                ChooseSongChangeEvent(value: false),
+              );
 
               Navigator.of(context).pop();
 
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(localizations.addedSelectedToPlaylist),
-              ));
-            }))
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(localizations.addedSelectedToPlaylist)),
+              );
+            },
+          ),
+        )
         .toList();
   }
 
@@ -444,8 +477,9 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
     if (playlist != null) {
       final updatedSongsIds = List<String>.from(playlist.songsIds)
         ..addAll(selectedSongs);
-      playlistsRepository
-          .updatePlaylist(playlist.copyWith(songsIds: updatedSongsIds));
+      playlistsRepository.updatePlaylist(
+        playlist.copyWith(songsIds: updatedSongsIds),
+      );
     }
   }
 
@@ -456,7 +490,8 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
 
     if (selectedSongs.isEmpty) {
       return showNoSongsSelectedDialog(
-          localizations.toRunPresentationSelectSongs);
+        localizations.toRunPresentationSelectSongs,
+      );
     }
     final songsRepository = sl<SongsRepository>();
     final allSongs = songsRepository.getAllSongs();
@@ -470,23 +505,25 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
       }
     }
 
-    parentContext
-        .read<PresentationBloc>()
-        .add(SongsPresentation(songs: toPresentation));
+    parentContext.read<PresentationBloc>().add(
+      SongsPresentation(songs: toPresentation),
+    );
 
     showInterstitialAds();
 
     Navigator.of(parentContext).push(
-      MaterialPageRoute(
-        builder: (parentContext) => const PresentationView(),
-      ),
+      MaterialPageRoute(builder: (parentContext) => const PresentationView()),
     );
   }
 
   Future<void> _showQuickAddModal(BuildContext parentContext) async {
     final localizations = AppLocalizations.of(context)!;
-    var newSong =
-        Song(uuid: const Uuid().v8(), author: "", title: "", text: "");
+    var newSong = Song(
+      uuid: const Uuid().v8(),
+      author: "",
+      title: "",
+      text: "",
+    );
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -501,31 +538,36 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                   ListBody(
                     children: <Widget>[
                       TextFormField(
-                          decoration: InputDecoration(
-                              hintText: localizations.enterAuthor,
-                              labelText: localizations.author),
-                          validator: (value) {
-                            if (newSong.author.isEmpty &&
-                                (value == null || value.trim().isEmpty)) {
-                              return localizations.authorIsRequired;
-                            }
-                            return null;
-                          },
-                          onChanged: (value) =>
-                              newSong = newSong.copyWith(author: value)),
+                        decoration: InputDecoration(
+                          hintText: localizations.enterAuthor,
+                          labelText: localizations.author,
+                        ),
+                        validator: (value) {
+                          if (newSong.author.isEmpty &&
+                              (value == null || value.trim().isEmpty)) {
+                            return localizations.authorIsRequired;
+                          }
+                          return null;
+                        },
+                        onChanged:
+                            (value) =>
+                                newSong = newSong.copyWith(author: value),
+                      ),
                       TextFormField(
-                          decoration: InputDecoration(
-                              hintText: localizations.enterTitle,
-                              labelText: localizations.title),
-                          validator: (value) {
-                            if (newSong.title.isEmpty &&
-                                (value == null || value.trim().isEmpty)) {
-                              return localizations.titleIsRequired;
-                            }
-                            return null;
-                          },
-                          onChanged: (value) =>
-                              newSong = newSong.copyWith(title: value))
+                        decoration: InputDecoration(
+                          hintText: localizations.enterTitle,
+                          labelText: localizations.title,
+                        ),
+                        validator: (value) {
+                          if (newSong.title.isEmpty &&
+                              (value == null || value.trim().isEmpty)) {
+                            return localizations.titleIsRequired;
+                          }
+                          return null;
+                        },
+                        onChanged:
+                            (value) => newSong = newSong.copyWith(title: value),
+                      ),
                     ],
                   ),
                 ],
@@ -573,8 +615,9 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
           return BlocProvider.value(
             value: builderContext.read<SongSearchCubit>(),
             child: SearchDialog(
-                songToFind: songToFind,
-                sourceView: SearchSourceViewEnum.songAddForm),
+              songToFind: songToFind,
+              sourceView: SearchSourceViewEnum.songAddForm,
+            ),
           );
         },
       );
@@ -582,13 +625,15 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
       if (searchResult != null) {
         showInterstitialAds();
 
-        if (newSong.author.isEmpty &&
-            (searchResult.author != null && searchResult.author!.isNotEmpty)) {
+        if (searchResult.author != null &&
+            searchResult.author!.isNotEmpty &&
+            newSong.author != searchResult.author) {
           newSong = newSong.copyWith(author: searchResult.author);
         }
 
-        if (newSong.title.isEmpty &&
-            (searchResult.title != null && searchResult.title!.isNotEmpty)) {
+        if (searchResult.title != null &&
+            searchResult.title!.isNotEmpty &&
+            newSong.title != searchResult.title) {
           newSong = newSong.copyWith(title: searchResult.title);
         }
 
@@ -602,21 +647,25 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   }
 
   void _showNotConnectedInfo(AppLocalizations localizations) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(localizations.noActiveInternetConnection),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(localizations.noActiveInternetConnection)),
+    );
   }
 
   void _showInvalidSearchData(AppLocalizations localizations) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(localizations.toSearchForTextYouNeedAtLeastTitleOrAuthor),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(localizations.toSearchForTextYouNeedAtLeastTitleOrAuthor),
+      ),
+    );
   }
 
   final _previewFormKey = GlobalKey<FormState>();
 
   Future<void> _quickSearchResultPreviewModal(
-      BuildContext parentContext, Song newSong) async {
+    BuildContext parentContext,
+    Song newSong,
+  ) async {
     final localizations = AppLocalizations.of(context)!;
     return showDialog<void>(
       context: context,
@@ -632,48 +681,55 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                   ListBody(
                     children: <Widget>[
                       TextFormField(
-                          initialValue: newSong.author,
-                          decoration:
-                              InputDecoration(labelText: localizations.author),
-                          validator: (value) {
-                            if (newSong.title.isEmpty &&
-                                (value == null || value.trim().isEmpty)) {
-                              return localizations.authorIsRequired;
-                            }
-                            return null;
-                          },
-                          onChanged: (value) =>
-                              newSong = newSong.copyWith(author: value)),
+                        initialValue: newSong.author,
+                        decoration: InputDecoration(
+                          labelText: localizations.author,
+                        ),
+                        validator: (value) {
+                          if (newSong.title.isEmpty &&
+                              (value == null || value.trim().isEmpty)) {
+                            return localizations.authorIsRequired;
+                          }
+                          return null;
+                        },
+                        onChanged:
+                            (value) =>
+                                newSong = newSong.copyWith(author: value),
+                      ),
                       TextFormField(
-                          initialValue: newSong.title,
-                          decoration:
-                              InputDecoration(labelText: localizations.title),
-                          validator: (value) {
-                            if (newSong.author.isEmpty &&
-                                (value == null || value.trim().isEmpty)) {
-                              return localizations.titleIsRequired;
-                            }
-                            return null;
-                          },
-                          onChanged: (value) =>
-                              newSong = newSong.copyWith(title: value)),
+                        initialValue: newSong.title,
+                        decoration: InputDecoration(
+                          labelText: localizations.title,
+                        ),
+                        validator: (value) {
+                          if (newSong.author.isEmpty &&
+                              (value == null || value.trim().isEmpty)) {
+                            return localizations.titleIsRequired;
+                          }
+                          return null;
+                        },
+                        onChanged:
+                            (value) => newSong = newSong.copyWith(title: value),
+                      ),
                       const SizedBox(height: 10),
                       TextFormField(
-                          initialValue: newSong.text,
-                          minLines: 12,
-                          maxLines: null,
-                          decoration: InputDecoration(
-                              labelText: localizations.text,
-                              alignLabelWithHint: true,
-                              border: const OutlineInputBorder()),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return localizations.textIsRequired;
-                            }
-                            return null;
-                          },
-                          onChanged: (value) =>
-                              newSong = newSong.copyWith(text: value)),
+                        initialValue: newSong.text,
+                        minLines: 12,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                          labelText: localizations.text,
+                          alignLabelWithHint: true,
+                          border: const OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return localizations.textIsRequired;
+                          }
+                          return null;
+                        },
+                        onChanged:
+                            (value) => newSong = newSong.copyWith(text: value),
+                      ),
                     ],
                   ),
                 ],
@@ -690,9 +746,9 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
               onPressed: () {
                 if (_previewFormKey.currentState!.validate()) {
                   _saveSong(newSong);
-                  parentContext
-                      .read<SongsListComponentBloc>()
-                      .add(ReloadListEvent());
+                  parentContext.read<SongsListComponentBloc>().add(
+                    ReloadListEvent(),
+                  );
                   Navigator.of(context).pop();
                 }
               },
@@ -702,12 +758,12 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
               onPressed: () {
                 if (_previewFormKey.currentState!.validate()) {
                   _saveSong(newSong);
-                  parentContext
-                      .read<SongsListComponentBloc>()
-                      .add(ReloadListEvent());
-                  parentContext
-                      .read<PresentationBloc>()
-                      .add(SongsPresentation(songs: [newSong]));
+                  parentContext.read<SongsListComponentBloc>().add(
+                    ReloadListEvent(),
+                  );
+                  parentContext.read<PresentationBloc>().add(
+                    SongsPresentation(songs: [newSong]),
+                  );
 
                   Navigator.of(context).pop();
 

@@ -9,10 +9,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubit/client_screen_mode_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/models/send_to_client_model.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubit/client_cubit/client_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ClientScreenMode extends StatefulWidget {
   const ClientScreenMode({super.key});
@@ -33,9 +35,9 @@ class _ClientScreenModeState extends State<ClientScreenMode>
     FullScreen.setFullScreen(true);
 
     _dataSubscription = context.read<ClientCubit>().dataStream.listen(
-          (data) => _onDataRecived(data as String),
-          onError: _showConnectionErrorToast,
-        );
+      (data) => _onDataRecived(data as String),
+      onError: _showConnectionErrorToast,
+    );
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _checkInitialData(key.currentContext!);
@@ -66,60 +68,64 @@ class _ClientScreenModeState extends State<ClientScreenMode>
     return BlocListener<ClientCubit, ClientState>(
       listener: (context, state) {
         if (state.connectionError == true) {
-          _showSetIpDialog(context, localizations.connectionFailed,
-              context.read<ClientCubit>().state.ip);
+          _showSetIpDialog(
+            context,
+            localizations.connectionFailed,
+            context.read<ClientCubit>().state.ip,
+          );
         }
       },
       child: BlocBuilder<ClientCubit, ClientState>(
-        builder: (context, state) => Scaffold(
-            key: key,
-            appBar: AppBar(
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.of(context).pop(),
+        builder:
+            (context, state) => Scaffold(
+              key: key,
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                title: Row(children: [Text(_title)]),
               ),
-              title: Row(
-                children: [
-                  Text(_title),
-                ],
-              ),
+              body: _getBody(state, localizations),
             ),
-            body: _getBody(state, localizations)),
       ),
     );
   }
 
   Widget _getBody(ClientState state, AppLocalizations localizations) {
     if (state.isConnected) {
-      final fontSize = LocalStorage.instance.getInt('fontSize') ?? 15;
+      final fontSize = sl<SharedPreferences>().getInt('fontSize') ?? 15;
 
       return BlocBuilder<ClientScreenModeCubit, ClientScreenModeState>(
-        builder: (context, state) => Column(
-          children: [
-            Expanded(
-              child: SizedBox.expand(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: AutoSizeText(
-                    state.text.isEmpty
-                        ? localizations.noTextToDisplay
-                        : state.text,
-                    style: TextStyle(
-                        fontSize: fontSize.toDouble(),
-                        color: Colors.black,
-                        decoration: TextDecoration.none),
+        builder:
+            (context, state) => Column(
+              children: [
+                Expanded(
+                  child: SizedBox.expand(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                      child: AutoSizeText(
+                        state.text.isEmpty
+                            ? localizations.noTextToDisplay
+                            : state.text,
+                        style: TextStyle(
+                          fontSize: fontSize.toDouble(),
+                          color: Colors.black,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
       );
     } else {
       return Center(
-        child: state.connectionStarted
-            ? Text(localizations.connecting)
-            : Text(localizations.noConnection),
+        child:
+            state.connectionStarted
+                ? Text(localizations.connecting)
+                : Text(localizations.noConnection),
       );
     }
   }
@@ -187,13 +193,14 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                   Navigator.of(context).pop();
                 } catch (e) {
                   _showSetIpDialog(
-                      parentContext,
-                      localizations.connectionFailedPleaseReenterIp,
-                      parentContext.read<ClientCubit>().state.ip);
+                    parentContext,
+                    localizations.connectionFailedPleaseReenterIp,
+                    parentContext.read<ClientCubit>().state.ip,
+                  );
                   Navigator.of(context).pop();
                 }
               },
-            )
+            ),
           ],
         );
       },
@@ -201,7 +208,10 @@ class _ClientScreenModeState extends State<ClientScreenMode>
   }
 
   Future<void> _showSetIpDialog(
-      BuildContext parentContext, String? previousError, String? lastIp) {
+    BuildContext parentContext,
+    String? previousError,
+    String? lastIp,
+  ) {
     final localizations = AppLocalizations.of(parentContext)!;
     return showDialog<void>(
       context: parentContext,
@@ -215,28 +225,33 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                 ListBody(
                   children: <Widget>[
                     TextFormField(
-                        initialValue: lastIp,
-                        decoration: InputDecoration(
-                          hintText:
-                              localizations.enterTheIpFromTheServerSettings,
-                          labelText: 'IP',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return localizations.ipIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged: (value) =>
-                            parentContext.read<ClientCubit>().setIp(value)),
+                      initialValue: lastIp,
+                      decoration: InputDecoration(
+                        hintText: localizations.enterTheIpFromTheServerSettings,
+                        labelText: 'IP',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return localizations.ipIsRequired;
+                        }
+                        return null;
+                      },
+                      onChanged:
+                          (value) =>
+                              parentContext.read<ClientCubit>().setIp(value),
+                    ),
                     const SizedBox(height: 10.0),
                     Visibility(
-                        visible: previousError != null,
-                        child: Text(previousError ?? '',
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red)))
+                      visible: previousError != null,
+                      child: Text(
+                        previousError ?? '',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -259,9 +274,10 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                   Navigator.of(context).pop();
                 } catch (e) {
                   _showSetIpDialog(
-                      parentContext,
-                      localizations.connectionFailedCheckIp,
-                      parentContext.read<ClientCubit>().state.ip);
+                    parentContext,
+                    localizations.connectionFailedCheckIp,
+                    parentContext.read<ClientCubit>().state.ip,
+                  );
                   Navigator.of(context).pop();
                 }
               },
@@ -273,8 +289,10 @@ class _ClientScreenModeState extends State<ClientScreenMode>
   }
 
   void _showConnectionErrorToast(dynamic error) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(AppLocalizations.of(context)!.connectionError(error)),
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.connectionError(error)),
+      ),
+    );
   }
 }
