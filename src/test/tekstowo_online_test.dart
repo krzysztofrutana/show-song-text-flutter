@@ -15,9 +15,11 @@ void main() {
       expect(result.state, ResultState.artistsToChooseFinded);
       expect(result.songsToChoose, isNotEmpty);
 
-      final found = result.songsToChoose.any((song) =>
-          song.fullName == 'happysad - Długa droga w dół' &&
-          song.link == "happysad/dluga_droga_w_dol");
+      final found = result.songsToChoose.any(
+        (song) =>
+            song.fullName == 'happysad - Długa droga w dół' &&
+            song.link == "happysad/dluga-droga-w-dol",
+      );
       expect(found, isTrue);
     }, tags: 'online');
 
@@ -28,39 +30,48 @@ void main() {
       expect(result.state, ResultState.songsToChooseFinded);
       expect(result.songsToChoose, isNotEmpty);
 
-      final found = result.songsToChoose.any((song) =>
-          song.fullName == 'happysad - Długa droga w dół' &&
-          song.link == "happysad/dluga_droga_w_dol");
+      final found = result.songsToChoose.any(
+        (song) =>
+            song.fullName == 'happysad - Długa droga w dół' &&
+            song.link == "happysad/dluga-droga-w-dol",
+      );
       expect(found, isTrue);
     }, tags: 'online');
 
     test(
-        'searchByArtistAndTitle returns results for Happysad - Długa droga w dół',
-        () async {
-      final songToFind = SongToFindModel('Happysad', 'Długa droga w dół');
-      final result = await service.searchByArtistAndTitle(songToFind, false);
+      'searchByArtistAndTitle returns results for Happysad - Długa droga w dół',
+      () async {
+        final songToFind = SongToFindModel('Happysad', 'Długa droga w dół');
+        final result = await service.searchByArtistAndTitle(songToFind, false);
 
-      expect(result.state, ResultState.artistsToChooseFinded);
-      expect(result.songsToChoose, isNotEmpty);
+        expect(result.state, ResultState.artistsToChooseFinded);
+        expect(result.songsToChoose, isNotEmpty);
 
-      final found = result.songsToChoose.any((song) =>
-          song.fullName == 'happysad - Długa droga w dół' &&
-          song.link == "happysad/dluga_droga_w_dol");
-      expect(found, isTrue);
-    }, tags: 'online');
+        final found = result.songsToChoose.any(
+          (song) =>
+              song.fullName == 'happysad - Długa droga w dół' &&
+              song.link == "happysad/dluga-droga-w-dol",
+        );
+        expect(found, isTrue);
+      },
+      tags: 'online',
+    );
 
-    test('searchTextByLink returns lyrics for Happysad - Długa droga w dół',
-        () async {
-      final songToFind = SongToFindModel('Happysad', 'Długa droga w dół');
-      songToFind.linkToSong = 'happysad/dluga_droga_w_dol';
+    test(
+      'searchTextByLink returns lyrics for Happysad - Długa droga w dół',
+      () async {
+        final songToFind = SongToFindModel('Happysad', 'Długa droga w dół');
+        songToFind.linkToSong = 'happysad/dluga-droga-w-dol';
 
-      final result = await service.searchTextByLink(songToFind, true);
+        final result = await service.searchTextByLink(songToFind, true);
 
-      expect(result.state, ResultState.textFinded);
-      expect(result.text, isNotNull);
-      expect(result.text, isNotEmpty);
-      expect(result.text!.contains('Tak często Cię widzę'), isTrue);
-    }, tags: 'online');
+        expect(result.state, ResultState.textFinded);
+        expect(result.text, isNotNull);
+        expect(result.text, isNotEmpty);
+        expect(result.text!.contains('Tak często Cię widzę'), isTrue);
+      },
+      tags: 'online',
+    );
 
     test('SongSearchCubit online search flow', () async {
       final cubit = SongSearchCubit(tekstowoService: service);
@@ -75,7 +86,7 @@ void main() {
       expect(cubit.state.songsToChoose, isNotEmpty);
 
       final chosen = cubit.state.songsToChoose.firstWhere(
-        (s) => s.link.contains('dluga_droga_w_dol'),
+        (s) => s.link.contains('dluga-droga-w-dol'),
       );
 
       cubit.setChoosenSong(chosen);

@@ -8,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart' as di;
+import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
@@ -38,33 +40,39 @@ main() {
 
     setUp(() async {
       LocalStorage.instance = SharedPreferencesMock();
-      when(() => LocalStorage.instance.getInt(any())).thenReturn(15);
+      await di.init();
+      when(() => sl<SharedPreferences>().getInt(any())).thenReturn(15);
       FullScreenHelper.instance = FullScreenHelperMock();
       presentationBlock = MockPresentationBloc();
       serverCubit = MockServerCubit();
 
-      when(() => FullScreenHelper.instance.addListener(any()))
-          .thenAnswer((invocation) {
+      when(() => FullScreenHelper.instance.addListener(any())).thenAnswer((
+        invocation,
+      ) {
         final listener =
             invocation.positionalArguments[0] as FullScreenListener;
         // Trigger fullscreen change after a small delay
         Future.delayed(
-            Duration.zero,
-            () => listener.onFullScreenChanged(
-                true, SystemUiMode.immersiveSticky));
+          Duration.zero,
+          () =>
+              listener.onFullScreenChanged(true, SystemUiMode.immersiveSticky),
+        );
       });
-      when(() => FullScreenHelper.instance.setFullScreen(any()))
-          .thenAnswer((_) async {});
-      when(() => FullScreenHelper.instance.removeListener(any()))
-          .thenReturn(null);
+      when(
+        () => FullScreenHelper.instance.setFullScreen(any()),
+      ).thenAnswer((_) async {});
+      when(
+        () => FullScreenHelper.instance.removeListener(any()),
+      ).thenReturn(null);
     });
 
     testWidgets('BasePresentationView shows PageView and content', (
       tester,
     ) async {
       final song = SongsHelper.songHappysad30Raz;
-      when(() => presentationBlock.state)
-          .thenReturn(PresentationActive(songs: [song]));
+      when(
+        () => presentationBlock.state,
+      ).thenReturn(PresentationActive(songs: [song]));
       when(() => serverCubit.state).thenReturn(const ServerState());
 
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
