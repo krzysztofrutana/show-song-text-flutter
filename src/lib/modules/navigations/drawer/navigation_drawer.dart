@@ -410,7 +410,7 @@ Future<String> _getActualVersion() async {
   final packageInfo = await PackageInfo.fromPlatform();
   final version = packageInfo.version;
   final code = packageInfo.buildNumber;
-  return '$version+$code';
+  return '$version.$code';
 }
 
 class _NavigationItem {
