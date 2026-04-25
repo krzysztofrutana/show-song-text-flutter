@@ -47,7 +47,9 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const SongsListComponent(),
+      body: SongsListComponent(
+        onAddPressed: () => _redirectToSongsAdd(context),
+      ),
       floatingActionButton:
           BlocBuilder<SongsListComponentBloc, SongsListComponentState>(
             builder:
@@ -64,12 +66,15 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                         child: const Icon(Icons.manage_search, size: 30),
                         onPressed: () => _showQuickAddModal(context),
                       ),
-                      FloatingActionButton(
-                        heroTag: "add",
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        child: const Icon(Icons.add, size: 30),
-                        onPressed: () => _redirectToSongsAdd(context),
+                      Visibility(
+                        visible: state.data.isNotEmpty,
+                        child: FloatingActionButton(
+                          heroTag: "add",
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          child: const Icon(Icons.add, size: 30),
+                          onPressed: () => _redirectToSongsAdd(context),
+                        ),
                       ),
                     ],
                   ),
@@ -90,31 +95,12 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
           final localizations = AppLocalizations.of(context)!;
           return Visibility(
             visible: state.chooseSongs == true,
-            child: SizedBox(
-              height: size.height * 0.1,
+            child: IntrinsicHeight(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(
-                    child: TextButton(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.cancel_outlined,
-                            size: iconSize,
-                            color: Colors.black,
-                          ),
-                          Text(
-                            localizations.cancel,
-                            style: TextStyle(
-                              fontSize: fontSize,
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+                    child: ElevatedButton(
                       onPressed: () {
                         internalContext.read<SongsListComponentBloc>().add(
                           ClearSelectedSongs(),
@@ -124,111 +110,125 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                           ChooseSongChangeEvent(value: false),
                         );
                       },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        foregroundColor: Colors.black,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.cancel_outlined, size: iconSize),
+                          const SizedBox(height: 5),
+                          FittedBox(
+                            child: Text(
+                              localizations.cancel,
+                              style: TextStyle(fontSize: fontSize),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Expanded(
-                    child: TextButton(
+                    child: ElevatedButton(
+                      onPressed: () => _showDeleteConfirmModal(internalContext),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        foregroundColor: Colors.red,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           ImageIcon(
-                            color: Colors.black,
                             const AssetImage('assets/images/icons/delete.png'),
                             size: iconSize,
                           ),
-                          Text(
-                            localizations.delete,
-                            style: TextStyle(
-                              fontSize: fontSize,
-                              color: Colors.black,
+                          const SizedBox(height: 5),
+                          FittedBox(
+                            child: Text(
+                              localizations.delete,
+                              style: TextStyle(fontSize: fontSize),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
-                      onPressed: () => _showDeleteConfirmModal(internalContext),
                     ),
                   ),
                   Expanded(
-                    child: TextButton(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ImageIcon(
-                            color: Colors.black,
-                            const AssetImage(
-                              'assets/images/icons/playlist.png',
-                            ),
-                            size: iconSize,
-                          ),
-                          Text(
-                            localizations.createPlaylist,
-                            style: TextStyle(
-                              fontSize: fontSize,
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+                    child: ElevatedButton(
                       onPressed:
-                          () => _showCreatePlaylistModal(internalContext),
-                    ),
-                  ),
-                  Expanded(
-                    child: TextButton(
+                          () =>
+                              _showAddSelectedToPlaylistModal(internalContext),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        foregroundColor: Colors.black,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           ImageIcon(
-                            color: Colors.black,
                             const AssetImage(
                               'assets/images/icons/playlist.png',
                             ),
                             size: iconSize,
                           ),
                           const SizedBox(height: 5),
-                          Text(
-                            localizations.addToPlaylistSentence,
-                            style: TextStyle(
-                              fontSize: fontSize,
-                              color: Colors.black,
+                          FittedBox(
+                            child: Text(
+                              localizations.addToPlaylistSentence,
+                              style: TextStyle(fontSize: fontSize),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
-                      onPressed:
-                          () => _showAddSelectedToExistPlaylistModal(
-                            internalContext,
-                          ),
                     ),
                   ),
                   Expanded(
-                    child: TextButton(
+                    child: ElevatedButton(
+                      onPressed:
+                          () => _runPresentationForSelected(internalContext),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        foregroundColor: Colors.black,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           ImageIcon(
-                            color: Colors.black,
                             const AssetImage(
                               'assets/images/icons/presentation.png',
                             ),
                             size: iconSize,
                           ),
                           const SizedBox(height: 5),
-                          Text(
-                            localizations.showText,
-                            style: TextStyle(
-                              fontSize: fontSize,
-                              color: Colors.black,
+                          FittedBox(
+                            child: Text(
+                              localizations.showText,
+                              style: TextStyle(fontSize: fontSize),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
-                      onPressed:
-                          () => _runPresentationForSelected(internalContext),
                     ),
                   ),
                 ],
@@ -381,7 +381,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
     }
   }
 
-  Future<void> _showAddSelectedToExistPlaylistModal(
+  Future<void> _showAddSelectedToPlaylistModal(
     BuildContext parentContext,
   ) async {
     final localizations = AppLocalizations.of(context)!;
@@ -437,7 +437,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
     );
   }
 
-  List<SimpleDialogOption> _getPlaylistsOptions(
+  List<Widget> _getPlaylistsOptions(
     Iterable<Playlist> playlists,
     List<String> selectedSongs,
     BuildContext parentContext,
@@ -445,8 +445,26 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   ) {
     final localizations = AppLocalizations.of(context)!;
 
-    return playlists
-        .map(
+    final List<Widget> options = [
+      SimpleDialogOption(
+        child: Row(
+          children: [
+            const Icon(Icons.add_circle_outline),
+            const SizedBox(width: 10),
+            Text(localizations.toNewPlaylist),
+          ],
+        ),
+        onPressed: () {
+          Navigator.of(context).pop();
+          _showCreatePlaylistModal(parentContext);
+        },
+      ),
+    ];
+
+    if (playlists.isNotEmpty) {
+      options.add(const Divider());
+      options.addAll(
+        playlists.map(
           (playlist) => SimpleDialogOption(
             child: Text(playlist.name),
             onPressed: () {
@@ -466,8 +484,11 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
               );
             },
           ),
-        )
-        .toList();
+        ),
+      );
+    }
+
+    return options;
   }
 
   void _addSongsToPlaylist(String playlistId, List<String> selectedSongs) {
@@ -528,67 +549,80 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(localizations.quickSearch),
-          content: SingleChildScrollView(
-            child: Form(
-              key: _quickSearchFormKey,
-              child: Column(
-                children: [
-                  ListBody(
-                    children: <Widget>[
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: localizations.enterAuthor,
-                          labelText: localizations.author,
-                        ),
-                        validator: (value) {
-                          if (newSong.author.isEmpty &&
-                              (value == null || value.trim().isEmpty)) {
-                            return localizations.authorIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged:
-                            (value) =>
-                                newSong = newSong.copyWith(author: value),
-                      ),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          hintText: localizations.enterTitle,
-                          labelText: localizations.title,
-                        ),
-                        validator: (value) {
-                          if (newSong.title.isEmpty &&
-                              (value == null || value.trim().isEmpty)) {
-                            return localizations.titleIsRequired;
-                          }
-                          return null;
-                        },
-                        onChanged:
-                            (value) => newSong = newSong.copyWith(title: value),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(localizations.quickSearch),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: _quickSearchFormKey,
+                  child: Column(
+                    children: [
+                      ListBody(
+                        children: <Widget>[
+                          TextFormField(
+                            decoration: InputDecoration(
+                              hintText: localizations.enterAuthor,
+                              labelText: localizations.author,
+                            ),
+                            validator: (value) {
+                              if (newSong.author.isEmpty &&
+                                  newSong.title.isEmpty) {
+                                return localizations
+                                    .toSearchForTextYouNeedAtLeastTitleOrAuthor;
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                newSong = newSong.copyWith(author: value);
+                              });
+                              _quickSearchFormKey.currentState!.validate();
+                            },
+                          ),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              hintText: localizations.enterTitle,
+                              labelText: localizations.title,
+                            ),
+                            validator: (value) {
+                              if (newSong.author.isEmpty &&
+                                  newSong.title.isEmpty) {
+                                return localizations
+                                    .toSearchForTextYouNeedAtLeastTitleOrAuthor;
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              setState(() {
+                                newSong = newSong.copyWith(title: value);
+                              });
+                              _quickSearchFormKey.currentState!.validate();
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(localizations.cancel),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: Text(localizations.search),
-              onPressed: () {
-                if (_quickSearchFormKey.currentState!.validate()) {
-                  _onSearchClick(parentContext, newSong);
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-          ],
+              actions: <Widget>[
+                TextButton(
+                  child: Text(localizations.cancel),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                TextButton(
+                  child: Text(localizations.search),
+                  onPressed: () {
+                    if (_quickSearchFormKey.currentState!.validate()) {
+                      _onSearchClick(parentContext, newSong);
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );

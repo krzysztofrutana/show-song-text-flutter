@@ -8,18 +8,26 @@ part 'playlist_edit_state.dart';
 
 class PlaylistEditCubit extends Cubit<PlaylistEditState> {
   PlaylistEditCubit({PlaylistsRepository? playlistsRepository})
-      : _playlistsRepository = playlistsRepository ?? PlaylistsRepository(),
-        super(const PlaylistEditInitial());
+    : _playlistsRepository = playlistsRepository ?? PlaylistsRepository(),
+      super(const PlaylistEditInitial());
 
   final PlaylistsRepository _playlistsRepository;
+  Playlist? _initialPlaylist;
 
   void initForm(String playlistId) {
     final playlist = _playlistsRepository.getPlaylist(playlistId);
 
     if (playlist == null) return;
 
-    emit(state.copyWith(
-        uuid: playlist.uuid, name: playlist.name, songsIds: playlist.songsIds));
+    _initialPlaylist = playlist;
+
+    emit(
+      state.copyWith(
+        uuid: playlist.uuid,
+        name: playlist.name,
+        songsIds: playlist.songsIds,
+      ),
+    );
   }
 
   void updateName(String? name) {
@@ -28,6 +36,11 @@ class PlaylistEditCubit extends Cubit<PlaylistEditState> {
 
   void updateSongs(List<String> songsIds) {
     emit(state.copyWith(songsIds: songsIds));
+  }
+
+  void addSongs(List<String> songsIds) {
+    final updatedSongsIds = List<String>.from(state.songsIds)..addAll(songsIds);
+    emit(state.copyWith(songsIds: updatedSongsIds));
   }
 
   void updateAutovalidateMode(AutovalidateMode? autovalidateMode) {
@@ -39,12 +52,26 @@ class PlaylistEditCubit extends Cubit<PlaylistEditState> {
   }
 
   Future<void> save() async {
-    await _playlistsRepository.updatePlaylist(
-      Playlist(
-        uuid: state.uuid,
-        name: state.name,
-        songsIds: state.songsIds,
-      ),
+    final playlist = Playlist(
+      uuid: state.uuid,
+      name: state.name,
+      songsIds: state.songsIds,
     );
+    await _playlistsRepository.updatePlaylist(playlist);
+    _initialPlaylist = playlist;
+  }
+
+  Future<void> delete() async {
+    await _playlistsRepository.deletePlaylist(state.uuid);
+  }
+
+  bool get isModified {
+    if (_initialPlaylist == null) return true;
+    if (state.name != _initialPlaylist!.name) return true;
+    if (state.songsIds.length != _initialPlaylist!.songsIds.length) return true;
+    for (int i = 0; i < state.songsIds.length; i++) {
+      if (state.songsIds[i] != _initialPlaylist!.songsIds[i]) return true;
+    }
+    return false;
   }
 }

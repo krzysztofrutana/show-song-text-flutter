@@ -9,6 +9,7 @@ import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/cubit/playlist_edit_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/helpers/playlist_edit_validator.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/partials/playlist_songs_list_component.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/edit/views/dialogs/song_selection_dialog.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
@@ -30,7 +31,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
   @override
   void initState() {
     super.initState();
-    initAds(_getWidth, _setBanerAdd);
+    initAds(_getWidth, _setBannerAdd);
     initializeInterstitialMobileAdsSDK();
   }
 
@@ -41,7 +42,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
     super.dispose();
   }
 
-  void _setBanerAdd(BannerAd? banner) {
+  void _setBannerAdd(BannerAd? banner) {
     setState(() {
       bannerAd = banner;
     });
@@ -60,38 +61,32 @@ class _PlaylistEditState extends State<PlaylistEdit>
       child: BlocBuilder<PlaylistEditCubit, PlaylistEditState>(
         builder: (context, state) {
           final cubit = context.read<PlaylistEditCubit>();
-          return Scaffold(
+          return PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (bool didPop, dynamic result) async {
+              if (didPop) return;
+
+              if (!cubit.isModified) {
+                Navigator.of(context).pop();
+                return;
+              }
+
+              final shouldPop =
+                  await _showExitConfirmationDialog(context) ?? false;
+              if (shouldPop && context.mounted) {
+                Navigator.of(context).pop();
+              }
+            },
+            child: Scaffold(
               appBar: AppBar(
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.maybePop(context),
                 ),
-                title: Text(localizations.editPlaylist),
-                centerTitle: true,
-                actions: [
-                  IconButton(
-                    padding: const EdgeInsets.all(10),
-                    iconSize: 30,
-                    icon: const ImageIcon(
-                      AssetImage('assets/images/icons/presentation.png'),
-                      size: 30,
-                    ),
-                    onPressed: () =>
-                        _runPresentationForSelected(context, cubit),
-                  ),
-                  IconButton(
-                    padding: const EdgeInsets.all(10),
-                    iconSize: 30,
-                    icon: const Icon(Icons.save),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        _savePlaylist(context, cubit);
-                      } else {
-                        cubit.updateAutovalidateMode(AutovalidateMode.always);
-                      }
-                    },
-                  )
-                ],
+                title: Text(
+                  localizations.editPlaylist,
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
               body: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,55 +94,260 @@ class _PlaylistEditState extends State<PlaylistEdit>
                   Flexible(
                     child: SingleChildScrollView(
                       child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              Form(
-                                key: _formKey,
-                                autovalidateMode: state.autovalidateMode,
-                                child: Column(
-                                  children: [
-                                    BlocTextFormField<PlaylistEditCubit,
-                                        PlaylistEditState>(
-                                      bloc: cubit,
-                                      selector: (state) => state.name,
-                                      validator: (value) => validateName(
-                                          value, state.uuid, localizations),
-                                      onChanged: cubit.updateName,
-                                      textInputAction: TextInputAction.done,
-                                      onFieldSubmitted: (_) {
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: Column(
+                          children: [
+                            IntrinsicHeight(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed:
+                                          () => _showSongSelectionDialog(
+                                            context,
+                                            cubit,
+                                          ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).scaffoldBackgroundColor,
+                                        foregroundColor: Colors.black,
+                                        elevation: 0,
+                                        shape: const RoundedRectangleBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.queue_music),
+                                          const SizedBox(height: 4),
+                                          FittedBox(
+                                            child: Text(
+                                              localizations.addSong,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed:
+                                          () => _runPresentationForSelected(
+                                            context,
+                                            cubit,
+                                          ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).scaffoldBackgroundColor,
+                                        foregroundColor: Colors.black,
+                                        elevation: 0,
+                                        shape: const RoundedRectangleBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const ImageIcon(
+                                            AssetImage(
+                                              'assets/images/icons/presentation.png',
+                                            ),
+                                            size: 18,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          FittedBox(
+                                            child: Text(
+                                              localizations.presentationScreen,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
                                         if (_formKey.currentState!.validate()) {
                                           _savePlaylist(context, cubit);
                                         } else {
                                           cubit.updateAutovalidateMode(
-                                              AutovalidateMode.always);
+                                            AutovalidateMode.always,
+                                          );
                                         }
                                       },
-                                      decoration: InputDecoration(
-                                          labelText: localizations.name,
-                                          border: const OutlineInputBorder()),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).scaffoldBackgroundColor,
+                                        foregroundColor: Colors.black,
+                                        elevation: 0,
+                                        shape: const RoundedRectangleBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.save),
+                                          const SizedBox(height: 4),
+                                          FittedBox(
+                                            child: Text(
+                                              localizations.save,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    const SizedBox(height: 8.0),
-                                  ],
-                                ),
+                                  ),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed:
+                                          () => _confirmDelete(context, cubit),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).scaffoldBackgroundColor,
+                                        foregroundColor: Colors.red,
+                                        elevation: 0,
+                                        shape: const RoundedRectangleBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.delete),
+                                          const SizedBox(height: 4),
+                                          FittedBox(
+                                            child: Text(
+                                              localizations.delete,
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 8.0),
-                              PlaylistSongsListComponent(
-                                  playlistEditCubit: cubit)
-                            ],
-                          )),
+                            ),
+                            const SizedBox(height: 16.0),
+                            Form(
+                              key: _formKey,
+                              autovalidateMode: state.autovalidateMode,
+                              child: Column(
+                                children: [
+                                  BlocTextFormField<
+                                    PlaylistEditCubit,
+                                    PlaylistEditState
+                                  >(
+                                    bloc: cubit,
+                                    selector: (state) => state.name,
+                                    validator:
+                                        (value) => validateName(
+                                          value,
+                                          state.uuid,
+                                          localizations,
+                                        ),
+                                    onChanged: cubit.updateName,
+                                    textInputAction: TextInputAction.done,
+                                    onFieldSubmitted: (_) {
+                                      if (_formKey.currentState!.validate()) {
+                                        _savePlaylist(context, cubit);
+                                      } else {
+                                        cubit.updateAutovalidateMode(
+                                          AutovalidateMode.always,
+                                        );
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      labelText: localizations.name,
+                                      border: const OutlineInputBorder(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 8.0),
+                            PlaylistSongsListComponent(
+                              playlistEditCubit: cubit,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  getBanerWidget()
+                  getBanerWidget(),
                 ],
-              ));
+              ),
+            ),
+          );
         },
       ),
     );
   }
 
+  void _confirmDelete(BuildContext context, PlaylistEditCubit cubit) async {
+    final localizations = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(localizations.deletePlaylist),
+            content: Text(localizations.areYouSureYouWantToDeleteThisPlaylist),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(localizations.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(
+                  localizations.delete,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      await cubit.delete();
+      if (context.mounted) {
+        context.read<PlaylistsListComponentBloc>().add(ReloadListEvent());
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
   void _savePlaylist(
-      BuildContext context, PlaylistEditCubit playlistEditCubit) {
+    BuildContext context,
+    PlaylistEditCubit playlistEditCubit,
+  ) {
     playlistEditCubit.save();
 
     context.read<PlaylistsListComponentBloc>().add(ReloadListEvent());
@@ -156,26 +356,27 @@ class _PlaylistEditState extends State<PlaylistEdit>
   }
 
   void _runPresentationForSelected(
-      BuildContext parentContext, PlaylistEditCubit cubit) async {
+    BuildContext parentContext,
+    PlaylistEditCubit cubit,
+  ) async {
     final localizations = AppLocalizations.of(parentContext)!;
     final selectedSongs = cubit.state.songsIds;
 
     if (selectedSongs.isEmpty) {
       return showNoSongsAssignedDialog(
-          localizations.thePlaylistDoesNotContainAnySongs);
+        localizations.thePlaylistDoesNotContainAnySongs,
+      );
     }
     final playlist = sl<PlaylistsRepository>().getPlaylist(cubit.state.uuid);
 
-    parentContext
-        .read<PresentationBloc>()
-        .add(PlaylistPresentation(playlist: playlist!));
+    parentContext.read<PresentationBloc>().add(
+      PlaylistPresentation(playlist: playlist!),
+    );
 
     showInterstitialAds();
 
     Navigator.of(parentContext).push(
-      MaterialPageRoute(
-        builder: (parentContext) => const PresentationView(),
-      ),
+      MaterialPageRoute(builder: (parentContext) => const PresentationView()),
     );
   }
 
@@ -191,11 +392,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
             style: const TextStyle(fontSize: 20),
           ),
           content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(message),
-              ],
-            ),
+            child: ListBody(children: <Widget>[Text(message)]),
           ),
           actions: <Widget>[
             TextButton(
@@ -206,5 +403,40 @@ class _PlaylistEditState extends State<PlaylistEdit>
         );
       },
     );
+  }
+
+  Future<bool?> _showExitConfirmationDialog(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(localizations.areYouSureYouWantToLeaveTheApplication),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text(localizations.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text(localizations.leave),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Future<void> _showSongSelectionDialog(
+    BuildContext context,
+    PlaylistEditCubit cubit,
+  ) async {
+    final selectedSongsIds = await showDialog<List<String>>(
+      context: context,
+      builder: (context) => const SongSelectionDialog(),
+    );
+
+    if (selectedSongsIds != null && selectedSongsIds.isNotEmpty) {
+      cubit.addSongs(selectedSongsIds);
+    }
   }
 }

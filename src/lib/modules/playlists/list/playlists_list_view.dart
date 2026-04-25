@@ -5,6 +5,7 @@ import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/views/add_playlist_dialog.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/edit/playlist_edit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/playlists_list_component.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
@@ -35,117 +36,139 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
-        body: const PlaylistsListComponent(),
-        floatingActionButton: BlocBuilder<PlaylistsListComponentBloc,
-                PlaylistsListComponentState>(
-            builder: (context, state) => Visibility(
-                  visible: state.choosePlaylists == false,
-                  child: FloatingActionButton(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      child: const Icon(
-                        Icons.add,
-                        size: 30,
-                      ),
-                      onPressed: () => _showCreatePlaylistModal(context)),
-                )),
-        bottomNavigationBar: BlocBuilder<PlaylistsListComponentBloc,
-            PlaylistsListComponentState>(
-          builder: (internalContext, state) {
-            final size = MediaQuery.of(context).size;
-            var iconSize = size.width * 0.07; // icon scale
-            var fontSize = size.width * 0.03; // text scale
+      body: PlaylistsListComponent(),
+      bottomNavigationBar: BlocBuilder<
+        PlaylistsListComponentBloc,
+        PlaylistsListComponentState
+      >(
+        builder: (internalContext, state) {
+          final size = MediaQuery.of(context).size;
+          var iconSize = size.width * 0.07; // icon scale
+          var fontSize = size.width * 0.03; // text scale
 
-            if (iconSize > 20) iconSize = 20;
-            if (fontSize > 14) fontSize = 14;
-            return Visibility(
-              visible: state.choosePlaylists == true,
-              child: SizedBox(
-                height: size.height * 0.1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.cancel_outlined,
-                                size: iconSize,
-                                color: Colors.black,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(localizations.cancel,
-                                  style: TextStyle(
-                                      fontSize: fontSize, color: Colors.black))
-                            ],
-                          ),
-                          onPressed: () {
-                            internalContext
-                                .read<PlaylistsListComponentBloc>()
-                                .add(ClearSelectedPlaylists());
+          if (iconSize > 20) iconSize = 20;
+          if (fontSize > 14) fontSize = 14;
+          return Visibility(
+            visible: state.choosePlaylists == true,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        internalContext.read<PlaylistsListComponentBloc>().add(
+                          ClearSelectedPlaylists(),
+                        );
 
-                            internalContext
-                                .read<PlaylistsListComponentBloc>()
-                                .add(ChoosePlaylistChangeEvent(value: false));
-                          }),
-                    ),
-                    Expanded(
-                      child: TextButton(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ImageIcon(
-                                color: Colors.black,
-                                const AssetImage(
-                                    'assets/images/icons/delete.png'),
-                                size: iconSize,
-                              ),
-                              const SizedBox(height: 5),
-                              Text(localizations.delete,
-                                  style: TextStyle(
-                                      fontSize: fontSize, color: Colors.black))
-                            ],
-                          ),
-                          onPressed: () =>
-                              _showDeleteConfirmModal(internalContext)),
-                    ),
-                    Expanded(
-                      child: TextButton(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ImageIcon(
-                                color: Colors.black,
-                                const AssetImage(
-                                    'assets/images/icons/presentation.png'),
-                                size: iconSize),
-                            const SizedBox(height: 5),
-                            Text(localizations.showText,
-                                style: TextStyle(
-                                    fontSize: fontSize, color: Colors.black))
-                          ],
-                        ),
-                        onPressed: () =>
-                            _runPresentationForSelected(internalContext),
+                        internalContext.read<PlaylistsListComponentBloc>().add(
+                          ChoosePlaylistChangeEvent(value: false),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        foregroundColor: Colors.black,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
-                    )
-                  ],
-                ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.cancel_outlined, size: iconSize),
+                          const SizedBox(height: 5),
+                          FittedBox(
+                            child: Text(
+                              localizations.cancel,
+                              style: TextStyle(fontSize: fontSize),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => _showDeleteConfirmModal(internalContext),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        foregroundColor: Colors.red,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ImageIcon(
+                            const AssetImage('assets/images/icons/delete.png'),
+                            size: iconSize,
+                          ),
+                          const SizedBox(height: 5),
+                          FittedBox(
+                            child: Text(
+                              localizations.delete,
+                              style: TextStyle(fontSize: fontSize),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed:
+                          () => _runPresentationForSelected(internalContext),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
+                        foregroundColor: Colors.black,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ImageIcon(
+                            const AssetImage(
+                              'assets/images/icons/presentation.png',
+                            ),
+                            size: iconSize,
+                          ),
+                          const SizedBox(height: 5),
+                          FittedBox(
+                            child: Text(
+                              localizations.showText,
+                              style: TextStyle(fontSize: fontSize),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
-        ));
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _showDeleteConfirmModal(BuildContext parentContext) async {
     final localizations = AppLocalizations.of(context)!;
-    final selectedPlaylistsLength = parentContext
-        .read<PlaylistsListComponentBloc>()
-        .state
-        .selectedPlaylists
-        .length;
+    final selectedPlaylistsLength =
+        parentContext
+            .read<PlaylistsListComponentBloc>()
+            .state
+            .selectedPlaylists
+            .length;
 
     if (selectedPlaylistsLength == 0) {
       return showDialog<void>(
@@ -160,9 +183,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  Text(
-                    localizations.youShouldMarkThePlaylistsToBeDeleted,
-                  ),
+                  Text(localizations.youShouldMarkThePlaylistsToBeDeleted),
                 ],
               ),
             ),
@@ -187,7 +208,8 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                 children: <Widget>[
                   Text(localizations.areYouSureYouWantDeletSelectedLists),
                   Text(
-                      localizations.numberOfPlaylists(selectedPlaylistsLength)),
+                    localizations.numberOfPlaylists(selectedPlaylistsLength),
+                  ),
                 ],
               ),
             ),
@@ -199,19 +221,19 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
               TextButton(
                 child: Text(localizations.yes),
                 onPressed: () {
-                  parentContext
-                      .read<PlaylistsListComponentBloc>()
-                      .add(RemoveSelectedPlaylistsEvent());
+                  parentContext.read<PlaylistsListComponentBloc>().add(
+                    RemoveSelectedPlaylistsEvent(),
+                  );
 
-                  parentContext
-                      .read<PlaylistsListComponentBloc>()
-                      .add(ReloadListEvent());
+                  parentContext.read<PlaylistsListComponentBloc>().add(
+                    ReloadListEvent(),
+                  );
 
                   Navigator.of(context).pop();
 
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(localizations.deletedSuccessfully),
-                  ));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(localizations.deletedSuccessfully)),
+                  );
                 },
               ),
             ],
@@ -222,7 +244,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
   }
 
   Future<void> _showCreatePlaylistModal(BuildContext parentContext) async {
-    return showDialog<void>(
+    final playlistId = await showDialog<String?>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
@@ -232,15 +254,24 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         );
       },
     );
+
+    if (playlistId != null && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => PlaylistEdit(playlistId: playlistId),
+        ),
+      );
+    }
   }
 
   void _runPresentationForSelected(BuildContext parentContext) async {
     final localizations = AppLocalizations.of(parentContext)!;
-    final selectedPlaylistsLength = parentContext
-        .read<PlaylistsListComponentBloc>()
-        .state
-        .selectedPlaylists
-        .length;
+    final selectedPlaylistsLength =
+        parentContext
+            .read<PlaylistsListComponentBloc>()
+            .state
+            .selectedPlaylists
+            .length;
 
     if (selectedPlaylistsLength == 0) {
       return showDialog<void>(
@@ -295,13 +326,15 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         },
       );
     } else {
-      final selectedPlaylists = parentContext
-          .read<PlaylistsListComponentBloc>()
-          .state
-          .selectedPlaylists;
+      final selectedPlaylists =
+          parentContext
+              .read<PlaylistsListComponentBloc>()
+              .state
+              .selectedPlaylists;
 
-      final playlist =
-          sl<PlaylistsRepository>().getPlaylist(selectedPlaylists[0]);
+      final playlist = sl<PlaylistsRepository>().getPlaylist(
+        selectedPlaylists[0],
+      );
 
       if (playlist == null) {
         return showDialog<void>(
@@ -316,8 +349,10 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
               content: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text(localizations
-                        .anErrorOccurredWhileRetrievingListInformation),
+                    Text(
+                      localizations
+                          .anErrorOccurredWhileRetrievingListInformation,
+                    ),
                   ],
                 ),
               ),
@@ -332,16 +367,14 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         );
       }
 
-      parentContext
-          .read<PresentationBloc>()
-          .add(PlaylistPresentation(playlist: playlist));
+      parentContext.read<PresentationBloc>().add(
+        PlaylistPresentation(playlist: playlist),
+      );
 
       showInterstitialAds();
 
       Navigator.of(parentContext).push(
-        MaterialPageRoute(
-          builder: (parentContext) => const PresentationView(),
-        ),
+        MaterialPageRoute(builder: (parentContext) => const PresentationView()),
       );
     }
   }

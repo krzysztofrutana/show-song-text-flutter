@@ -173,6 +173,18 @@ abstract class AppLocalizations {
   /// **'Czy na pewno chcesz usunąć utwór {author} - {title} z listy odtwarzania z pozycji {index}?'**
   String areYouSureYouWantRemoveSongFromPlaylistAtPosition(Object author, Object index, Object title);
 
+  /// No description provided for @areYouSureYouWantToDeleteThisPlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Czy na pewno chcesz usunąć tę playlistę?'**
+  String get areYouSureYouWantToDeleteThisPlaylist;
+
+  /// No description provided for @areYouSureYouWantToDeleteThisSong.
+  ///
+  /// In pl, this message translates to:
+  /// **'Czy na pewno chcesz usunąć ten utwór?'**
+  String get areYouSureYouWantToDeleteThisSong;
+
   /// No description provided for @areYouSureYouWantToLeaveTheApplication.
   ///
   /// In pl, this message translates to:
@@ -190,6 +202,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Autor jest wymagany'**
   String get authorIsRequired;
+
+  /// No description provided for @backToList.
+  ///
+  /// In pl, this message translates to:
+  /// **'Wróć do listy'**
+  String get backToList;
 
   /// No description provided for @cancel.
   ///
@@ -329,6 +347,18 @@ abstract class AppLocalizations {
   /// **'Usunięto pomyślnie'**
   String get deletedSuccessfully;
 
+  /// No description provided for @deletePlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Usuń playlistę'**
+  String get deletePlaylist;
+
+  /// No description provided for @deleteSong.
+  ///
+  /// In pl, this message translates to:
+  /// **'Usuń utwór'**
+  String get deleteSong;
+
   /// No description provided for @editPlaylist.
   ///
   /// In pl, this message translates to:
@@ -395,6 +425,60 @@ abstract class AppLocalizations {
   /// **'Wielkość czcionki musi być większa od 5'**
   String get fontSizeMustBeGreaterThan5;
 
+  /// No description provided for @help.
+  ///
+  /// In pl, this message translates to:
+  /// **'Pomoc'**
+  String get help;
+
+  /// No description provided for @helpSongsTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Zarządzanie utworami'**
+  String get helpSongsTitle;
+
+  /// No description provided for @helpSongsDescription.
+  ///
+  /// In pl, this message translates to:
+  /// **'Możesz dodawać utwory ręcznie lub wyszukiwać ich teksty. Aby dodać utwór, kliknij przycisk \'+\' na liście utworów. W formularzu możesz wpisać tytuł, autora oraz tekst utworu. Użyj przycisku wyszukiwania, aby automatycznie pobrać tekst.'**
+  String get helpSongsDescription;
+
+  /// No description provided for @helpPlaylistsTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Playlisty'**
+  String get helpPlaylistsTitle;
+
+  /// No description provided for @helpPlaylistsDescription.
+  ///
+  /// In pl, this message translates to:
+  /// **'Playlisty pozwalają grupować utwory w zestawy. Możesz tworzyć nowe playlisty, edytować ich nazwy oraz dodawać i usuwać utwory. Kolejność utworów na liście można zmieniać poprzez przeciąganie ich za ikonę uchwytu.'**
+  String get helpPlaylistsDescription;
+
+  /// No description provided for @helpPresentationTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Tryb prezentacji'**
+  String get helpPresentationTitle;
+
+  /// No description provided for @helpPresentationDescription.
+  ///
+  /// In pl, this message translates to:
+  /// **'Tryb prezentacji umożliwia wyświetlanie tekstów utworów na innych urządzeniach. W ustawieniach prezentacji możesz skonfigurować parametry serwera i zobaczyć kod QR ułatwiający połączenie.'**
+  String get helpPresentationDescription;
+
+  /// No description provided for @helpClientTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Tryb klienta'**
+  String get helpClientTitle;
+
+  /// No description provided for @helpClientDescription.
+  ///
+  /// In pl, this message translates to:
+  /// **'Aby połączyć się jako klient, wprowadź adres IP serwera lub zeskanuj kod QR wyświetlony na urządzeniu głównym. Po połączeniu będziesz widzieć tekst aktualnie prezentowanego utworu.'**
+  String get helpClientDescription;
+
   /// No description provided for @ipIsRequired.
   ///
   /// In pl, this message translates to:
@@ -446,7 +530,7 @@ abstract class AppLocalizations {
   /// No description provided for @noPlaylists.
   ///
   /// In pl, this message translates to:
-  /// **'Brak list odtwarzania'**
+  /// **'Dodaj pierwszą playlistę'**
   String get noPlaylists;
 
   /// No description provided for @noPlaylistsSelected.
@@ -458,7 +542,7 @@ abstract class AppLocalizations {
   /// No description provided for @noSongs.
   ///
   /// In pl, this message translates to:
-  /// **'Brak utworów'**
+  /// **'Dodaj pierwszy utwór'**
   String get noSongs;
 
   /// No description provided for @noSongsAssigned.
@@ -548,7 +632,7 @@ abstract class AppLocalizations {
   /// No description provided for @presentationScreen.
   ///
   /// In pl, this message translates to:
-  /// **'Ekran prezentacji'**
+  /// **'Prezentuj'**
   String get presentationScreen;
 
   /// No description provided for @presentationSettings.
@@ -659,6 +743,36 @@ abstract class AppLocalizations {
   /// **'Utwory dodane do listy odtwarzania'**
   String get songsAddedToPlaylist;
 
+  /// No description provided for @sortBy.
+  ///
+  /// In pl, this message translates to:
+  /// **'Sortuj według'**
+  String get sortBy;
+
+  /// No description provided for @latest.
+  ///
+  /// In pl, this message translates to:
+  /// **'Najnowsze'**
+  String get latest;
+
+  /// No description provided for @oldest.
+  ///
+  /// In pl, this message translates to:
+  /// **'Najstarsze'**
+  String get oldest;
+
+  /// No description provided for @byArtistAndTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Po artyście i tytule'**
+  String get byArtistAndTitle;
+
+  /// No description provided for @byTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Po tytule'**
+  String get byTitle;
+
   /// No description provided for @songsList.
   ///
   /// In pl, this message translates to:
@@ -754,6 +868,18 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'By utworzyć playlistę należy wybrać utwory'**
   String get toCreatePlaylistYouNeedToSelectSongs;
+
+  /// No description provided for @toExistingPlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Do istniejącej listy'**
+  String get toExistingPlaylist;
+
+  /// No description provided for @toNewPlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Utwórz nową playlistę'**
+  String get toNewPlaylist;
 
   /// No description provided for @tooManyMatchingArtistsFoundPleaseSpecifyArtistName.
   ///

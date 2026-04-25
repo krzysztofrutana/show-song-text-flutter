@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
+import 'package:pomocnik_wokalisty/modules/help/views/help_view.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/navigation_drawer.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/playlists_list_view.dart';
@@ -20,22 +21,27 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return BlocBuilder<NavigationDrawerBloc, NavigationDrawerState>(
-        builder: (BuildContext context, NavigationDrawerState state) =>
-            SafeArea(
-              top: false,
-              child: Scaffold(
-                  drawer: const MyNavigationDrawer(),
-                  appBar: AppBar(
-                    title: Text(
-                        _getTextForItem(state.navigationPage, localizations)),
-                  ),
-                  body: _bodyForState(state)),
-            ));
+      builder:
+          (BuildContext context, NavigationDrawerState state) => SafeArea(
+            top: false,
+            child: Scaffold(
+              drawer: const MyNavigationDrawer(),
+              appBar: AppBar(
+                title: Text(
+                  _getTextForItem(state.navigationPage, localizations),
+                ),
+              ),
+              body: _bodyForState(state),
+            ),
+          ),
+    );
   }
 }
 
 String _getTextForItem(
-    NavigationPage navigationPage, AppLocalizations localizations) {
+  NavigationPage navigationPage,
+  AppLocalizations localizations,
+) {
   switch (navigationPage) {
     case NavigationPage.songsList:
       return localizations.songsList;
@@ -49,6 +55,8 @@ String _getTextForItem(
       return localizations.editPlaylist;
     case NavigationPage.serverSettings:
       return localizations.presentationSettings;
+    case NavigationPage.help:
+      return localizations.help;
     default:
       return '-';
   }
@@ -64,6 +72,8 @@ Widget? _bodyForState(NavigationDrawerState state) {
       return const PlaylistsList();
     case NavigationPage.serverSettings:
       return PresentationSettings();
+    case NavigationPage.help:
+      return const HelpView();
     default:
       return null;
   }

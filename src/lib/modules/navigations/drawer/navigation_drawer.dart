@@ -118,7 +118,16 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
         false,
         NavigationPage.clientMode,
         localizations.clientMode,
-        const AssetImage('assets/images/icons/presentation.png'),
+        Icons.cast,
+        isMaterialIcon: true,
+      ),
+      _NavigationItem(
+        false,
+        false,
+        NavigationPage.help,
+        localizations.help,
+        Icons.help_outline,
+        isMaterialIcon: true,
       ),
     ];
   }
@@ -229,7 +238,10 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
           builder:
               (BuildContext context) => ListTile(
                 title: Text(data.title),
-                leading: ImageIcon(data.icon, size: 20),
+                leading:
+                    data.isMaterialIcon
+                        ? Icon(data.icon as IconData, size: 20)
+                        : ImageIcon(data.icon as AssetImage, size: 20),
                 onTap: () => _handleItemClick(context, data.item),
               ),
         ),
@@ -414,11 +426,19 @@ Future<String> _getActualVersion() async {
 }
 
 class _NavigationItem {
-  _NavigationItem(this.header, this.footer, this.item, this.title, this.icon);
+  _NavigationItem(
+    this.header,
+    this.footer,
+    this.item,
+    this.title,
+    this.icon, {
+    this.isMaterialIcon = false,
+  });
 
   final bool header;
   final NavigationPage item;
   final String title;
-  final AssetImage icon;
+  final dynamic icon;
   final bool footer;
+  final bool isMaterialIcon;
 }

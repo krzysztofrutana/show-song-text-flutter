@@ -8,21 +8,27 @@ part 'songs_edit_state.dart';
 
 class SongsEditCubit extends Cubit<SongsEditState> {
   SongsEditCubit({SongsRepository? songsRepository})
-      : _songsRepository = songsRepository ?? SongsRepository(),
-        super(const SongsEditInitial());
+    : _songsRepository = songsRepository ?? SongsRepository(),
+      super(const SongsEditInitial());
 
   final SongsRepository _songsRepository;
+  Song? _initialSong;
 
   void initForm(String songId) {
     final song = _songsRepository.getSong(songId);
 
     if (song == null) return;
 
-    emit(state.copyWith(
+    _initialSong = song;
+
+    emit(
+      state.copyWith(
         uuid: song.uuid,
         title: song.title,
         author: song.author,
-        text: song.text));
+        text: song.text,
+      ),
+    );
   }
 
   void updateTitle(String? title) {
@@ -46,13 +52,23 @@ class SongsEditCubit extends Cubit<SongsEditState> {
   }
 
   Future<void> save() async {
-    await _songsRepository.updateSong(
-      Song(
-        uuid: state.uuid,
-        title: state.title,
-        author: state.author,
-        text: state.text,
-      ),
+    final song = Song(
+      uuid: state.uuid,
+      title: state.title,
+      author: state.author,
+      text: state.text,
     );
+    await _songsRepository.updateSong(song);
+    _initialSong = song;
   }
+
+  Future<void> delete() async {
+    await _songsRepository.deleteSong(state.uuid);
+  }
+
+  bool get isModified =>
+      _initialSong == null ||
+      state.author != _initialSong!.author ||
+      state.title != _initialSong!.title ||
+      state.text != _initialSong!.text;
 }

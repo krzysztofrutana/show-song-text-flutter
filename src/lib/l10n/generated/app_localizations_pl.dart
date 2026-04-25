@@ -52,6 +52,12 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get areYouSureYouWantToDeleteThisPlaylist => 'Czy na pewno chcesz usunąć tę playlistę?';
+
+  @override
+  String get areYouSureYouWantToDeleteThisSong => 'Czy na pewno chcesz usunąć ten utwór?';
+
+  @override
   String get areYouSureYouWantToLeaveTheApplication => 'Czy na pewno chcesz opuścić aplikację?';
 
   @override
@@ -59,6 +65,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get authorIsRequired => 'Autor jest wymagany';
+
+  @override
+  String get backToList => 'Wróć do listy';
 
   @override
   String get cancel => 'Anuluj';
@@ -132,6 +141,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get deletedSuccessfully => 'Usunięto pomyślnie';
 
   @override
+  String get deletePlaylist => 'Usuń playlistę';
+
+  @override
+  String get deleteSong => 'Usuń utwór';
+
+  @override
   String get editPlaylist => 'Edytuj listę odtwarzania';
 
   @override
@@ -167,6 +182,33 @@ class AppLocalizationsPl extends AppLocalizations {
   String get fontSizeMustBeGreaterThan5 => 'Wielkość czcionki musi być większa od 5';
 
   @override
+  String get help => 'Pomoc';
+
+  @override
+  String get helpSongsTitle => 'Zarządzanie utworami';
+
+  @override
+  String get helpSongsDescription => 'Możesz dodawać utwory ręcznie lub wyszukiwać ich teksty. Aby dodać utwór, kliknij przycisk \'+\' na liście utworów. W formularzu możesz wpisać tytuł, autora oraz tekst utworu. Użyj przycisku wyszukiwania, aby automatycznie pobrać tekst.';
+
+  @override
+  String get helpPlaylistsTitle => 'Playlisty';
+
+  @override
+  String get helpPlaylistsDescription => 'Playlisty pozwalają grupować utwory w zestawy. Możesz tworzyć nowe playlisty, edytować ich nazwy oraz dodawać i usuwać utwory. Kolejność utworów na liście można zmieniać poprzez przeciąganie ich za ikonę uchwytu.';
+
+  @override
+  String get helpPresentationTitle => 'Tryb prezentacji';
+
+  @override
+  String get helpPresentationDescription => 'Tryb prezentacji umożliwia wyświetlanie tekstów utworów na innych urządzeniach. W ustawieniach prezentacji możesz skonfigurować parametry serwera i zobaczyć kod QR ułatwiający połączenie.';
+
+  @override
+  String get helpClientTitle => 'Tryb klienta';
+
+  @override
+  String get helpClientDescription => 'Aby połączyć się jako klient, wprowadź adres IP serwera lub zeskanuj kod QR wyświetlony na urządzeniu głównym. Po połączeniu będziesz widzieć tekst aktualnie prezentowanego utworu.';
+
+  @override
   String get ipIsRequired => 'IP jest wymagane';
 
   @override
@@ -191,13 +233,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get noConnection => 'Brak połączenia';
 
   @override
-  String get noPlaylists => 'Brak list odtwarzania';
+  String get noPlaylists => 'Dodaj pierwszą playlistę';
 
   @override
   String get noPlaylistsSelected => 'Brak zaznaczonych list odtwarzania';
 
   @override
-  String get noSongs => 'Brak utworów';
+  String get noSongs => 'Dodaj pierwszy utwór';
 
   @override
   String get noSongsAssigned => 'Brak przypisanych utworów';
@@ -250,7 +292,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get presentationIsOnlyPossibleForOneList => 'Prezentacja możliwa tylko dla jednej listy';
 
   @override
-  String get presentationScreen => 'Ekran prezentacji';
+  String get presentationScreen => 'Prezentuj';
 
   @override
   String get presentationSettings => 'Ustawienia prezentacji';
@@ -307,6 +349,21 @@ class AppLocalizationsPl extends AppLocalizations {
   String get songsAddedToPlaylist => 'Utwory dodane do listy odtwarzania';
 
   @override
+  String get sortBy => 'Sortuj według';
+
+  @override
+  String get latest => 'Najnowsze';
+
+  @override
+  String get oldest => 'Najstarsze';
+
+  @override
+  String get byArtistAndTitle => 'Po artyście i tytule';
+
+  @override
+  String get byTitle => 'Po tytule';
+
+  @override
   String get songsList => 'Lista utworów';
 
   @override
@@ -355,6 +412,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get toCreatePlaylistYouNeedToSelectSongs => 'By utworzyć playlistę należy wybrać utwory';
+
+  @override
+  String get toExistingPlaylist => 'Do istniejącej listy';
+
+  @override
+  String get toNewPlaylist => 'Utwórz nową playlistę';
 
   @override
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty';

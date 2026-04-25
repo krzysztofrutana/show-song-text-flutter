@@ -48,3 +48,12 @@ class RemoveSelectedSongsEvent extends SongsListComponentEvent {}
 class ReloadListEvent extends SongsListComponentEvent {}
 
 class ClearSelectedSongs extends SongsListComponentEvent {}
+
+class ChangeSortEvent extends SongsListComponentEvent {
+  ChangeSortEvent(this.sortOption);
+
+  final SongsSortOption sortOption;
+
+  @override
+  List<Object?> get props => [sortOption];
+}

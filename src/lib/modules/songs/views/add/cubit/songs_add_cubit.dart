@@ -9,16 +9,17 @@ part 'songs_add_state.dart';
 
 class SongsAddCubit extends Cubit<SongsAddState> {
   SongsAddCubit({SongsRepository? songsRepository})
-      : _songsRepository = songsRepository ?? SongsRepository(),
-        super(SongsAddInitial());
+    : _songsRepository = songsRepository ?? SongsRepository(),
+      super(SongsAddInitial());
 
   final SongsRepository _songsRepository;
 
-  void initForm(
-      {String uuid = '',
-      String title = '',
-      String author = '',
-      String text = ''}) {
+  void initForm({
+    String uuid = '',
+    String title = '',
+    String author = '',
+    String text = '',
+  }) {
     emit(state.copyWith(uuid: uuid, title: title, author: author, text: text));
   }
 
@@ -53,4 +54,9 @@ class SongsAddCubit extends Cubit<SongsAddState> {
     );
     emit(SongsAddInitial());
   }
+
+  bool get isModified =>
+      state.author.isNotEmpty ||
+      state.title.isNotEmpty ||
+      state.text.isNotEmpty;
 }

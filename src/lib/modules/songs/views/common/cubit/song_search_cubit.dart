@@ -8,13 +8,23 @@ part 'song_search_state.dart';
 
 class SongSearchCubit extends Cubit<SongSearchState> {
   SongSearchCubit({TekstowoService? tekstowoService})
-      : _tekstowoService = tekstowoService ?? di.sl<TekstowoService>(),
-        super(SongSearchStateInitial());
+    : _tekstowoService = tekstowoService ?? di.sl<TekstowoService>(),
+      super(SongSearchStateInitial());
 
   final TekstowoService _tekstowoService;
 
   void initSearch(SongToFindModel songToFind) {
-    emit(state.copyWith(song: songToFind, status: ResultState.searchStarted));
+    emit(
+      state.copyWith(
+        song: songToFind,
+        status: ResultState.searchStarted,
+        songsToChoose: [],
+        artistToChoose: [],
+        findedText: null,
+        choosenArtist: null,
+        choosenSong: null,
+      ),
+    );
   }
 
   void setChoosenSong(FindedSongModel choosenSong) {
@@ -30,16 +40,25 @@ class SongSearchCubit extends Cubit<SongSearchState> {
         return false;
       }
 
-      emit(state.copyWith(
+      final songs = searchResult.songsToChoose;
+      _sortSongs(songs);
+
+      emit(
+        state.copyWith(
           status: ResultState.chooseSongFromList,
-          songsToChoose: searchResult.songsToChoose));
+          songsToChoose: songs,
+        ),
+      );
 
       return true;
     } catch (ex) {
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           status: ResultState.unexpectedError,
           artistToChoose: [],
-          songsToChoose: []));
+          songsToChoose: [],
+        ),
+      );
 
       return false;
     }
@@ -47,24 +66,35 @@ class SongSearchCubit extends Cubit<SongSearchState> {
 
   Future<bool> searchSongByArtistAndTitle() async {
     try {
-      final searchResult =
-          await _tekstowoService.searchByArtistAndTitle(state.song!, false);
+      final searchResult = await _tekstowoService.searchByArtistAndTitle(
+        state.song!,
+        false,
+      );
 
       if (resultHasError(searchResult)) {
         processError(searchResult);
         return false;
       }
 
-      emit(state.copyWith(
+      final songs = searchResult.songsToChoose;
+      _sortSongs(songs);
+
+      emit(
+        state.copyWith(
           status: ResultState.chooseSongFromList,
-          songsToChoose: searchResult.songsToChoose));
+          songsToChoose: songs,
+        ),
+      );
 
       return true;
     } catch (ex) {
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           status: ResultState.unexpectedError,
           artistToChoose: [],
-          songsToChoose: []));
+          songsToChoose: [],
+        ),
+      );
 
       return false;
     }
@@ -78,11 +108,27 @@ class SongSearchCubit extends Cubit<SongSearchState> {
       return false;
     }
 
-    emit(state.copyWith(
+    final songs = searchSongResult.songsToChoose;
+    _sortSongs(songs);
+
+    emit(
+      state.copyWith(
         status: ResultState.chooseSongFromList,
-        songsToChoose: searchSongResult.songsToChoose));
+        songsToChoose: songs,
+      ),
+    );
 
     return true;
+  }
+
+  void _sortSongs(List<FindedSongModel> songs) {
+    songs.sort((a, b) {
+      final artistCompare = (a.artist ?? '').toLowerCase().compareTo(
+        (b.artist ?? '').toLowerCase(),
+      );
+      if (artistCompare != 0) return artistCompare;
+      return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+    });
   }
 
   bool resultHasError(SearchResultModel searchResult) {
@@ -92,7 +138,7 @@ class SongSearchCubit extends Cubit<SongSearchState> {
       ResultState.cannotFindAnySongs,
       ResultState.cannotFindText,
       ResultState.connectionError,
-      ResultState.invalidRequestData
+      ResultState.invalidRequestData,
     ];
 
     if (errorsStatuses.contains(searchResult.state)) {
@@ -104,38 +150,61 @@ class SongSearchCubit extends Cubit<SongSearchState> {
 
   Future<bool> searchByChoosenSong() async {
     try {
-      final songToFind =
-          SongToFindModel(state.choosenSong!.artist, state.choosenSong!.title);
+      final songToFind = SongToFindModel(
+        state.choosenSong!.artist,
+        state.choosenSong!.title,
+      );
       songToFind.linkToSong = state.choosenSong!.link;
 
-      final textResult =
-          await _tekstowoService.searchTextByLink(songToFind, true);
+      final textResult = await _tekstowoService.searchTextByLink(
+        songToFind,
+        true,
+      );
 
       if (resultHasError(textResult)) {
         processError(textResult);
         return false;
       }
 
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           status: ResultState.textFinded,
-          songsToChoose: [],
-          artistToChoose: [],
-          findedText: textResult.text));
+          findedText: textResult.text,
+        ),
+      );
 
       return true;
     } catch (ex) {
-      emit(state.copyWith(
+      emit(
+        state.copyWith(
           status: ResultState.unexpectedError,
           artistToChoose: [],
-          songsToChoose: []));
+          songsToChoose: [],
+        ),
+      );
 
       return false;
     }
   }
 
+  void backToSongsList() {
+    emit(state.copyWith(status: ResultState.chooseSongFromList));
+  }
+
+  void backToText() {
+    if (state.findedText != null) {
+      emit(state.copyWith(status: ResultState.textFinded));
+    }
+  }
+
   void processError(SearchResultModel searchResult) {
-    emit(state.copyWith(
-        status: searchResult.state, artistToChoose: [], songsToChoose: []));
+    emit(
+      state.copyWith(
+        status: searchResult.state,
+        artistToChoose: [],
+        songsToChoose: [],
+      ),
+    );
   }
 
   void clear() {

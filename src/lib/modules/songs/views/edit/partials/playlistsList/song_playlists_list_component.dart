@@ -28,43 +28,54 @@ class _SongPlaylistsListComponentState
   Widget build(BuildContext context) {
     return InputDecorator(
       decoration: InputDecoration(
-          labelText:
-              AppLocalizations.of(context)!.playlistsToWhichSongHasBeenAdded,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(0))),
-      child: playlists.isEmpty
-          ? Center(
-              heightFactor: 2,
-              child: SizedBox(
-                width: double.infinity,
-                child: Text(AppLocalizations.of(context)!.noPlaylists,
-                    textAlign: TextAlign.center),
-              ),
-            )
-          : Container(
-              padding: const EdgeInsets.all(4),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: playlists.length,
-                physics: const ScrollPhysics(),
-                itemBuilder: (context, index) {
-                  final playlistModel = playlists[index];
-                  return ListTile(
-                    title: Text(playlistModel.playlist.name),
-                    subtitle: Text(AppLocalizations.of(context)!
-                        .position(playlistModel.position + 1)),
-                    titleTextStyle: const TextStyle(
+        labelText:
+            AppLocalizations.of(context)!.playlistsToWhichSongHasBeenAdded,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(0)),
+      ),
+      child:
+          playlists.isEmpty
+              ? Center(
+                heightFactor: 2,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    AppLocalizations.of(context)!.noPlaylists,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+              : Container(
+                padding: const EdgeInsets.all(4),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: playlists.length,
+                  physics: const ScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final playlistModel = playlists[index];
+                    return ListTile(
+                      title: Text(playlistModel.playlist.name),
+                      subtitle: Text(
+                        AppLocalizations.of(
+                          context,
+                        )!.position(playlistModel.position + 1),
+                      ),
+                      titleTextStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        color: Colors.black),
-                    trailing: IconButton(
+                        color: Colors.black,
+                      ),
+                      contentPadding: const EdgeInsets.only(),
+                      trailing: IconButton(
                         onPressed: () {
                           _removeSongFromPlaylis(playlistModel, context);
                         },
-                        icon: const Icon(Icons.remove_circle_outline)),
-                  );
-                },
+                        color: Colors.red,
+                        icon: const Icon(Icons.highlight_remove_outlined),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
     );
   }
 
@@ -72,17 +83,21 @@ class _SongPlaylistsListComponentState
     setState(() {
       playlists = [];
       final repository = sl<PlaylistsRepository>();
-      final playlistsIncludeSong = repository
-          .getAllPlaylists()
-          .where((playlist) =>
-              playlist.songsIds.any((songId) => songId == widget.songId))
-          .toList();
+      final playlistsIncludeSong =
+          repository
+              .getAllPlaylists()
+              .where(
+                (playlist) =>
+                    playlist.songsIds.any((songId) => songId == widget.songId),
+              )
+              .toList();
 
       for (final playlist in playlistsIncludeSong) {
         for (var i = 0; i < playlist.songsIds.length; i++) {
           if (playlist.songsIds[i] == widget.songId) {
-            playlists
-                .add(PlaylistIncludeSongModel(playlist: playlist, position: i));
+            playlists.add(
+              PlaylistIncludeSongModel(playlist: playlist, position: i),
+            );
           }
         }
       }
@@ -90,7 +105,9 @@ class _SongPlaylistsListComponentState
   }
 
   _removeSongFromPlaylis(
-      PlaylistIncludeSongModel playlistModel, BuildContext parentContext) {
+    PlaylistIncludeSongModel playlistModel,
+    BuildContext parentContext,
+  ) {
     final localizations = AppLocalizations.of(parentContext)!;
     return showDialog<void>(
       context: parentContext,
@@ -101,10 +118,13 @@ class _SongPlaylistsListComponentState
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(localizations
-                    .areYouSureYouWantRemoveCurrentSongFromPlaylistAtPosition(
+                Text(
+                  localizations
+                      .areYouSureYouWantRemoveCurrentSongFromPlaylistAtPosition(
                         playlistModel.playlist.name,
-                        playlistModel.position + 1)),
+                        playlistModel.position + 1,
+                      ),
+                ),
               ],
             ),
           ),
@@ -118,8 +138,9 @@ class _SongPlaylistsListComponentState
               onPressed: () async {
                 final repository = sl<PlaylistsRepository>();
                 final updated = playlistModel.playlist.copyWith(
-                    songsIds: List<String>.from(playlistModel.playlist.songsIds)
-                      ..removeAt(playlistModel.position));
+                  songsIds: List<String>.from(playlistModel.playlist.songsIds)
+                    ..removeAt(playlistModel.position),
+                );
                 await repository.updatePlaylist(updated);
 
                 initPlaylistsList();

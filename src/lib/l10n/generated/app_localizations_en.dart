@@ -52,6 +52,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get areYouSureYouWantToDeleteThisPlaylist => 'Are you sure you want to delete this playlist?';
+
+  @override
+  String get areYouSureYouWantToDeleteThisSong => 'Are you sure you want to delete this song?';
+
+  @override
   String get areYouSureYouWantToLeaveTheApplication => 'Are you sure you want to leave the application?';
 
   @override
@@ -59,6 +65,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authorIsRequired => 'Author is required';
+
+  @override
+  String get backToList => 'Back to list';
 
   @override
   String get cancel => 'Cancel';
@@ -132,6 +141,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deletedSuccessfully => 'Successfully deleted';
 
   @override
+  String get deletePlaylist => 'Delete playlist';
+
+  @override
+  String get deleteSong => 'Delete song';
+
+  @override
   String get editPlaylist => 'Edit playlist';
 
   @override
@@ -167,6 +182,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fontSizeMustBeGreaterThan5 => 'Font size must be greater than 5';
 
   @override
+  String get help => 'Help';
+
+  @override
+  String get helpSongsTitle => 'Songs management';
+
+  @override
+  String get helpSongsDescription => 'You can add songs manually or search for their lyrics. To add a song, click the \'+\' button on the song list. In the form, you can enter the title, author, and lyrics. Use the search button to automatically download the text.';
+
+  @override
+  String get helpPlaylistsTitle => 'Playlists';
+
+  @override
+  String get helpPlaylistsDescription => 'Playlists allow you to group songs into sets. You can create new playlists, edit their names, and add or remove songs. The order of songs on the list can be changed by dragging them using the handle icon.';
+
+  @override
+  String get helpPresentationTitle => 'Presentation mode';
+
+  @override
+  String get helpPresentationDescription => 'Presentation mode allows you to display song lyrics on other devices. In the presentation settings, you can configure the server parameters and see a QR code to facilitate connection.';
+
+  @override
+  String get helpClientTitle => 'Client mode';
+
+  @override
+  String get helpClientDescription => 'To connect as a client, enter the server\'s IP address or scan the QR code displayed on the main device. Once connected, you will see the lyrics of the song currently being presented.';
+
+  @override
   String get ipIsRequired => 'IP is required';
 
   @override
@@ -191,13 +233,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noConnection => 'No connection';
 
   @override
-  String get noPlaylists => 'No playlists';
+  String get noPlaylists => 'Add your first playlist';
 
   @override
   String get noPlaylistsSelected => 'No playlists selected';
 
   @override
-  String get noSongs => 'No songs';
+  String get noSongs => 'Add your first song';
 
   @override
   String get noSongsAssigned => 'No songs assigned';
@@ -250,7 +292,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get presentationIsOnlyPossibleForOneList => 'Presentation is only possible for one playlist';
 
   @override
-  String get presentationScreen => 'Presentation screen';
+  String get presentationScreen => 'Present';
 
   @override
   String get presentationSettings => 'Presentation settings';
@@ -307,6 +349,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get songsAddedToPlaylist => 'Songs added to playlist';
 
   @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get latest => 'Latest';
+
+  @override
+  String get oldest => 'Oldest';
+
+  @override
+  String get byArtistAndTitle => 'By artist and title';
+
+  @override
+  String get byTitle => 'By title';
+
+  @override
   String get songsList => 'Songs list';
 
   @override
@@ -355,6 +412,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get toCreatePlaylistYouNeedToSelectSongs => 'To create a playlist you need to select songs.';
+
+  @override
+  String get toExistingPlaylist => 'To existing playlist';
+
+  @override
+  String get toNewPlaylist => 'Create new playlist';
 
   @override
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Too many matching artists found, please specify the artist name';

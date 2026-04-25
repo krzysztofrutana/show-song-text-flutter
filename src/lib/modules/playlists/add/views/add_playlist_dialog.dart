@@ -38,13 +38,14 @@ class AddPlaylistDialog extends StatelessWidget {
                       }
                       return null;
                     },
-                    onChanged: (value) => context
-                        .read<AddPlaylistBloc>()
-                        .add(PlaylistAddNameChange(value)),
+                    onChanged:
+                        (value) => context.read<AddPlaylistBloc>().add(
+                          PlaylistAddNameChange(value),
+                        ),
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _onSave(context),
                     autofocus: true,
-                  )
+                  ),
                 ],
               ),
             ),
@@ -70,15 +71,18 @@ class AddPlaylistDialog extends StatelessWidget {
   void _onSave(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       final addPlaylistBloc = context.read<AddPlaylistBloc>();
+      final playlistId = addPlaylistBloc.state.playlist.uuid;
+
       addPlaylistBloc.add(AddPlaylistSave());
       addPlaylistBloc.add(AddPlaylistReset());
 
       context.read<PlaylistsListComponentBloc>().add(ReloadListEvent());
 
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(playlistId);
     } else {
       context.read<AddPlaylistBloc>().add(
-          const AddPlaylistUpdateAutovalidateMode(AutovalidateMode.always));
+        const AddPlaylistUpdateAutovalidateMode(AutovalidateMode.always),
+      );
     }
   }
 }

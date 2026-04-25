@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
@@ -228,6 +229,10 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                       decoration: InputDecoration(
                         hintText: localizations.enterTheIpFromTheServerSettings,
                         labelText: 'IP',
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.qr_code_scanner),
+                          onPressed: () => _showScannerDialog(context),
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -284,6 +289,50 @@ class _ClientScreenModeState extends State<ClientScreenMode>
           ],
         );
       },
+    );
+  }
+
+  void _showScannerDialog(BuildContext ipDialogContext) {
+    showDialog(
+      context: ipDialogContext,
+      builder:
+          (scannerDialogContext) => AlertDialog(
+            content: SizedBox(
+              width: 300,
+              height: 300,
+              child: MobileScanner(
+                onDetect: (capture) {
+                  final List<Barcode> barcodes = capture.barcodes;
+                  for (final barcode in barcodes) {
+                    final String? code = barcode.rawValue;
+                    if (code != null) {
+                      context.read<ClientCubit>().setIp(code);
+                      Navigator.of(
+                        scannerDialogContext,
+                      ).pop(); // Zamknij skaner
+                      Navigator.of(
+                        ipDialogContext,
+                      ).pop(); // Zamknij dialog z IP
+
+                      // Automatyczne zatwierdzenie
+                      try {
+                        showInterstitialAds();
+                        context.read<ClientCubit>().startConnection();
+                        FullScreen.setFullScreen(true);
+                      } catch (e) {
+                        _showSetIpDialog(
+                          context,
+                          AppLocalizations.of(context)!.connectionFailedCheckIp,
+                          code,
+                        );
+                      }
+                      break;
+                    }
+                  }
+                },
+              ),
+            ),
+          ),
     );
   }
 
