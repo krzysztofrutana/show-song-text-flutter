@@ -146,7 +146,7 @@
     "toRunPresentationSelectSongs": "To start presentation you need to select songs.",
     "toSearchForTextYouNeedAtLeastTitleOrAuthor": "To search for a text you need at least the title or author",
     "tooManyMatchingArtistsFoundPleaseSpecifyArtistName": "Too many matching artists found, please specify the artist name",
-    "theme": "Theme",
+    "theme": "Theme:",
     "@theme": {
       "description": "Label for theme selection"
     },

@@ -974,7 +974,7 @@ abstract class AppLocalizations {
   /// Label for theme selection
   ///
   /// In pl, this message translates to:
-  /// **'Motyw'**
+  /// **'Motyw:'**
   String get theme;
 
   /// Label for light theme

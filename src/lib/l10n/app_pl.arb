@@ -146,7 +146,7 @@
     "toRunPresentationSelectSongs": "Aby uruchomić prezentację wybierz utwory",
     "toSearchForTextYouNeedAtLeastTitleOrAuthor": "Aby wyszukać tekst potrzebujesz co najmniej tytułu lub autora",
     "tooManyMatchingArtistsFoundPleaseSpecifyArtistName": "Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty",
-    "theme": "Motyw",
+    "theme": "Motyw:",
     "@theme": {
       "description": "Label for theme selection"
     },
