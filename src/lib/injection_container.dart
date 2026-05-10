@@ -5,6 +5,7 @@ import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repo
 import 'package:pomocnik_wokalisty/modules/presentation_settings/cubit/presentation_settings_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/cubit/songs_edit_cubit.dart';
+import 'package:pomocnik_wokalisty/modules/theme/bloc/theme_cubit.dart';
 import 'package:pomocnik_wokalisty/socket_connection/services/socket_client.dart';
 import 'package:pomocnik_wokalisty/socket_connection/services/socket_server.dart';
 import 'package:pomocnik_wokalisty/webscraping/sources/tekstowo_service.dart';
@@ -21,6 +22,7 @@ Future<void> init() async {
   sl.registerFactory(() => PresentationSettingsCubit());
   sl.registerFactory(() => SongsEditCubit(songsRepository: sl()));
   sl.registerFactory(() => PlaylistEditCubit(playlistsRepository: sl()));
+  sl.registerFactory(() => ThemeCubit(prefs: sl()));
 
   // Services
   sl.registerLazySingleton(() => Server());

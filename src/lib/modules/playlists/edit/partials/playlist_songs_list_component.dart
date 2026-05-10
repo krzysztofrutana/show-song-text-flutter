@@ -62,7 +62,8 @@ class _PlaylistSongsListComponentState
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 Theme.of(context).scaffoldBackgroundColor,
-                            foregroundColor: Colors.black,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onSurface,
                             elevation: 0,
                             shape: const RoundedRectangleBorder(),
                             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -103,7 +104,7 @@ class _PlaylistSongsListComponentState
                               titleTextStyle: Theme.of(
                                 context,
                               ).textTheme.titleMedium?.copyWith(
-                                color: Colors.black,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.bold,
                               ),
                               contentPadding: const EdgeInsets.only(),

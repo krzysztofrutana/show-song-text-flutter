@@ -123,7 +123,8 @@ class _SongsListComponentState extends State<SongsListComponent> {
                                     context,
                                   ).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 subtitle: Text(songAuthor),
@@ -140,7 +141,8 @@ class _SongsListComponentState extends State<SongsListComponent> {
                                   context,
                                 ).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
                                 ),
                                 onTap:
                                     () => _redirectToSongsEdit(context, song),

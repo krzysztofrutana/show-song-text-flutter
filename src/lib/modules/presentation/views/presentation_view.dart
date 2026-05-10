@@ -120,7 +120,7 @@ class _PresentationViewState extends State<PresentationView>
           child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               title: Row(
@@ -140,7 +140,7 @@ class _PresentationViewState extends State<PresentationView>
                       _currentPageInfo != null
                           ? '${_currentPageInfo!.songNumber}/${_currentPageInfo!.totalSongsCount}'
                           : "",
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                     ),
                   ),
                 ],
@@ -211,7 +211,7 @@ class _PresentationViewState extends State<PresentationView>
                       _currentPageInfo != null
                           ? '${_currentPageInfo!.pageNumberInSongContext}/${_currentPageInfo!.totalPagesCountForSong}'
                           : '',
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                     ),
                     IconButton(
                       icon: const Icon(Icons.navigate_next),

@@ -93,7 +93,10 @@ class SongSelectionDialog extends StatelessWidget {
                                       context,
                                     ).textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
                                     ),
                                   ),
                                   subtitle: Text(songAuthor),

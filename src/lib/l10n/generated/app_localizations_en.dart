@@ -465,6 +465,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Too many matching artists found, please specify the artist name';
 
   @override
+  String get theme => 'Theme';
+
+  @override
+  String get lightTheme => 'Light';
+
+  @override
+  String get darkTheme => 'Dark';
+
+  @override
+  String get systemTheme => 'System';
+
+  @override
   String get tryAgain => 'Try again';
 
   @override

@@ -22,6 +22,8 @@ import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/pla
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/cubit/song_search_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/theme/bloc/theme_cubit.dart';
+import 'package:pomocnik_wokalisty/modules/theme/bloc/theme_state.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubit/client_cubit/client_cubit.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
 
@@ -47,53 +49,47 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: getBlockProviders,
       child: BlocBuilder<LocalizationCubit, LocalizationState>(
-        builder: (context, state) {
-          return MaterialApp(
-            locale: state.locale,
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            onGenerateTitle: (ctx) {
-              return AppLocalizations.of(ctx)!.singersAssistant;
+        builder: (context, localizationState) {
+          return BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, themeState) {
+              return MaterialApp(
+                locale: localizationState.locale,
+                debugShowCheckedModeBanner: false,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                onGenerateTitle: (ctx) {
+                  return AppLocalizations.of(ctx)!.singersAssistant;
+                },
+                themeMode: themeState.themeMode,
+                theme: ThemeData(
+                  useMaterial3: true,
+                  brightness: Brightness.light,
+                  textTheme: _getTextTheme(),
+                ),
+                darkTheme: ThemeData(
+                  useMaterial3: true,
+                  brightness: Brightness.dark,
+                  textTheme: _getTextTheme(),
+                ),
+                home: const InitializeScreen(targetWidget: MyHomePage()),
+              );
             },
-            theme: ThemeData(
-              useMaterial3: true,
-              textTheme: const TextTheme(
-                headlineSmall: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w400,
-                ),
-                titleLarge: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                ),
-                titleMedium: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-                bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
-                bodyMedium: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                ),
-                labelLarge: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-                labelMedium: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-                labelSmall: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            home: const InitializeScreen(targetWidget: MyHomePage()),
           );
         },
       ),
+    );
+  }
+
+  TextTheme _getTextTheme() {
+    return const TextTheme(
+      headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
+      titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+      titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+      bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+      bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+      labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+      labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+      labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
     );
   }
 
@@ -110,6 +106,7 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (context) => PresentationBloc()),
       BlocProvider(create: (context) => ClientScreenModeCubit()),
       BlocProvider(create: (context) => SongSearchCubit()),
+      BlocProvider(create: (context) => ThemeCubit()),
     ];
   }
 }

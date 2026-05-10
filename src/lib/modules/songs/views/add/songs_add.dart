@@ -88,7 +88,7 @@ class _SongsAddState extends State<SongsAdd>
             child: Scaffold(
               appBar: AppBar(
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () => Navigator.of(context).maybePop(),
                 ),
                 title: Text(
@@ -124,7 +124,10 @@ class _SongsAddState extends State<SongsAdd>
                                               Theme.of(
                                                 context,
                                               ).scaffoldBackgroundColor,
-                                          foregroundColor: Colors.black,
+                                          foregroundColor:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                           elevation: 0,
                                           shape: const RoundedRectangleBorder(),
                                           padding: const EdgeInsets.symmetric(
@@ -166,7 +169,10 @@ class _SongsAddState extends State<SongsAdd>
                                               Theme.of(
                                                 context,
                                               ).scaffoldBackgroundColor,
-                                          foregroundColor: Colors.black,
+                                          foregroundColor:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                           elevation: 0,
                                           shape: const RoundedRectangleBorder(),
                                           padding: const EdgeInsets.symmetric(
@@ -194,10 +200,7 @@ class _SongsAddState extends State<SongsAdd>
                                     Expanded(
                                       child: ElevatedButton(
                                         onPressed:
-                                            () =>
-                                                Navigator.of(
-                                                  context,
-                                                ).maybePop(),
+                                            () => Navigator.of(context).pop(),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
                                               Theme.of(
@@ -213,11 +216,11 @@ class _SongsAddState extends State<SongsAdd>
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            const Icon(Icons.delete),
+                                            const Icon(Icons.cancel_outlined),
                                             const SizedBox(height: 4),
                                             FittedBox(
                                               child: Text(
-                                                localizations.delete,
+                                                localizations.cancel,
                                                 style:
                                                     Theme.of(
                                                       context,

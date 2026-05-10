@@ -88,7 +88,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
             child: Scaffold(
               appBar: AppBar(
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () => Navigator.maybePop(context),
                 ),
                 title: Text(
@@ -121,7 +121,10 @@ class _PlaylistEditState extends State<PlaylistEdit>
                                             Theme.of(
                                               context,
                                             ).scaffoldBackgroundColor,
-                                        foregroundColor: Colors.black,
+                                        foregroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                         elevation: 0,
                                         shape: const RoundedRectangleBorder(),
                                         padding: const EdgeInsets.symmetric(
@@ -158,7 +161,10 @@ class _PlaylistEditState extends State<PlaylistEdit>
                                             Theme.of(
                                               context,
                                             ).scaffoldBackgroundColor,
-                                        foregroundColor: Colors.black,
+                                        foregroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                         elevation: 0,
                                         shape: const RoundedRectangleBorder(),
                                         padding: const EdgeInsets.symmetric(
@@ -204,7 +210,10 @@ class _PlaylistEditState extends State<PlaylistEdit>
                                             Theme.of(
                                               context,
                                             ).scaffoldBackgroundColor,
-                                        foregroundColor: Colors.black,
+                                        foregroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                         elevation: 0,
                                         shape: const RoundedRectangleBorder(),
                                         padding: const EdgeInsets.symmetric(

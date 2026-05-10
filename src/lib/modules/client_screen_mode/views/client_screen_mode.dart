@@ -81,7 +81,7 @@ class _ClientScreenModeState extends State<ClientScreenMode>
               key: key,
               appBar: AppBar(
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 title: Row(
@@ -120,7 +120,7 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                             : state.text,
                         style: TextStyle(
                           fontSize: fontSize.toDouble(),
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                           decoration: TextDecoration.none,
                         ),
                       ),

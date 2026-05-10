@@ -34,7 +34,6 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: const PlaylistsListComponent(),
       floatingActionButton: FloatingActionButton(
@@ -49,12 +48,9 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
         PlaylistsListComponentState
       >(
         builder: (internalContext, state) {
-          final size = MediaQuery.of(context).size;
-          var iconSize = size.width * 0.07; // icon scale
-          var fontSize = size.width * 0.03; // text scale
+          final localizations = AppLocalizations.of(context)!;
+          const double iconSize = 18;
 
-          if (iconSize > 20) iconSize = 20;
-          if (fontSize > 14) fontSize = 14;
           return Visibility(
             visible: state.choosePlaylists == true,
             child: IntrinsicHeight(
@@ -75,22 +71,20 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             Theme.of(context).scaffoldBackgroundColor,
-                        foregroundColor: Colors.black,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSurface,
                         elevation: 0,
                         shape: const RoundedRectangleBorder(),
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.cancel_outlined, size: iconSize),
+                          const Icon(Icons.cancel_outlined, size: iconSize),
                           const SizedBox(height: 5),
-                          FittedBox(
-                            child: Text(
-                              localizations.cancel,
-                              style: Theme.of(context).textTheme.labelMedium,
-                              textAlign: TextAlign.center,
-                            ),
+                          Text(
+                            localizations.cancel,
+                            style: Theme.of(context).textTheme.labelMedium,
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
@@ -108,19 +102,16 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          ImageIcon(
-                            const AssetImage('assets/images/icons/delete.png'),
+                          const ImageIcon(
+                            AssetImage('assets/images/icons/delete.png'),
                             size: iconSize,
                           ),
                           const SizedBox(height: 5),
-                          FittedBox(
-                            child: Text(
-                              localizations.delete,
-                              style: Theme.of(context).textTheme.labelMedium,
-                              textAlign: TextAlign.center,
-                            ),
+                          Text(
+                            localizations.delete,
+                            style: Theme.of(context).textTheme.labelMedium,
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
@@ -133,27 +124,23 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             Theme.of(context).scaffoldBackgroundColor,
-                        foregroundColor: Colors.black,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSurface,
                         elevation: 0,
                         shape: const RoundedRectangleBorder(),
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          ImageIcon(
-                            const AssetImage(
-                              'assets/images/icons/presentation.png',
-                            ),
+                          const ImageIcon(
+                            AssetImage('assets/images/icons/presentation.png'),
                             size: iconSize,
                           ),
                           const SizedBox(height: 5),
-                          FittedBox(
-                            child: Text(
-                              localizations.showText,
-                              style: Theme.of(context).textTheme.labelMedium,
-                              textAlign: TextAlign.center,
-                            ),
+                          Text(
+                            localizations.presentationScreen,
+                            style: Theme.of(context).textTheme.labelMedium,
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),

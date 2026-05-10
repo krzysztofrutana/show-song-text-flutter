@@ -146,6 +146,22 @@
     "toRunPresentationSelectSongs": "To start presentation you need to select songs.",
     "toSearchForTextYouNeedAtLeastTitleOrAuthor": "To search for a text you need at least the title or author",
     "tooManyMatchingArtistsFoundPleaseSpecifyArtistName": "Too many matching artists found, please specify the artist name",
+    "theme": "Theme",
+    "@theme": {
+      "description": "Label for theme selection"
+    },
+    "lightTheme": "Light",
+    "@lightTheme": {
+      "description": "Label for light theme"
+    },
+    "darkTheme": "Dark",
+    "@darkTheme": {
+      "description": "Label for dark theme"
+    },
+    "systemTheme": "System",
+    "@systemTheme": {
+      "description": "Label for system theme"
+    },
     "tryAgain": "Try again",
     "unsavedChanges": "Unsaved changes",
     "unsavedChangesInPlaylist": "There are unsaved changes in the playlist. Do you want to save them before starting the presentation?",

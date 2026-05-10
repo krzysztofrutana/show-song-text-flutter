@@ -107,7 +107,8 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
                                     context,
                                   ).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                               );
@@ -118,7 +119,8 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
                                   context,
                                 ).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
                                 ),
                                 onTap:
                                     () => _redirectToPlaylistEdit(

@@ -7,6 +7,7 @@ class HelpView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final color = Theme.of(context).colorScheme.onSurface;
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
@@ -14,9 +15,9 @@ class HelpView extends StatelessWidget {
           context,
           localizations.helpSongsTitle,
           localizations.helpSongsDescription,
-          const ImageIcon(
-            AssetImage('assets/images/icons/note.png'),
-            color: Colors.black,
+          ImageIcon(
+            const AssetImage('assets/images/icons/note.png'),
+            color: color,
           ),
         ),
         const SizedBox(height: 16),
@@ -24,9 +25,9 @@ class HelpView extends StatelessWidget {
           context,
           localizations.helpPlaylistsTitle,
           localizations.helpPlaylistsDescription,
-          const ImageIcon(
-            AssetImage('assets/images/icons/playlist.png'),
-            color: Colors.black,
+          ImageIcon(
+            const AssetImage('assets/images/icons/playlist.png'),
+            color: color,
           ),
         ),
         const SizedBox(height: 16),
@@ -34,9 +35,9 @@ class HelpView extends StatelessWidget {
           context,
           localizations.helpPresentationTitle,
           localizations.helpPresentationDescription,
-          const ImageIcon(
-            AssetImage('assets/images/icons/presentation.png'),
-            color: Colors.black,
+          ImageIcon(
+            const AssetImage('assets/images/icons/presentation.png'),
+            color: color,
           ),
         ),
         const SizedBox(height: 16),
@@ -44,7 +45,7 @@ class HelpView extends StatelessWidget {
           context,
           localizations.helpClientTitle,
           localizations.helpClientDescription,
-          const Icon(Icons.cast, color: Colors.black),
+          Icon(Icons.cast, color: color),
         ),
       ],
     );
@@ -56,9 +57,11 @@ class HelpView extends StatelessWidget {
     String description,
     Widget icon,
   ) {
+    final color = Theme.of(context).colorScheme.onSurface;
+    final dividerColor = Theme.of(context).dividerColor;
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black12),
+        border: Border.all(color: dividerColor),
         borderRadius: BorderRadius.zero,
       ),
       child: Padding(
@@ -75,19 +78,14 @@ class HelpView extends StatelessWidget {
                     title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: color,
                     ),
                   ),
                 ),
               ],
             ),
-            const Divider(color: Colors.black12),
-            Text(
-              description,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.black87),
-            ),
+            Divider(color: dividerColor),
+            Text(description, style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),
       ),

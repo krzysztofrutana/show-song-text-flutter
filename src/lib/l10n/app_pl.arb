@@ -146,6 +146,22 @@
     "toRunPresentationSelectSongs": "Aby uruchomić prezentację wybierz utwory",
     "toSearchForTextYouNeedAtLeastTitleOrAuthor": "Aby wyszukać tekst potrzebujesz co najmniej tytułu lub autora",
     "tooManyMatchingArtistsFoundPleaseSpecifyArtistName": "Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty",
+    "theme": "Motyw",
+    "@theme": {
+      "description": "Label for theme selection"
+    },
+    "lightTheme": "Jasny",
+    "@lightTheme": {
+      "description": "Label for light theme"
+    },
+    "darkTheme": "Ciemny",
+    "@darkTheme": {
+      "description": "Label for dark theme"
+    },
+    "systemTheme": "Systemowy",
+    "@systemTheme": {
+      "description": "Label for system theme"
+    },
     "tryAgain": "Spróbuj ponownie",
     "unsavedChanges": "Niezapisane zmiany",
     "unsavedChangesInPlaylist": "W liście odtwarzania znajdują się niezapisane zmiany. Czy chcesz je zapisać przed uruchomieniem prezentacji?",

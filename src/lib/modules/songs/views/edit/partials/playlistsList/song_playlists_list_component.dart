@@ -59,10 +59,12 @@ class _SongPlaylistsListComponentState
                           context,
                         )!.position(playlistModel.position + 1),
                       ),
-                      titleTextStyle: const TextStyle(
+                      titleTextStyle: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       contentPadding: const EdgeInsets.only(),
                       trailing: IconButton(

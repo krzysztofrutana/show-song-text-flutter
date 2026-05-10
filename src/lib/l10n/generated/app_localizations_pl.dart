@@ -465,6 +465,18 @@ class AppLocalizationsPl extends AppLocalizations {
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty';
 
   @override
+  String get theme => 'Motyw';
+
+  @override
+  String get lightTheme => 'Jasny';
+
+  @override
+  String get darkTheme => 'Ciemny';
+
+  @override
+  String get systemTheme => 'Systemowy';
+
+  @override
   String get tryAgain => 'Spróbuj ponownie';
 
   @override

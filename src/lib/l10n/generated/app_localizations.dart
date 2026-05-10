@@ -971,6 +971,30 @@ abstract class AppLocalizations {
   /// **'Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty'**
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName;
 
+  /// Label for theme selection
+  ///
+  /// In pl, this message translates to:
+  /// **'Motyw'**
+  String get theme;
+
+  /// Label for light theme
+  ///
+  /// In pl, this message translates to:
+  /// **'Jasny'**
+  String get lightTheme;
+
+  /// Label for dark theme
+  ///
+  /// In pl, this message translates to:
+  /// **'Ciemny'**
+  String get darkTheme;
+
+  /// Label for system theme
+  ///
+  /// In pl, this message translates to:
+  /// **'Systemowy'**
+  String get systemTheme;
+
   /// No description provided for @tryAgain.
   ///
   /// In pl, this message translates to:

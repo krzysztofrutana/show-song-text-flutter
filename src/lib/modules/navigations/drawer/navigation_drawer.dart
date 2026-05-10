@@ -13,6 +13,8 @@ import 'package:pomocnik_wokalisty/modules/client_screen_mode/views/client_scree
 import 'package:pomocnik_wokalisty/modules/dialogs/policy_dialog.dart';
 import 'package:pomocnik_wokalisty/modules/localization/bloc/localization_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/navigations/drawer/bloc/navigation_drawer_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/theme/bloc/theme_cubit.dart';
+import 'package:pomocnik_wokalisty/modules/theme/bloc/theme_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyNavigationDrawer extends StatefulWidget {
@@ -173,12 +175,9 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
   }
 
   Widget _getSelectedLanguageIcon() {
-    return Padding(
-      padding: const EdgeInsets.all(10),
-      child: CountryFlag.fromLanguageCode(
-        _selectedLanguage,
-        theme: const ImageTheme(shape: Circle(), height: 8, width: 8),
-      ),
+    return CountryFlag.fromLanguageCode(
+      _selectedLanguage,
+      theme: const ImageTheme(shape: Circle(), height: 18, width: 18),
     );
   }
 
@@ -260,34 +259,129 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
             child: Column(
               children: <Widget>[
                 const Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5),
-                      child: DropdownMenu<String>(
-                        inputDecorationTheme: const InputDecorationTheme(
-                          enabledBorder: InputBorder.none,
-                        ),
-                        width: 160,
-                        textStyle: Theme.of(context).textTheme.bodyMedium,
-                        initialSelection: _getDefaultLanguage().value,
-                        dropdownMenuEntries: _supportedLanguageList,
-                        leadingIcon: _getSelectedLanguageIcon(),
-                        label: Text(localizations.language),
-                        onSelected: (value) {
-                          if (value != null) {
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: PopupMenuButton<String>(
+                          initialValue: _getDefaultLanguage().value,
+                          onSelected: (value) {
                             context.read<LocalizationCubit>().setLocale(
                               Locale.fromSubtags(languageCode: value),
                             );
                             setState(() {
                               _selectedLanguage = value;
                             });
-                          }
-                        },
+                          },
+                          itemBuilder:
+                              (context) =>
+                                  _supportedLanguageList
+                                      .map(
+                                        (e) => PopupMenuItem<String>(
+                                          value: e.value,
+                                          child: Row(
+                                            children: [
+                                              if (e.leadingIcon != null)
+                                                e.leadingIcon!,
+                                              const SizedBox(width: 8),
+                                              Text(e.label),
+                                            ],
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    localizations.language,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                _getSelectedLanguageIcon(),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Container(
+                        height: 24,
+                        width: 1,
+                        color: Theme.of(context).dividerColor.withAlpha(128),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: BlocBuilder<ThemeCubit, ThemeState>(
+                          builder: (context, state) {
+                            return PopupMenuButton<ThemeMode>(
+                              initialValue: state.themeMode,
+                              onSelected: (value) {
+                                context.read<ThemeCubit>().setThemeMode(value);
+                              },
+                              itemBuilder:
+                                  (context) => [
+                                    _buildThemeMenuItem(
+                                      context,
+                                      ThemeMode.system,
+                                      localizations.systemTheme,
+                                      Icons.settings_brightness_outlined,
+                                    ),
+                                    _buildThemeMenuItem(
+                                      context,
+                                      ThemeMode.light,
+                                      localizations.lightTheme,
+                                      Icons.light_mode_outlined,
+                                    ),
+                                    _buildThemeMenuItem(
+                                      context,
+                                      ThemeMode.dark,
+                                      localizations.darkTheme,
+                                      Icons.dark_mode_outlined,
+                                    ),
+                                  ],
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        localizations.theme,
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodySmall,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(
+                                      state.themeMode == ThemeMode.system
+                                          ? Icons.settings_brightness_outlined
+                                          : state.themeMode == ThemeMode.light
+                                          ? Icons.light_mode_outlined
+                                          : Icons.dark_mode_outlined,
+                                      size: 18,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -301,7 +395,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                   TextSpan(
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     text: localizations.privacyPolicy,
                     recognizer:
@@ -319,15 +413,15 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                           },
                   ),
                   TextSpan(
-                    style: Theme.of(
-                      context,
-                    ).textTheme.labelMedium?.copyWith(color: Colors.black),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                     text: ' ${localizations.and} ',
                   ),
                   TextSpan(
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     text: localizations.termsAndConditions,
                     recognizer:
@@ -365,7 +459,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                               context,
                             ).textTheme.labelMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                             text: localizations.changePrivacyPolicy,
                             recognizer:
@@ -416,6 +510,20 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
       BlocProvider.of<NavigationDrawerBloc>(context).add(NavigateToEvent(item));
       Navigator.pop(context);
     }
+  }
+
+  PopupMenuItem<ThemeMode> _buildThemeMenuItem(
+    BuildContext context,
+    ThemeMode value,
+    String label,
+    IconData icon,
+  ) {
+    return PopupMenuItem<ThemeMode>(
+      value: value,
+      child: Row(
+        children: [Icon(icon, size: 20), const SizedBox(width: 8), Text(label)],
+      ),
+    );
   }
 }
 
