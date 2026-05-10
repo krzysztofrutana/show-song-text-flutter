@@ -9,9 +9,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get addingPlaylist => 'Adding a playlist';
-
-  @override
   String get addSong => 'Add a song';
 
   @override
@@ -21,19 +18,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addToPlaylistSentence => 'Add to playlist';
 
   @override
+  String get addedToPlaylist => 'Added song to playlist';
+
+  @override
   String get addedSelectedToPlaylist => 'Added selected songs to playlist';
+
+  @override
+  String get addingPlaylist => 'Adding a playlist';
 
   @override
   String get addingToPlaylist => 'Adding to playlist';
 
   @override
-  String get and => 'and';
+  String get anErrorOccurredWhileRetrievingListInformation => 'An error occurred while retrieving list information.';
 
   @override
   String get anErrorOccurredWhileTryingToChangeYourPrivacyPreferences => 'An error ocurred while trying to change your privacy preferences';
 
   @override
-  String get anErrorOccurredWhileRetrievingListInformation => 'An error occurred while retrieving list information.';
+  String get and => 'and';
 
   @override
   String get areYouSureYouWantDeletSelectedLists => 'Are you sure you want to delete the selected lists?';
@@ -58,6 +61,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get areYouSureYouWantToDeleteThisSong => 'Are you sure you want to delete this song?';
 
   @override
+  String get areYouSureYouWantToExitWithoutSaving => 'Are you sure you want to exit without saving changes?';
+
+  @override
   String get areYouSureYouWantToLeaveTheApplication => 'Are you sure you want to leave the application?';
 
   @override
@@ -68,6 +74,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backToList => 'Back to list';
+
+  @override
+  String get byArtistAndTitle => 'By artist and title';
+
+  @override
+  String get byTitle => 'By title';
 
   @override
   String get cancel => 'Cancel';
@@ -83,6 +95,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String get confirmDeletion => 'Confirm deletion';
 
   @override
   String get connecting => 'Connecting';
@@ -105,13 +120,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connectionToTheServer => 'Connection to the server';
 
   @override
+  String get couldNotFindTextForGivenParameters => 'Could not find text for the given parameters';
+
+  @override
   String get couldntFindMatchingArtist => 'Couldn\'t find a matching artist';
 
   @override
   String get couldntFindMatchingSong => 'Couldn\'t find a matching song';
-
-  @override
-  String get couldNotFindTextForGivenParameters => 'Could not find text for the given parameters';
 
   @override
   String get create => 'Create';
@@ -120,10 +135,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createPlaylist => 'Create playlist';
 
   @override
-  String get createdPlaylist => 'Created new playlist';
+  String get createPresentationError => 'Presentation lunch error';
 
   @override
-  String get createPresentationError => 'Presentation lunch error';
+  String get createdPlaylist => 'Created new playlist';
 
   @override
   String get currentIP => 'Current IP:';
@@ -132,19 +147,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete => 'Delete';
 
   @override
-  String get deletingPlaylists => 'Deleting playlists';
+  String get deletePlaylist => 'Delete playlist';
 
   @override
-  String get deletingSongs => 'Deleting songs';
+  String get deleteSong => 'Delete song';
 
   @override
   String get deletedSuccessfully => 'Successfully deleted';
 
   @override
-  String get deletePlaylist => 'Delete playlist';
+  String get deletingPlaylists => 'Deleting playlists';
 
   @override
-  String get deleteSong => 'Delete song';
+  String get deletingSongs => 'Deleting songs';
 
   @override
   String get editPlaylist => 'Edit playlist';
@@ -168,9 +183,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error => 'Error';
 
   @override
+  String get errorLoadingPlaylists => 'An error occurred while loading playlists. Please try again.';
+
+  @override
+  String get errorLoadingSongs => 'An error occurred while loading songs. Please try again.';
+
+  @override
   String errorWithMessage(Object message) {
     return 'Error: $message';
   }
+
+  @override
+  String get exit => 'Exit';
 
   @override
   String get exitApplication => 'Exit the application';
@@ -185,34 +209,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get help => 'Help';
 
   @override
-  String get helpSongsTitle => 'Songs management';
-
-  @override
-  String get helpSongsDescription => 'You can add songs manually or search for their lyrics. To add a song, click the \'+\' button on the song list. In the form, you can enter the title, author, and lyrics. Use the search button to automatically download the text.';
-
-  @override
-  String get helpPlaylistsTitle => 'Playlists';
-
-  @override
-  String get helpPlaylistsDescription => 'Playlists allow you to group songs into sets. You can create new playlists, edit their names, and add or remove songs. The order of songs on the list can be changed by dragging them using the handle icon.';
-
-  @override
-  String get helpPresentationTitle => 'Presentation mode';
-
-  @override
-  String get helpPresentationDescription => 'Presentation mode allows you to display song lyrics on other devices. In the presentation settings, you can configure the server parameters and see a QR code to facilitate connection.';
+  String get helpClientDescription => 'To connect as a client, enter the server\'s IP address or scan the QR code displayed on the main device. Once connected, you will see the lyrics of the song currently being presented.';
 
   @override
   String get helpClientTitle => 'Client mode';
 
   @override
-  String get helpClientDescription => 'To connect as a client, enter the server\'s IP address or scan the QR code displayed on the main device. Once connected, you will see the lyrics of the song currently being presented.';
+  String get helpPlaylistsDescription => 'Playlists allow you to group songs into sets. You can create new playlists, edit their names, and add or remove songs. The order of songs on the list can be changed by dragging them using the handle icon.';
+
+  @override
+  String get helpPlaylistsTitle => 'Playlists';
+
+  @override
+  String get helpPresentationDescription => 'Presentation mode allows you to display song lyrics on other devices. In the presentation settings, you can configure the server parameters and see a QR code to facilitate connection.';
+
+  @override
+  String get helpPresentationTitle => 'Presentation mode';
+
+  @override
+  String get helpSongsDescription => 'You can add songs manually or search for their lyrics. To add a song, click the \'+\' button on the song list. In the form, you can enter the title, author, and lyrics. Use the search button to automatically download the text.';
+
+  @override
+  String get helpSongsTitle => 'Songs management';
 
   @override
   String get ipIsRequired => 'IP is required';
 
   @override
   String get language => 'Language:';
+
+  @override
+  String get latest => 'Latest';
 
   @override
   String get leave => 'Leave';
@@ -269,6 +296,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'Ok';
 
   @override
+  String get oldest => 'Oldest';
+
+  @override
   String get parametersProvidedAreIncorrect => 'The parameters provided are incorrect';
 
   @override
@@ -313,7 +343,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
+  String get saveAndContinue => 'Save and continue';
+
+  @override
+  String get saveAndExit => 'Save and exit';
+
+  @override
   String get saveAndLunchPresentation => 'Save and present';
+
+  @override
+  String get savedSuccessfully => 'Saved successfully';
 
   @override
   String get search => 'Search';
@@ -343,33 +382,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get singersAssistant => 'Singer assistant';
 
   @override
+  String songMustHaveTextDividedIntoLines(Object title) {
+    return 'The song $title must have text divided into lines. Presentation creation has been suspended.';
+  }
+
+  @override
   String get songSelection => 'Song selection';
 
   @override
   String get songsAddedToPlaylist => 'Songs added to playlist';
 
   @override
-  String get sortBy => 'Sort by';
-
-  @override
-  String get latest => 'Latest';
-
-  @override
-  String get oldest => 'Oldest';
-
-  @override
-  String get byArtistAndTitle => 'By artist and title';
-
-  @override
-  String get byTitle => 'By title';
-
-  @override
   String get songsList => 'Songs list';
 
   @override
-  String songMustHaveTextDividedIntoLines(Object title) {
-    return 'The song $title must have text divided into lines. Presentation creation has been suspended.';
-  }
+  String get sortBy => 'Sort by';
+
+  @override
+  String get startServer => 'Start server';
+
+  @override
+  String get stopServer => 'Stop server';
 
   @override
   String get termsAndConditions => 'Terms and conditions';
@@ -384,13 +417,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get textIsRequired => 'Text is required';
 
   @override
-  String get thisWillBeTheFontSize => 'This will be the font size';
-
-  @override
   String get theAddressOfTheLastServerUsedIs => 'The address of the last server used is:';
 
   @override
   String get thePlaylistDoesNotContainAnySongs => 'The playlist does not contain any songs';
+
+  @override
+  String get theValueEnteredIsNotNumber => 'The value entered is not a number';
 
   @override
   String get thereIsAlreadyPlaylistWithThisName => 'There is already a playlist with this name';
@@ -402,13 +435,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thereWasProblemWithConnection => 'There was a problem with the connection';
 
   @override
-  String get theValueEnteredIsNotNumber => 'The value entered is not a number';
+  String get thisWillBeTheFontSize => 'This will be the font size';
 
   @override
   String get title => 'Title';
 
   @override
   String get titleIsRequired => 'Title is required';
+
+  @override
+  String get toAddToPlaylistSelectSongs => 'To add to the playlist you need to select songs.';
 
   @override
   String get toCreatePlaylistYouNeedToSelectSongs => 'To create a playlist you need to select songs.';
@@ -420,16 +456,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get toNewPlaylist => 'Create new playlist';
 
   @override
-  String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Too many matching artists found, please specify the artist name';
-
-  @override
-  String get toAddToPlaylistSelectSongs => 'To add to the playlist you need to select songs.';
-
-  @override
   String get toRunPresentationSelectSongs => 'To start presentation you need to select songs.';
 
   @override
   String get toSearchForTextYouNeedAtLeastTitleOrAuthor => 'To search for a text you need at least the title or author';
+
+  @override
+  String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Too many matching artists found, please specify the artist name';
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String get unsavedChanges => 'Unsaved changes';
+
+  @override
+  String get unsavedChangesInPlaylist => 'There are unsaved changes in the playlist. Do you want to save them before starting the presentation?';
 
   @override
   String get wifiHotspotDisabled => 'Wifi hotspot disabled';

@@ -8,22 +8,43 @@ class SongsRepository {
   final Box<Song> _box;
 
   List<Song> getAllSongs() {
-    return _box.values.toList();
+    try {
+      return _box.values.toList();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> addSong(Song song) async {
-    await _box.put(song.uuid, song);
+    try {
+      await _box.put(song.uuid, song);
+    } catch (e) {
+      // Re-throw or handle accordingly
+      rethrow;
+    }
   }
 
   Future<void> deleteSong(String uuid) async {
-    await _box.delete(uuid);
+    try {
+      await _box.delete(uuid);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> updateSong(Song song) async {
-    await _box.put(song.uuid, song);
+    try {
+      await _box.put(song.uuid, song);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Song? getSong(String uuid) {
-    return _box.get(uuid);
+    try {
+      return _box.get(uuid);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

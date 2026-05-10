@@ -199,17 +199,18 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
             alignment: Alignment.bottomCenter,
             child: Text(
               localizations.singersAssistant,
-              style: const TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
-          const Align(
+          Align(
             alignment: Alignment.bottomCenter,
             child: Text(
               "by Krzysztof Rutana",
-              style: TextStyle(fontSize: 11.0, fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           Align(
@@ -219,7 +220,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
               builder: (context, snapshot) {
                 return Text(
                   snapshot.hasData ? "${snapshot.data}" : "",
-                  style: const TextStyle(fontSize: 10.0),
+                  style: Theme.of(context).textTheme.labelSmall,
                 );
               },
             ),
@@ -267,10 +268,9 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                       child: DropdownMenu<String>(
                         inputDecorationTheme: const InputDecorationTheme(
                           enabledBorder: InputBorder.none,
-                          labelStyle: TextStyle(fontSize: 14),
                         ),
                         width: 160,
-                        textStyle: const TextStyle(fontSize: 14),
+                        textStyle: Theme.of(context).textTheme.bodyMedium,
                         initialSelection: _getDefaultLanguage().value,
                         dropdownMenuEntries: _supportedLanguageList,
                         leadingIcon: _getSelectedLanguageIcon(),
@@ -299,8 +299,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
               text: TextSpan(
                 children: [
                   TextSpan(
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -320,12 +319,13 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                           },
                   ),
                   TextSpan(
-                    style: const TextStyle(fontSize: 12, color: Colors.black),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelMedium?.copyWith(color: Colors.black),
                     text: ' ${localizations.and} ',
                   ),
                   TextSpan(
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -361,8 +361,9 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            style: const TextStyle(
-                              fontSize: 12,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.labelMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
@@ -372,13 +373,13 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                                   ..onTap = () async {
                                     Navigator.of(context).pop();
 
-                                    final scafooldMessenger =
+                                    final scaffoldMessenger =
                                         ScaffoldMessenger.of(context);
                                     final didChangePreferences =
                                         await _initializationHelper
                                             .changePrivacyPreferences();
 
-                                    scafooldMessenger.showSnackBar(
+                                    scaffoldMessenger.showSnackBar(
                                       SnackBar(
                                         content:
                                             didChangePreferences

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/cubit/playlist_edit_cubit.dart';
+import 'package:pomocnik_wokalisty/modules/playlists/edit/views/dialogs/song_selection_dialog.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
 
@@ -53,16 +54,31 @@ class _PlaylistSongsListComponentState
             child:
                 songs.isEmpty
                     ? Center(
-                      heightFactor: 2,
+                      heightFactor: 1,
                       child: SizedBox(
                         width: double.infinity,
-                        child: Column(
-                          children: [
-                            Text(
-                              localizations.noSongs,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                        child: ElevatedButton(
+                          onPressed: () => _showSongSelectionDialog(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            foregroundColor: Colors.black,
+                            elevation: 0,
+                            shape: const RoundedRectangleBorder(),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.add),
+                              const SizedBox(height: 4),
+                              Text(
+                                localizations.noSongs,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.labelMedium,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     )
@@ -84,10 +100,11 @@ class _PlaylistSongsListComponentState
                                 "${index + 1}. ${songs[index].title}",
                               ),
                               subtitle: Text(songs[index].author),
-                              titleTextStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                              titleTextStyle: Theme.of(
+                                context,
+                              ).textTheme.titleMedium?.copyWith(
                                 color: Colors.black,
+                                fontWeight: FontWeight.bold,
                               ),
                               contentPadding: const EdgeInsets.only(),
                               trailing: IconButton(
@@ -202,5 +219,16 @@ class _PlaylistSongsListComponentState
         );
       },
     );
+  }
+
+  Future<void> _showSongSelectionDialog(BuildContext context) async {
+    final selectedSongsIds = await showDialog<List<String>>(
+      context: context,
+      builder: (context) => const SongSelectionDialog(),
+    );
+
+    if (selectedSongsIds != null && selectedSongsIds.isNotEmpty) {
+      widget.playlistEditCubit.addSongs(selectedSongsIds);
+    }
   }
 }

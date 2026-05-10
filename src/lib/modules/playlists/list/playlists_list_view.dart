@@ -36,7 +36,14 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
-      body: PlaylistsListComponent(),
+      body: const PlaylistsListComponent(),
+      floatingActionButton: FloatingActionButton(
+        heroTag: "add",
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add, size: 30),
+        onPressed: () => _showCreatePlaylistModal(context),
+      ),
       bottomNavigationBar: BlocBuilder<
         PlaylistsListComponentBloc,
         PlaylistsListComponentState
@@ -81,7 +88,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                           FittedBox(
                             child: Text(
                               localizations.cancel,
-                              style: TextStyle(fontSize: fontSize),
+                              style: Theme.of(context).textTheme.labelMedium,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -111,7 +118,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                           FittedBox(
                             child: Text(
                               localizations.delete,
-                              style: TextStyle(fontSize: fontSize),
+                              style: Theme.of(context).textTheme.labelMedium,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -144,7 +151,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
                           FittedBox(
                             child: Text(
                               localizations.showText,
-                              style: TextStyle(fontSize: fontSize),
+                              style: Theme.of(context).textTheme.labelMedium,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -178,7 +185,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
           return AlertDialog(
             title: Text(
               localizations.noPlaylistsSelected,
-              style: const TextStyle(fontSize: 20),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             content: SingleChildScrollView(
               child: ListBody(
@@ -255,12 +262,18 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
       },
     );
 
-    if (playlistId != null && mounted) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => PlaylistEdit(playlistId: playlistId),
-        ),
-      );
+    if (playlistId != null && parentContext.mounted) {
+      final bloc = parentContext.read<PlaylistsListComponentBloc>();
+      final navigator = Navigator.of(parentContext);
+      navigator
+          .push(
+            MaterialPageRoute(
+              builder: (context) => PlaylistEdit(playlistId: playlistId),
+            ),
+          )
+          .then((_) {
+            bloc.add(LoadPlaylistsEvent());
+          });
     }
   }
 
@@ -281,7 +294,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
           return AlertDialog(
             title: Text(
               localizations.noPlaylistsSelected,
-              style: const TextStyle(fontSize: 20),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             content: SingleChildScrollView(
               child: ListBody(
@@ -307,7 +320,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
           return AlertDialog(
             title: Text(
               localizations.presentationIsOnlyPossibleForOneList,
-              style: const TextStyle(fontSize: 20),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             content: SingleChildScrollView(
               child: ListBody(
@@ -344,7 +357,7 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
             return AlertDialog(
               title: Text(
                 localizations.error,
-                style: const TextStyle(fontSize: 20),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               content: SingleChildScrollView(
                 child: ListBody(

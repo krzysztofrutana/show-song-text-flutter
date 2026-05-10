@@ -5,11 +5,9 @@ import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/connection_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
-import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
-import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
-import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
+import 'package:pomocnik_wokalisty/modules/songs/helpers/songs_ui_helper.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/songs_add.dart';
@@ -30,7 +28,6 @@ class SongsList extends StatefulWidget {
 
 class _SongsListState extends State<SongsList> with InterstitialAds {
   final _quickSearchFormKey = GlobalKey<FormState>();
-  final _playlistFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -126,7 +123,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                           FittedBox(
                             child: Text(
                               localizations.cancel,
-                              style: TextStyle(fontSize: fontSize),
+                              style: Theme.of(context).textTheme.labelMedium,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -156,7 +153,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                           FittedBox(
                             child: Text(
                               localizations.delete,
-                              style: TextStyle(fontSize: fontSize),
+                              style: Theme.of(context).textTheme.labelMedium,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -166,9 +163,24 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                   ),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed:
-                          () =>
-                              _showAddSelectedToPlaylistModal(internalContext),
+                      onPressed: () {
+                        SongsUIHelper.showAddSongsToPlaylistModal(
+                          context: context,
+                          selectedSongsIds:
+                              internalContext
+                                  .read<SongsListComponentBloc>()
+                                  .state
+                                  .selectedSongs,
+                          onSuccess: () {
+                            internalContext.read<SongsListComponentBloc>().add(
+                              ClearSelectedSongs(),
+                            );
+                            internalContext.read<SongsListComponentBloc>().add(
+                              ChooseSongChangeEvent(value: false),
+                            );
+                          },
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             Theme.of(context).scaffoldBackgroundColor,
@@ -190,7 +202,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                           FittedBox(
                             child: Text(
                               localizations.addToPlaylistSentence,
-                              style: TextStyle(fontSize: fontSize),
+                              style: Theme.of(context).textTheme.labelMedium,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -223,7 +235,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                           FittedBox(
                             child: Text(
                               localizations.showText,
-                              style: TextStyle(fontSize: fontSize),
+                              style: Theme.of(context).textTheme.labelMedium,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -243,7 +255,11 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
   void _redirectToSongsAdd(BuildContext context) {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (context) => SongsAdd()));
+    ).push(MaterialPageRoute(builder: (context) => const SongsAdd())).then((_) {
+      if (context.mounted) {
+        context.read<SongsListComponentBloc>().add(LoadSongsEvent());
+      }
+    });
   }
 
   Future<void> _showDeleteConfirmModal(BuildContext parentContext) async {
@@ -252,9 +268,7 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
         parentContext.read<SongsListComponentBloc>().state.selectedSongs.length;
 
     if (selectedSongsLength == 0) {
-      return showNoSongsSelectedDialog(
-        localizations.youMustMarkSongsToBeDeleted,
-      );
+      return SongsUIHelper.showNoSongsSelectedDialog(context);
     } else {
       return showDialog<void>(
         context: context,
@@ -296,223 +310,12 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
     }
   }
 
-  Future<void> _showCreatePlaylistModal(BuildContext parentContext) async {
-    final localizations = AppLocalizations.of(context)!;
-    final selectedSongs =
-        parentContext.read<SongsListComponentBloc>().state.selectedSongs;
-
-    parentContext.read<AddPlaylistBloc>().add(
-      PlaylistSetSelectedSongs(selectedSongs),
-    );
-
-    if (selectedSongs.isEmpty) {
-      return showNoSongsSelectedDialog(
-        localizations.toCreatePlaylistYouNeedToSelectSongs,
-      );
-    } else {
-      return showDialog<void>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(localizations.addingPlaylist),
-            content: SingleChildScrollView(
-              child: Form(
-                key: _playlistFormKey,
-                child: Column(
-                  children: [
-                    ListBody(
-                      children: <Widget>[
-                        Text(localizations.numberOfSongs(selectedSongs.length)),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            hintText: localizations.enterName,
-                            labelText: localizations.name,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return localizations.nameIsRequired;
-                            }
-                            return null;
-                          },
-                          onChanged:
-                              (value) => parentContext
-                                  .read<AddPlaylistBloc>()
-                                  .add(PlaylistAddNameChange(value)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: Text(localizations.cancel),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              TextButton(
-                child: Text(localizations.yes),
-                onPressed: () {
-                  if (_playlistFormKey.currentState!.validate()) {
-                    parentContext.read<AddPlaylistBloc>().add(
-                      AddPlaylistSave(),
-                    );
-                    parentContext.read<AddPlaylistBloc>().add(
-                      AddPlaylistReset(),
-                    );
-
-                    parentContext.read<SongsListComponentBloc>().add(
-                      ClearSelectedSongs(),
-                    );
-
-                    Navigator.of(context).pop();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(localizations.createdPlaylist)),
-                    );
-                  }
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
-  Future<void> _showAddSelectedToPlaylistModal(
-    BuildContext parentContext,
-  ) async {
-    final localizations = AppLocalizations.of(context)!;
-    final selectedSongs =
-        parentContext.read<SongsListComponentBloc>().state.selectedSongs;
-
-    final playlists = PlaylistsRepository().getAllPlaylists();
-
-    if (selectedSongs.isEmpty) {
-      return showNoSongsSelectedDialog(
-        localizations.toAddToPlaylistSelectSongs,
-      );
-    } else {
-      return showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            title: Text(localizations.addingToPlaylist),
-            children: _getPlaylistsOptions(
-              playlists,
-              selectedSongs,
-              parentContext,
-              context,
-            ),
-          );
-        },
-      );
-    }
-  }
-
-  Future<void> showNoSongsSelectedDialog(String message) {
-    final localizations = AppLocalizations.of(context)!;
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            localizations.noSongsSelected,
-            style: const TextStyle(fontSize: 20),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(children: <Widget>[Text(message)]),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(localizations.cancel),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  List<Widget> _getPlaylistsOptions(
-    Iterable<Playlist> playlists,
-    List<String> selectedSongs,
-    BuildContext parentContext,
-    BuildContext context,
-  ) {
-    final localizations = AppLocalizations.of(context)!;
-
-    final List<Widget> options = [
-      SimpleDialogOption(
-        child: Row(
-          children: [
-            const Icon(Icons.add_circle_outline),
-            const SizedBox(width: 10),
-            Text(localizations.toNewPlaylist),
-          ],
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-          _showCreatePlaylistModal(parentContext);
-        },
-      ),
-    ];
-
-    if (playlists.isNotEmpty) {
-      options.add(const Divider());
-      options.addAll(
-        playlists.map(
-          (playlist) => SimpleDialogOption(
-            child: Text(playlist.name),
-            onPressed: () {
-              _addSongsToPlaylist(playlist.uuid, selectedSongs);
-
-              parentContext.read<SongsListComponentBloc>().add(
-                ClearSelectedSongs(),
-              );
-              parentContext.read<SongsListComponentBloc>().add(
-                ChooseSongChangeEvent(value: false),
-              );
-
-              Navigator.of(context).pop();
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(localizations.addedSelectedToPlaylist)),
-              );
-            },
-          ),
-        ),
-      );
-    }
-
-    return options;
-  }
-
-  void _addSongsToPlaylist(String playlistId, List<String> selectedSongs) {
-    final playlistsRepository = sl<PlaylistsRepository>();
-    final playlist = playlistsRepository.getPlaylist(playlistId);
-
-    if (playlist != null) {
-      final updatedSongsIds = List<String>.from(playlist.songsIds)
-        ..addAll(selectedSongs);
-      playlistsRepository.updatePlaylist(
-        playlist.copyWith(songsIds: updatedSongsIds),
-      );
-    }
-  }
-
   void _runPresentationForSelected(BuildContext parentContext) async {
-    final localizations = AppLocalizations.of(context)!;
     final selectedSongs =
         parentContext.read<SongsListComponentBloc>().state.selectedSongs;
 
     if (selectedSongs.isEmpty) {
-      return showNoSongsSelectedDialog(
-        localizations.toRunPresentationSelectSongs,
-      );
+      return SongsUIHelper.showNoSongsSelectedDialog(context);
     }
     final songsRepository = sl<SongsRepository>();
     final allSongs = songsRepository.getAllSongs();

@@ -9,9 +9,8 @@ import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/s
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/sort_menu.dart';
 
 class SongsListComponent extends StatefulWidget {
-  final VoidCallback? onAddPressed;
-
   const SongsListComponent({super.key, this.onAddPressed});
+  final VoidCallback? onAddPressed;
 
   @override
   State<SongsListComponent> createState() => _SongsListComponentState();
@@ -37,6 +36,29 @@ class _SongsListComponentState extends State<SongsListComponent> {
       builder: (context, state) {
         if (state.status == SongsListStatus.loading) {
           return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state.status == SongsListStatus.error) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  localizations.errorLoadingSongs,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<SongsListComponentBloc>().add(
+                      LoadSongsEvent(),
+                    );
+                  },
+                  child: Text(localizations.tryAgain),
+                ),
+              ],
+            ),
+          );
         }
 
         final list = state.data;
@@ -97,9 +119,10 @@ class _SongsListComponentState extends State<SongsListComponent> {
                                         _onSongCheckboxClick(song, newValue),
                                 title: Text(
                                   songTitle,
-                                  style: const TextStyle(
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
                                     color: Colors.black,
                                   ),
                                 ),
@@ -113,9 +136,10 @@ class _SongsListComponentState extends State<SongsListComponent> {
                               return ListTile(
                                 title: Text(songTitle),
                                 subtitle: Text(songAuthor),
-                                titleTextStyle: const TextStyle(
+                                titleTextStyle: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 18,
                                   color: Colors.black,
                                 ),
                                 onTap:
@@ -162,9 +186,15 @@ class _SongsListComponentState extends State<SongsListComponent> {
   }
 
   void _redirectToSongsEdit(BuildContext context, Song song) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => SongsEdit(songId: song.uuid)),
-    );
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(builder: (context) => SongsEdit(songId: song.uuid)),
+        )
+        .then((_) {
+          if (context.mounted) {
+            context.read<SongsListComponentBloc>().add(LoadSongsEvent());
+          }
+        });
   }
 
   void _runPresentation(BuildContext context, Song song) {

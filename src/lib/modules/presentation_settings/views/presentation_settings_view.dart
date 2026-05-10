@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/helpers/ui_helper.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/presentation_settings/cubit/presentation_settings_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/presentation_settings/helpers/presentation_settings_validator.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class PresentationSettings extends StatefulWidget
-    with PresentationSettingsValidator {
-  PresentationSettings({super.key});
+class PresentationSettings extends StatefulWidget {
+  const PresentationSettings({super.key});
 
   @override
   State<PresentationSettings> createState() => _PresentationSettingsState();
@@ -18,7 +19,7 @@ class PresentationSettings extends StatefulWidget
 class _PresentationSettingsState extends State<PresentationSettings>
     with PresentationSettingsValidator {
   final PresentationSettingsCubit _presentationSettingsCubit =
-      PresentationSettingsCubit()..initSettings();
+      sl<PresentationSettingsCubit>()..initSettings();
 
   @override
   void initState() {
@@ -92,9 +93,7 @@ class _PresentationSettingsState extends State<PresentationSettings>
                       (context, state) => Text(
                         localizations.thisWillBeTheFontSize,
                         style: TextStyle(
-                          fontSize: double.parse(
-                            _presentationSettingsCubit.state.fontSize,
-                          ),
+                          fontSize: double.tryParse(state.fontSize) ?? 15.0,
                         ),
                       ),
                 ),
@@ -125,23 +124,22 @@ class _PresentationSettingsState extends State<PresentationSettings>
             ),
             child: Column(
               children: [
-                if (state.ip != null)
+                if (state.serverStarted && state.ip != null) ...[
                   QrImageView(
                     data: state.ip!,
-                    version: QrVersions.auto,
                     size: 200.0,
                     backgroundColor: Colors.white,
                   ),
-                const SizedBox(height: 10.0),
-                Text(localizations.currentIP),
-                Text(
-                  state.ip ?? localizations.wifiHotspotDisabled,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                  const SizedBox(height: 10.0),
+                  Text(localizations.currentIP),
+                  Text(
+                    state.ip!,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
+                ],
                 state.serverStarted
                     ? Text(
                       localizations.numberOfConnectedDevices(
@@ -150,17 +148,29 @@ class _PresentationSettingsState extends State<PresentationSettings>
                     )
                     : Text(localizations.serverDown),
                 state.serverStarted
-                    ? IconButton(
-                      iconSize: 40,
-                      color: Colors.red,
+                    ? TextButton.icon(
                       onPressed: () => context.read<ServerCubit>().stop(),
-                      icon: const Icon(Icons.stop_circle_outlined),
+                      icon: const Icon(
+                        Icons.stop_circle_outlined,
+                        color: Colors.red,
+                        size: 40,
+                      ),
+                      label: Text(
+                        localizations.stopServer,
+                        style: const TextStyle(color: Colors.red),
+                      ),
                     )
-                    : IconButton(
-                      iconSize: 40,
-                      color: Colors.green,
+                    : TextButton.icon(
                       onPressed: () => context.read<ServerCubit>().start(),
-                      icon: const Icon(Icons.play_arrow_outlined),
+                      icon: const Icon(
+                        Icons.play_arrow_outlined,
+                        color: Colors.green,
+                        size: 40,
+                      ),
+                      label: Text(
+                        localizations.startServer,
+                        style: const TextStyle(color: Colors.green),
+                      ),
                     ),
               ],
             ),
@@ -181,8 +191,6 @@ class _PresentationSettingsState extends State<PresentationSettings>
 
   void _showConfirmSaveToast(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(localizations.settingsHaveBeenSaved)),
-    );
+    UIHelper.showSnackBar(context, localizations.settingsHaveBeenSaved);
   }
 }

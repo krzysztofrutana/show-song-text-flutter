@@ -62,6 +62,27 @@ class _SearchDialogState extends State<SearchDialog> {
               ),
             ),
             actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(localizations.cancel),
+              ),
+              BlocBuilder<SongSearchCubit, SongSearchState>(
+                builder:
+                    (context, state) => Visibility(
+                      visible:
+                          state.status == ResultState.textFinded &&
+                          state.songsToChoose.isNotEmpty,
+                      child: TextButton(
+                        onPressed: () {
+                          context.read<SongSearchCubit>().backToSongsList();
+                          _showChooseDialog(context);
+                        },
+                        child: Text(localizations.backToList),
+                      ),
+                    ),
+              ),
               BlocBuilder<SongSearchCubit, SongSearchState>(
                 builder:
                     (context, state) => Visibility(
@@ -79,27 +100,6 @@ class _SearchDialogState extends State<SearchDialog> {
                         child: Text(localizations.confirm),
                       ),
                     ),
-              ),
-              BlocBuilder<SongSearchCubit, SongSearchState>(
-                builder:
-                    (context, state) => Visibility(
-                      visible:
-                          state.status == ResultState.textFinded &&
-                          state.songsToChoose.isNotEmpty,
-                      child: TextButton(
-                        onPressed: () {
-                          context.read<SongSearchCubit>().backToSongsList();
-                          _showChooseDialog(context);
-                        },
-                        child: Text(localizations.backToList),
-                      ),
-                    ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(localizations.cancel),
               ),
             ],
           ),
@@ -192,7 +192,7 @@ class _SearchDialogState extends State<SearchDialog> {
         final cubit = parentContext.read<SongSearchCubit>();
         if (cubit.state.findedText != null) {
           cubit.backToText();
-        } else {
+        } else if (cubit.state.status == ResultState.chooseSongFromList) {
           Navigator.of(parentContext).pop();
         }
       }
@@ -210,12 +210,11 @@ class _SearchDialogState extends State<SearchDialog> {
       result.add(
         SimpleDialogOption(
           child: Text(song.fullName),
-          onPressed: () {
-            setState(() {
-              parentContext.read<SongSearchCubit>().setChoosenSong(song);
-              _getSearchByChoosenSongDialog(parentContext);
-              Navigator.of(dialogContext).pop(song);
-            });
+          onPressed: () async {
+            parentContext.read<SongSearchCubit>().setChoosenSong(song);
+            Navigator.of(dialogContext).pop(song);
+            if (!parentContext.mounted) return;
+            await _getSearchByChoosenSongDialog(parentContext);
           },
         ),
       );

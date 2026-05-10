@@ -79,10 +79,19 @@ class SongsListComponentBloc
     SearchSongsEvent event,
     Emitter<SongsListComponentState> emit,
   ) {
-    final allSongs = _songsRepository.getAllSongs();
-    final filteredSongs = _filterSongs(allSongs, event.query);
-    final sortedSongs = _sortSongs(filteredSongs, state.sortOption);
-    emit(state.copyWith(searchQuery: event.query, data: sortedSongs));
+    try {
+      final allSongs = _songsRepository.getAllSongs();
+      final filteredSongs = _filterSongs(allSongs, event.query);
+      final sortedSongs = _sortSongs(filteredSongs, state.sortOption);
+      emit(state.copyWith(searchQuery: event.query, data: sortedSongs));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: SongsListStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
   }
 
   List<Song> _filterSongs(List<Song> songs, String query) {

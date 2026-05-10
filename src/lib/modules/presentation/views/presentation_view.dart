@@ -126,7 +126,14 @@ class _PresentationViewState extends State<PresentationView>
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(_currentPageInfo?.title ?? ""),
+                  Expanded(
+                    child: Text(
+                      _currentPageInfo?.title ?? "",
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   Visibility(
                     visible: _allSongsCount > 1 && _currentPageInfo != null,
                     child: Text(
@@ -138,7 +145,6 @@ class _PresentationViewState extends State<PresentationView>
                   ),
                 ],
               ),
-              centerTitle: true,
             ),
             body: Column(
               children: [

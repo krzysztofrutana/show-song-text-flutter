@@ -37,6 +37,29 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
           return const Center(child: CircularProgressIndicator());
         }
 
+        if (state.status == PlaylistsListStatus.error) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  localizations.errorLoadingPlaylists,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<PlaylistsListComponentBloc>().add(
+                      LoadPlaylistsEvent(),
+                    );
+                  },
+                  child: Text(localizations.tryAgain),
+                ),
+              ],
+            ),
+          );
+        }
+
         final list = state.data;
         return Column(
           children: [
@@ -80,9 +103,10 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
                                 ),
                                 title: Text(
                                   playlist.name,
-                                  style: const TextStyle(
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 18,
                                     color: Colors.black,
                                   ),
                                 ),
@@ -90,9 +114,10 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
                             } else {
                               return ListTile(
                                 title: Text(playlist.name),
-                                titleTextStyle: const TextStyle(
+                                titleTextStyle: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 18,
                                   color: Colors.black,
                                 ),
                                 onTap:
@@ -151,11 +176,19 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
   }
 
   void _redirectToPlaylistEdit(BuildContext context, Playlist playlist) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => PlaylistEdit(playlistId: playlist.uuid),
-      ),
-    );
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => PlaylistEdit(playlistId: playlist.uuid),
+          ),
+        )
+        .then((_) {
+          if (context.mounted) {
+            context.read<PlaylistsListComponentBloc>().add(
+              LoadPlaylistsEvent(),
+            );
+          }
+        });
   }
 
   void _runPresentation(BuildContext context, Playlist playlist) {

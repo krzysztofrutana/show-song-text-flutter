@@ -84,7 +84,17 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                   icon: const Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
-                title: Row(children: [Text(_title)]),
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _title,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               body: _getBody(state, localizations),
             ),
@@ -302,9 +312,9 @@ class _ClientScreenModeState extends State<ClientScreenMode>
               height: 300,
               child: MobileScanner(
                 onDetect: (capture) {
-                  final List<Barcode> barcodes = capture.barcodes;
+                  final barcodes = capture.barcodes;
                   for (final barcode in barcodes) {
-                    final String? code = barcode.rawValue;
+                    final code = barcode.rawValue;
                     if (code != null) {
                       context.read<ClientCubit>().setIp(code);
                       Navigator.of(

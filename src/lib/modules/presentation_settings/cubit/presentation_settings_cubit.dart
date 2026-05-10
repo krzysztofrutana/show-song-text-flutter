@@ -15,7 +15,7 @@ class PresentationSettingsCubit extends Cubit<PresentationSettingsStateBase> {
   }
 
   Future<void> setFontSize(String fontSize) async {
-    final persistSettings = await SharedPreferences.getInstance();
+    final persistSettings = sl<SharedPreferences>();
 
     await persistSettings.setInt('fontSize', int.parse(fontSize));
 

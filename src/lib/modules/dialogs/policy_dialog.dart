@@ -12,14 +12,16 @@ class PolicyDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+      ),
       child: Column(
         children: [
           Expanded(
             child: FutureBuilder<String>(
-              future: Future.delayed(const Duration(milliseconds: 150))
-                  .then((value) {
+              future: Future.delayed(const Duration(milliseconds: 150)).then((
+                value,
+              ) {
                 return rootBundle.loadString('assets/markdown/$mdFileName');
               }),
               builder: (context, snapshot) {
@@ -36,26 +38,30 @@ class PolicyDialog extends StatelessWidget {
             color: Colors.red,
             onPressed: () => Navigator.of(context).pop(),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(radius),
-                    bottomRight: Radius.circular(radius))),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(radius),
+                bottomRight: Radius.circular(radius),
+              ),
+            ),
             child: Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(radius),
-                      bottomRight: Radius.circular(radius))),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(radius),
+                  bottomRight: Radius.circular(radius),
+                ),
+              ),
               alignment: Alignment.center,
               height: 50,
               width: double.infinity,
               child: Text(
                 AppLocalizations.of(context)!.ok,
-                style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

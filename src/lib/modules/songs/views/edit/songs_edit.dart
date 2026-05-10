@@ -5,8 +5,10 @@ import 'package:pomocnik_wokalisty/ads/ads_mixin.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/bloc_text_form_field.dart';
 import 'package:pomocnik_wokalisty/helpers/connection_helper.dart';
+import 'package:pomocnik_wokalisty/helpers/ui_helper.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
-import 'package:pomocnik_wokalisty/modules/songs/views/add/helpers/song_add_validator.dart';
+import 'package:pomocnik_wokalisty/modules/songs/helpers/songs_ui_helper.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/cubit/song_search_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/models/search_dialog_result_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/views/dialogs/search_dialog.dart';
@@ -16,8 +18,8 @@ import 'package:pomocnik_wokalisty/modules/songs/views/edit/partials/playlistsLi
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/webscraping/models/song_to_find_model.dart';
 
-class SongsEdit extends StatefulWidget with SongAddValidator {
-  SongsEdit({super.key, required this.songId, this.cubit});
+class SongsEdit extends StatefulWidget {
+  const SongsEdit({super.key, required this.songId, this.cubit});
 
   final String songId;
   final SongsEditCubit? cubit;
@@ -60,7 +62,7 @@ class _SongsEditState extends State<SongsEdit>
 
     return BlocProvider(
       create: (context) {
-        final cubit = widget.cubit ?? SongsEditCubit();
+        final cubit = widget.cubit ?? sl<SongsEditCubit>();
         cubit.initForm(widget.songId);
         return cubit;
       },
@@ -77,10 +79,17 @@ class _SongsEditState extends State<SongsEdit>
                 return;
               }
 
-              final shouldPop =
-                  await _showExitConfirmationDialog(context) ?? false;
-              if (shouldPop && context.mounted) {
-                Navigator.of(context).pop();
+              final action = await UIHelper.showExitConfirmationDialog(context);
+
+              if (action == ExitAction.cancel) return;
+
+              if (context.mounted) {
+                if (action == ExitAction.saveAndExit) {
+                  await cubit.save();
+                }
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               }
             },
             child: Scaffold(
@@ -91,7 +100,7 @@ class _SongsEditState extends State<SongsEdit>
                 ),
                 title: Text(
                   localizations.editSong,
-                  style: const TextStyle(fontSize: 18),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
               body: Column(
@@ -124,17 +133,54 @@ class _SongsEditState extends State<SongsEdit>
                                         ),
                                       ),
                                       child: Column(
-                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const Icon(Icons.search),
                                           const SizedBox(height: 4),
-                                          FittedBox(
-                                            child: Text(
-                                              localizations.search,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
+                                          Text(
+                                            localizations.search,
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.visible,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.labelMedium,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed:
+                                          () => _showAddToPlaylistModal(
+                                            context,
+                                            cubit,
+                                            state.uuid,
+                                          ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).scaffoldBackgroundColor,
+                                        foregroundColor: Colors.black,
+                                        elevation: 0,
+                                        shape: const RoundedRectangleBorder(),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          const Icon(Icons.playlist_add),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            localizations.addToPlaylistSentence,
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.visible,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.labelMedium,
                                           ),
                                         ],
                                       ),
@@ -164,17 +210,17 @@ class _SongsEditState extends State<SongsEdit>
                                         ),
                                       ),
                                       child: Column(
-                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const Icon(Icons.save),
                                           const SizedBox(height: 4),
-                                          FittedBox(
-                                            child: Text(
-                                              localizations.save,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
+                                          Text(
+                                            localizations.save,
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.visible,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.labelMedium,
                                           ),
                                         ],
                                       ),
@@ -197,17 +243,17 @@ class _SongsEditState extends State<SongsEdit>
                                         ),
                                       ),
                                       child: Column(
-                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const Icon(Icons.delete),
                                           const SizedBox(height: 4),
-                                          FittedBox(
-                                            child: Text(
-                                              localizations.delete,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
+                                          Text(
+                                            localizations.delete,
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.visible,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.labelMedium,
                                           ),
                                         ],
                                       ),
@@ -301,36 +347,28 @@ class _SongsEditState extends State<SongsEdit>
     );
   }
 
-  void _saveSong(BuildContext context, SongsEditCubit songAddCubit) {
-    songAddCubit.save();
+  Future<void> _saveSong(
+    BuildContext context,
+    SongsEditCubit songAddCubit,
+  ) async {
+    await songAddCubit.save();
 
-    context.read<SongsListComponentBloc>().add(ReloadListEvent());
-
-    return Navigator.of(context).pop();
+    if (context.mounted) {
+      context.read<SongsListComponentBloc>().add(ReloadListEvent());
+      UIHelper.showSuccessSnackBar(
+        context,
+        AppLocalizations.of(context)!.savedSuccessfully,
+      );
+    }
   }
 
   void _confirmDelete(BuildContext context, SongsEditCubit cubit) async {
     final localizations = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await UIHelper.showConfirmDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(localizations.deleteSong),
-            content: Text(localizations.areYouSureYouWantToDeleteThisSong),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(localizations.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                  localizations.delete,
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
-          ),
+      title: localizations.confirmDeletion,
+      content: localizations.areYouSureYouWantToDeleteThisSong,
+      confirmLabel: localizations.delete,
     );
 
     if (confirmed == true && context.mounted) {
@@ -354,6 +392,8 @@ class _SongsEditState extends State<SongsEdit>
       }
       return;
     }
+
+    if (!builderContext.mounted) return;
 
     if (songEditCubit.state.author.isEmpty &&
         songEditCubit.state.title.isEmpty) {
@@ -386,13 +426,15 @@ class _SongsEditState extends State<SongsEdit>
         showInterstitialAds();
         songEditCubit.updateText(searchResult.text);
 
-        if (songEditCubit.state.author.isEmpty &&
-            (searchResult.author != null && searchResult.author!.isNotEmpty)) {
+        if (searchResult.author != null &&
+            searchResult.author!.isNotEmpty &&
+            searchResult.author != songEditCubit.state.author) {
           songEditCubit.updateAuthor(searchResult.author);
         }
 
-        if (songEditCubit.state.title.isEmpty &&
-            (searchResult.title != null && searchResult.title!.isNotEmpty)) {
+        if (searchResult.title != null &&
+            searchResult.title!.isNotEmpty &&
+            searchResult.title != songEditCubit.state.title) {
           songEditCubit.updateTitle(searchResult.title);
         }
       }
@@ -403,8 +445,9 @@ class _SongsEditState extends State<SongsEdit>
     BuildContext context,
     AppLocalizations localizations,
   ) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(localizations.noActiveInternetConnection)),
+    UIHelper.showErrorSnackBar(
+      context,
+      localizations.noActiveInternetConnection,
     );
   }
 
@@ -412,31 +455,37 @@ class _SongsEditState extends State<SongsEdit>
     BuildContext context,
     AppLocalizations localizations,
   ) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(localizations.toSearchForTextYouNeedAtLeastTitleOrAuthor),
-      ),
+    UIHelper.showErrorSnackBar(
+      context,
+      localizations.toSearchForTextYouNeedAtLeastTitleOrAuthor,
     );
   }
 
-  Future<bool?> _showExitConfirmationDialog(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(localizations.areYouSureYouWantToLeaveTheApplication),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(localizations.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(localizations.leave),
-              ),
-            ],
-          ),
-    );
+  Future<void> _showAddToPlaylistModal(
+    BuildContext context,
+    SongsEditCubit cubit,
+    String songId,
+  ) async {
+    if (cubit.isModified) {
+      final shouldSave = await UIHelper.showSaveBeforeActionDialog(context);
+      if (shouldSave == true) {
+        cubit.save();
+        if (context.mounted) {
+          context.read<SongsListComponentBloc>().add(ReloadListEvent());
+        }
+      } else {
+        return;
+      }
+    }
+
+    if (!context.mounted) return;
+
+    if (context.mounted) {
+      await SongsUIHelper.showAddSongsToPlaylistModal(
+        context: context,
+        selectedSongsIds: [songId],
+        successMessage: AppLocalizations.of(context)!.addedToPlaylist,
+      );
+    }
   }
 }

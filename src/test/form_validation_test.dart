@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/add/bloc/add_playlist_bloc.dart';
@@ -24,9 +23,12 @@ import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/s
 class MockAddPlaylistBloc extends MockBloc<AddPlaylistEvent, AddPlaylistState>
     implements AddPlaylistBloc {}
 
-class MockPlaylistsListComponentBloc extends MockBloc<
-        playlists_bloc.PlaylistsListComponentEvent,
-        playlists_bloc.PlaylistsListComponentState>
+class MockPlaylistsListComponentBloc
+    extends
+        MockBloc<
+          playlists_bloc.PlaylistsListComponentEvent,
+          playlists_bloc.PlaylistsListComponentState
+        >
     implements playlists_bloc.PlaylistsListComponentBloc {}
 
 class MockSongsAddCubit extends MockCubit<SongsAddState>
@@ -35,8 +37,12 @@ class MockSongsAddCubit extends MockCubit<SongsAddState>
 class MockSongsEditCubit extends MockCubit<SongsEditState>
     implements SongsEditCubit {}
 
-class MockSongsListComponentBloc extends MockBloc<
-        songs_bloc.SongsListComponentEvent, songs_bloc.SongsListComponentState>
+class MockSongsListComponentBloc
+    extends
+        MockBloc<
+          songs_bloc.SongsListComponentEvent,
+          songs_bloc.SongsListComponentState
+        >
     implements songs_bloc.SongsListComponentBloc {}
 
 class MockSongsRepository extends Mock implements SongsRepository {}
@@ -51,9 +57,29 @@ void main() {
   setUpAll(() {
     registerFallbackValue(SongFake());
     registerFallbackValue(PlaylistFake());
-    sl.registerLazySingleton<SongsRepository>(() => MockSongsRepository());
+    final mockSongsRepository = MockSongsRepository();
+    final mockPlaylistsRepository = MockPlaylistsRepository();
+    final mockSongsEditCubit = MockSongsEditCubit();
+
+    sl.registerLazySingleton<SongsRepository>(() => mockSongsRepository);
     sl.registerLazySingleton<PlaylistsRepository>(
-        () => MockPlaylistsRepository());
+      () => mockPlaylistsRepository,
+    );
+    sl.registerFactory<SongsEditCubit>(() => mockSongsEditCubit);
+
+    when(() => mockPlaylistsRepository.getAllPlaylists()).thenReturn([]);
+    when(() => mockSongsRepository.getAllSongs()).thenReturn([]);
+    when(() => mockSongsEditCubit.state).thenReturn(
+      const SongsEditState(
+        autovalidateMode: AutovalidateMode.disabled,
+        uuid: '1',
+        author: '',
+        title: '',
+        text: '',
+        key: '',
+      ),
+    );
+    when(() => mockSongsEditCubit.initForm(any())).thenReturn(null);
   });
 
   group('AddPlaylistDialog Validation', () {
@@ -71,8 +97,9 @@ void main() {
       );
     });
 
-    testWidgets('shows validation error when name is empty and save is pressed',
-        (tester) async {
+    testWidgets('shows validation error when name is empty and save is pressed', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -82,7 +109,8 @@ void main() {
             providers: [
               BlocProvider<AddPlaylistBloc>.value(value: mockAddPlaylistBloc),
               BlocProvider<playlists_bloc.PlaylistsListComponentBloc>.value(
-                  value: mockPlaylistsListComponentBloc),
+                value: mockPlaylistsListComponentBloc,
+              ),
             ],
             child: Scaffold(body: AddPlaylistDialog()),
           ),
@@ -91,15 +119,18 @@ void main() {
 
       // Verify initial state
       expect(
-          find.text('Add Playlist'), findsNothing); // It's in the dialog title
+        find.text('Add Playlist'),
+        findsNothing,
+      ); // It's in the dialog title
       // Wait, the title in English is 'Adding playlist'? Let's check AppLocalizations
       // line 101: pl: 'Dodawanie playlisty', so en is likely 'Adding playlist'
 
       // Since it's an AlertDialog, it might not be visible immediately if not shown correctly
       // But here it's the home widget, so it should be visible.
 
-      await tester
-          .tap(find.text('Yes')); // The save button text is 'Yes' (Tak in PL)
+      await tester.tap(
+        find.text('Yes'),
+      ); // The save button text is 'Yes' (Tak in PL)
       await tester.pumpAndSettle();
 
       // Should find 'Name is required' (localizations.nameIsRequired)
@@ -107,9 +138,11 @@ void main() {
       expect(find.text('Name is required'), findsOneWidget);
 
       // Verify that AddPlaylistUpdateAutovalidateMode was added
-      verify(() => mockAddPlaylistBloc.add(
-              const AddPlaylistUpdateAutovalidateMode(AutovalidateMode.always)))
-          .called(1);
+      verify(
+        () => mockAddPlaylistBloc.add(
+          const AddPlaylistUpdateAutovalidateMode(AutovalidateMode.always),
+        ),
+      ).called(1);
     });
 
     testWidgets('calls save when name is provided', (tester) async {
@@ -128,7 +161,8 @@ void main() {
             providers: [
               BlocProvider<AddPlaylistBloc>.value(value: mockAddPlaylistBloc),
               BlocProvider<playlists_bloc.PlaylistsListComponentBloc>.value(
-                  value: mockPlaylistsListComponentBloc),
+                value: mockPlaylistsListComponentBloc,
+              ),
             ],
             child: Scaffold(body: AddPlaylistDialog()),
           ),
@@ -145,10 +179,12 @@ void main() {
   group('SongsAdd Validation', () {
     late MockSongsAddCubit mockSongsAddCubit;
     late MockSongsListComponentBloc mockSongsListComponentBloc;
+    late MockSongsEditCubit mockSongsEditCubit;
 
     setUp(() {
       mockSongsAddCubit = MockSongsAddCubit();
       mockSongsListComponentBloc = MockSongsListComponentBloc();
+      mockSongsEditCubit = MockSongsEditCubit();
 
       when(() => mockSongsAddCubit.state).thenReturn(
         const SongsAddState(
@@ -160,87 +196,6 @@ void main() {
           key: '',
         ),
       );
-    });
-
-    testWidgets(
-        'shows validation error when fields are empty and save is pressed',
-        (tester) async {
-      when(() => sl<SongsRepository>().getAllSongs()).thenReturn([]);
-
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: MultiBlocProvider(
-            providers: [
-              BlocProvider<songs_bloc.SongsListComponentBloc>.value(
-                  value: mockSongsListComponentBloc),
-            ],
-            child: SongsAdd(cubit: mockSongsAddCubit),
-          ),
-        ),
-      );
-
-      await tester.tap(find.byIcon(Icons.save));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Author is required'), findsOneWidget);
-      expect(find.text('Title is required'), findsOneWidget);
-      expect(find.text('Text is required'), findsOneWidget);
-
-      verify(() =>
-              mockSongsAddCubit.updateAutovalidateMode(AutovalidateMode.always))
-          .called(1);
-    });
-
-    testWidgets('calls save when all fields are provided', (tester) async {
-      when(() => mockSongsAddCubit.state).thenReturn(
-        const SongsAddState(
-          autovalidateMode: AutovalidateMode.disabled,
-          uuid: '1',
-          author: 'Test Author',
-          title: 'Test Title',
-          text: 'Test Text',
-          key: 'C',
-        ),
-      );
-      when(() => mockSongsAddCubit.save()).thenAnswer((_) async {});
-      when(() => sl<SongsRepository>().getAllSongs()).thenReturn([]);
-
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: MultiBlocProvider(
-            providers: [
-              BlocProvider<songs_bloc.SongsListComponentBloc>.value(
-                  value: mockSongsListComponentBloc),
-            ],
-            child: SongsAdd(cubit: mockSongsAddCubit),
-          ),
-        ),
-      );
-
-      await tester.tap(find.byIcon(Icons.save));
-      await tester.pumpAndSettle();
-
-      verify(() => mockSongsAddCubit.save()).called(1);
-      verify(() => mockSongsListComponentBloc.add(songs_bloc.ReloadListEvent()))
-          .called(1);
-    });
-  });
-
-  group('SongsEdit Validation', () {
-    late MockSongsEditCubit mockSongsEditCubit;
-    late MockSongsListComponentBloc mockSongsListComponentBloc;
-
-    setUp(() {
-      mockSongsEditCubit = MockSongsEditCubit();
-      mockSongsListComponentBloc = MockSongsListComponentBloc();
-
-      when(() => sl<PlaylistsRepository>().getAllPlaylists()).thenReturn([]);
 
       when(() => mockSongsEditCubit.state).thenReturn(
         const SongsEditState(
@@ -256,9 +211,51 @@ void main() {
     });
 
     testWidgets(
-        'shows validation error when fields are empty and save is pressed',
-        (tester) async {
-      when(() => sl<SongsRepository>().getAllSongs()).thenReturn([]);
+      'shows validation error when fields are empty and save is pressed',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('en'),
+            home: MultiBlocProvider(
+              providers: [
+                BlocProvider<songs_bloc.SongsListComponentBloc>.value(
+                  value: mockSongsListComponentBloc,
+                ),
+              ],
+              child: SongsAdd(cubit: mockSongsAddCubit),
+            ),
+          ),
+        );
+
+        await tester.tap(find.byIcon(Icons.save));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Author is required'), findsOneWidget);
+        expect(find.text('Title is required'), findsOneWidget);
+        expect(find.text('Text is required'), findsOneWidget);
+
+        verify(
+          () =>
+              mockSongsAddCubit.updateAutovalidateMode(AutovalidateMode.always),
+        ).called(1);
+      },
+    );
+
+    testWidgets('calls save when all fields are provided', (tester) async {
+      when(() => mockSongsAddCubit.state).thenReturn(
+        const SongsAddState(
+          autovalidateMode: AutovalidateMode.disabled,
+          uuid: '1',
+          author: 'Test Author',
+          title: 'Test Title',
+          text: 'Test Text',
+          key: 'C',
+        ),
+      );
+      when(() => mockSongsAddCubit.save()).thenAnswer((_) async => '1');
+      when(() => mockSongsEditCubit.save()).thenAnswer((_) async {});
 
       await tester.pumpWidget(
         MaterialApp(
@@ -268,9 +265,10 @@ void main() {
           home: MultiBlocProvider(
             providers: [
               BlocProvider<songs_bloc.SongsListComponentBloc>.value(
-                  value: mockSongsListComponentBloc),
+                value: mockSongsListComponentBloc,
+              ),
             ],
-            child: SongsEdit(songId: '1', cubit: mockSongsEditCubit),
+            child: SongsAdd(cubit: mockSongsAddCubit),
           ),
         ),
       );
@@ -278,13 +276,67 @@ void main() {
       await tester.tap(find.byIcon(Icons.save));
       await tester.pumpAndSettle();
 
-      expect(find.text('Author is required'), findsOneWidget);
-      expect(find.text('Title is required'), findsOneWidget);
-      expect(find.text('Text is required'), findsOneWidget);
-
-      verify(() => mockSongsEditCubit
-          .updateAutovalidateMode(AutovalidateMode.always)).called(1);
+      verify(() => mockSongsAddCubit.save()).called(1);
+      verify(
+        () => mockSongsListComponentBloc.add(songs_bloc.ReloadListEvent()),
+      ).called(1);
     });
+  });
+
+  group('SongsEdit Validation', () {
+    late MockSongsEditCubit mockSongsEditCubit;
+    late MockSongsListComponentBloc mockSongsListComponentBloc;
+
+    setUp(() {
+      mockSongsEditCubit = MockSongsEditCubit();
+      mockSongsListComponentBloc = MockSongsListComponentBloc();
+
+      when(() => mockSongsEditCubit.state).thenReturn(
+        const SongsEditState(
+          autovalidateMode: AutovalidateMode.disabled,
+          uuid: '1',
+          author: '',
+          title: '',
+          text: '',
+          key: '',
+        ),
+      );
+      when(() => mockSongsEditCubit.initForm(any())).thenReturn(null);
+    });
+
+    testWidgets(
+      'shows validation error when fields are empty and save is pressed',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('en'),
+            home: MultiBlocProvider(
+              providers: [
+                BlocProvider<songs_bloc.SongsListComponentBloc>.value(
+                  value: mockSongsListComponentBloc,
+                ),
+              ],
+              child: SongsEdit(songId: '1', cubit: mockSongsEditCubit),
+            ),
+          ),
+        );
+
+        await tester.tap(find.byIcon(Icons.save));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Author is required'), findsOneWidget);
+        expect(find.text('Title is required'), findsOneWidget);
+        expect(find.text('Text is required'), findsOneWidget);
+
+        verify(
+          () => mockSongsEditCubit.updateAutovalidateMode(
+            AutovalidateMode.always,
+          ),
+        ).called(1);
+      },
+    );
 
     testWidgets('calls save when all fields are provided', (tester) async {
       when(() => mockSongsEditCubit.state).thenReturn(
@@ -298,7 +350,6 @@ void main() {
         ),
       );
       when(() => mockSongsEditCubit.save()).thenAnswer((_) async {});
-      when(() => sl<SongsRepository>().getAllSongs()).thenReturn([]);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -308,7 +359,8 @@ void main() {
           home: MultiBlocProvider(
             providers: [
               BlocProvider<songs_bloc.SongsListComponentBloc>.value(
-                  value: mockSongsListComponentBloc),
+                value: mockSongsListComponentBloc,
+              ),
             ],
             child: SongsEdit(songId: '1', cubit: mockSongsEditCubit),
           ),
@@ -319,8 +371,9 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(() => mockSongsEditCubit.save()).called(1);
-      verify(() => mockSongsListComponentBloc.add(songs_bloc.ReloadListEvent()))
-          .called(1);
+      verify(
+        () => mockSongsListComponentBloc.add(songs_bloc.ReloadListEvent()),
+      ).called(1);
     });
   });
 }

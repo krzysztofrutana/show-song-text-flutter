@@ -8,7 +8,7 @@ part of 'song_model.dart';
 
 class SongAdapter extends TypeAdapter<Song> {
   @override
-  final int typeId = 1;
+  final typeId = 1;
 
   @override
   Song read(BinaryReader reader) {

@@ -4,6 +4,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:pomocnik_wokalisty/ads/ads_mixin.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/bloc_text_form_field.dart';
+import 'package:pomocnik_wokalisty/helpers/ui_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/cubit/playlist_edit_cubit.dart';
@@ -15,8 +16,8 @@ import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repo
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
 
-class PlaylistEdit extends StatefulWidget with PlaylistEditValidator {
-  PlaylistEdit({super.key, required this.playlistId});
+class PlaylistEdit extends StatefulWidget {
+  const PlaylistEdit({super.key, required this.playlistId});
 
   final String playlistId;
 
@@ -57,7 +58,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
     final localizations = AppLocalizations.of(context)!;
 
     return BlocProvider(
-      create: (context) => PlaylistEditCubit()..initForm(widget.playlistId),
+      create: (context) => sl<PlaylistEditCubit>()..initForm(widget.playlistId),
       child: BlocBuilder<PlaylistEditCubit, PlaylistEditState>(
         builder: (context, state) {
           final cubit = context.read<PlaylistEditCubit>();
@@ -71,10 +72,17 @@ class _PlaylistEditState extends State<PlaylistEdit>
                 return;
               }
 
-              final shouldPop =
-                  await _showExitConfirmationDialog(context) ?? false;
-              if (shouldPop && context.mounted) {
-                Navigator.of(context).pop();
+              final action = await UIHelper.showExitConfirmationDialog(context);
+
+              if (action == ExitAction.cancel) return;
+
+              if (context.mounted) {
+                if (action == ExitAction.saveAndExit) {
+                  await cubit.save();
+                }
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               }
             },
             child: Scaffold(
@@ -85,7 +93,7 @@ class _PlaylistEditState extends State<PlaylistEdit>
                 ),
                 title: Text(
                   localizations.editPlaylist,
-                  style: const TextStyle(fontSize: 18),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
               body: Column(
@@ -128,9 +136,10 @@ class _PlaylistEditState extends State<PlaylistEdit>
                                           FittedBox(
                                             child: Text(
                                               localizations.addSong,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.labelMedium,
                                             ),
                                           ),
                                         ],
@@ -169,9 +178,10 @@ class _PlaylistEditState extends State<PlaylistEdit>
                                           FittedBox(
                                             child: Text(
                                               localizations.presentationScreen,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.labelMedium,
                                             ),
                                           ),
                                         ],
@@ -209,9 +219,10 @@ class _PlaylistEditState extends State<PlaylistEdit>
                                           FittedBox(
                                             child: Text(
                                               localizations.save,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.labelMedium,
                                             ),
                                           ),
                                         ],
@@ -242,9 +253,10 @@ class _PlaylistEditState extends State<PlaylistEdit>
                                           FittedBox(
                                             child: Text(
                                               localizations.delete,
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                              ),
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.labelMedium,
                                             ),
                                           ),
                                         ],
@@ -313,26 +325,11 @@ class _PlaylistEditState extends State<PlaylistEdit>
 
   void _confirmDelete(BuildContext context, PlaylistEditCubit cubit) async {
     final localizations = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await UIHelper.showConfirmDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(localizations.deletePlaylist),
-            content: Text(localizations.areYouSureYouWantToDeleteThisPlaylist),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(localizations.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                  localizations.delete,
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
-          ),
+      title: localizations.confirmDeletion,
+      content: localizations.areYouSureYouWantToDeleteThisPlaylist,
+      confirmLabel: localizations.delete,
     );
 
     if (confirmed == true && context.mounted) {
@@ -344,15 +341,19 @@ class _PlaylistEditState extends State<PlaylistEdit>
     }
   }
 
-  void _savePlaylist(
+  Future<void> _savePlaylist(
     BuildContext context,
     PlaylistEditCubit playlistEditCubit,
-  ) {
-    playlistEditCubit.save();
+  ) async {
+    await playlistEditCubit.save();
 
-    context.read<PlaylistsListComponentBloc>().add(ReloadListEvent());
-
-    return Navigator.of(context).pop();
+    if (context.mounted) {
+      context.read<PlaylistsListComponentBloc>().add(ReloadListEvent());
+      UIHelper.showSuccessSnackBar(
+        context,
+        AppLocalizations.of(context)!.savedSuccessfully,
+      );
+    }
   }
 
   void _runPresentationForSelected(
@@ -360,13 +361,40 @@ class _PlaylistEditState extends State<PlaylistEdit>
     PlaylistEditCubit cubit,
   ) async {
     final localizations = AppLocalizations.of(parentContext)!;
+
+    if (cubit.isModified) {
+      final shouldSave = await UIHelper.showSaveBeforeActionDialog(
+        parentContext,
+      );
+      if (shouldSave == true) {
+        await cubit.save();
+        if (parentContext.mounted) {
+          parentContext.read<PlaylistsListComponentBloc>().add(
+            ReloadListEvent(),
+          );
+        }
+      } else {
+        return;
+      }
+    }
+
+    if (!parentContext.mounted) return;
+
     final selectedSongs = cubit.state.songsIds;
 
     if (selectedSongs.isEmpty) {
-      return showNoSongsAssignedDialog(
-        localizations.thePlaylistDoesNotContainAnySongs,
-      );
+      if (parentContext.mounted) {
+        await UIHelper.showConfirmDialog(
+          context: parentContext,
+          title: localizations.noSongsAssigned,
+          content: localizations.thePlaylistDoesNotContainAnySongs,
+        );
+      }
+      return;
     }
+
+    if (!parentContext.mounted) return;
+
     final playlist = sl<PlaylistsRepository>().getPlaylist(cubit.state.uuid);
 
     parentContext.read<PresentationBloc>().add(
@@ -375,55 +403,11 @@ class _PlaylistEditState extends State<PlaylistEdit>
 
     showInterstitialAds();
 
-    Navigator.of(parentContext).push(
-      MaterialPageRoute(builder: (parentContext) => const PresentationView()),
-    );
-  }
-
-  Future<void> showNoSongsAssignedDialog(String message) {
-    final localizations = AppLocalizations.of(context)!;
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            localizations.noSongsAssigned,
-            style: const TextStyle(fontSize: 20),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(children: <Widget>[Text(message)]),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(localizations.cancel),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<bool?> _showExitConfirmationDialog(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(localizations.areYouSureYouWantToLeaveTheApplication),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(localizations.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(localizations.leave),
-              ),
-            ],
-          ),
-    );
+    if (parentContext.mounted) {
+      Navigator.of(parentContext).push(
+        MaterialPageRoute(builder: (parentContext) => const PresentationView()),
+      );
+    }
   }
 
   Future<void> _showSongSelectionDialog(

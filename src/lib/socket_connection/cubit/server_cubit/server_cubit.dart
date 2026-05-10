@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,14 +10,15 @@ part 'server_state.dart';
 
 class ServerCubit extends Cubit<ServerState> {
   ServerCubit({Server? server})
-      : _server = server ?? sl<Server>(),
-        super(const ServerState()) {
+    : _server = server ?? sl<Server>(),
+      super(const ServerState()) {
     _server.init().then((_) => _updateState());
     _subscription = _server.connectionStream.listen((event) {
       _updateState();
     });
-    _connectivitySubscription =
-        Connectivity().onConnectivityChanged.listen((result) {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      result,
+    ) {
       refreshIp();
     });
   }
@@ -45,17 +47,20 @@ class ServerCubit extends Cubit<ServerState> {
   }
 
   void _updateState() {
-    emit(ServerState(
-      serverStarted: _server.serverStarted,
-      activeClientsCount: _server.activeClients.length,
-      ip: _server.ip,
-    ));
+    emit(
+      ServerState(
+        serverStarted: _server.serverStarted,
+        activeClientsCount: _server.activeClients.length,
+        ip: _server.ip,
+      ),
+    );
   }
 
   @override
   Future<void> close() async {
     await _subscription?.cancel();
     await _connectivitySubscription?.cancel();
+    await _server.dispose();
     return super.close();
   }
 }

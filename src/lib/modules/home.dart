@@ -67,11 +67,11 @@ Widget? _bodyForState(NavigationDrawerState state) {
     case NavigationPage.songsList:
       return const SongsList();
     case NavigationPage.songsAdd:
-      return SongsAdd();
+      return const SongsAdd();
     case NavigationPage.playlistList:
       return const PlaylistsList();
     case NavigationPage.serverSettings:
-      return PresentationSettings();
+      return const PresentationSettings();
     case NavigationPage.help:
       return const HelpView();
     default:

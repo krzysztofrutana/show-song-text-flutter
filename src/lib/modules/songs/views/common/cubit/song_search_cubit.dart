@@ -20,9 +20,6 @@ class SongSearchCubit extends Cubit<SongSearchState> {
         status: ResultState.searchStarted,
         songsToChoose: [],
         artistToChoose: [],
-        findedText: null,
-        choosenArtist: null,
-        choosenSong: null,
       ),
     );
   }

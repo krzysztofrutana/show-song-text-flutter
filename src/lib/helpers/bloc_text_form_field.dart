@@ -57,14 +57,16 @@ class _BlocTextFormFieldState<TBloc extends StateStreamable<TState>, TState>
 
         if (text != null && text != _controller.text) {
           _controller.text = text;
-          _controller.selection =
-              TextSelection.collapsed(offset: (text).length);
+          _controller.selection = TextSelection.collapsed(
+            offset: (text).length,
+          );
         }
       },
       child: TextFormField(
         controller: _controller,
         decoration: widget.decoration,
-        onTapOutside: widget.onTapOutside ??
+        onTapOutside:
+            widget.onTapOutside ??
             (e) => FocusManager.instance.primaryFocus?.unfocus(),
         keyboardType: widget.keyboardType,
         inputFormatters: widget.inputFormatters,
@@ -82,7 +84,8 @@ class _BlocTextFormFieldState<TBloc extends StateStreamable<TState>, TState>
   @override
   void initState() {
     super.initState();
-    final initialText = widget.initialValue ?? widget.selector(widget.bloc.state);
+    final initialText =
+        widget.initialValue ?? widget.selector(widget.bloc.state);
     _controller = TextEditingController(text: initialText);
     _controller.addListener(_changed);
   }
@@ -90,6 +93,7 @@ class _BlocTextFormFieldState<TBloc extends StateStreamable<TState>, TState>
   @override
   void dispose() {
     _controller.removeListener(_changed);
+    _controller.dispose();
     super.dispose();
   }
 

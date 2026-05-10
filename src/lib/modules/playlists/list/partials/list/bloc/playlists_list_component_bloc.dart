@@ -10,8 +10,8 @@ part 'playlists_list_component_state.dart';
 class PlaylistsListComponentBloc
     extends Bloc<PlaylistsListComponentEvent, PlaylistsListComponentState> {
   PlaylistsListComponentBloc({PlaylistsRepository? playlistsRepository})
-      : _playlistsRepository = playlistsRepository ?? sl<PlaylistsRepository>(),
-        super(const PlaylistsListComponentInitialState()) {
+    : _playlistsRepository = playlistsRepository ?? sl<PlaylistsRepository>(),
+      super(const PlaylistsListComponentInitialState()) {
     on<LoadPlaylistsEvent>(_onLoadPlaylists);
     on<ReloadListEvent>(_onLoadPlaylists);
     on<SearchPlaylistsEvent>(_onSearchPlaylists);
@@ -31,17 +31,23 @@ class PlaylistsListComponentBloc
     emit(state.copyWith(status: PlaylistsListStatus.loading));
     try {
       final allPlaylists = _playlistsRepository.getAllPlaylists();
-      final filteredPlaylists =
-          _filterPlaylists(allPlaylists, state.searchQuery);
-      emit(state.copyWith(
-        status: PlaylistsListStatus.success,
-        data: filteredPlaylists,
-      ));
+      final filteredPlaylists = _filterPlaylists(
+        allPlaylists,
+        state.searchQuery,
+      );
+      emit(
+        state.copyWith(
+          status: PlaylistsListStatus.success,
+          data: filteredPlaylists,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: PlaylistsListStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: PlaylistsListStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -49,12 +55,18 @@ class PlaylistsListComponentBloc
     SearchPlaylistsEvent event,
     Emitter<PlaylistsListComponentState> emit,
   ) {
-    final allPlaylists = _playlistsRepository.getAllPlaylists();
-    final filteredPlaylists = _filterPlaylists(allPlaylists, event.query);
-    emit(state.copyWith(
-      searchQuery: event.query,
-      data: filteredPlaylists,
-    ));
+    try {
+      final allPlaylists = _playlistsRepository.getAllPlaylists();
+      final filteredPlaylists = _filterPlaylists(allPlaylists, event.query);
+      emit(state.copyWith(searchQuery: event.query, data: filteredPlaylists));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: PlaylistsListStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
+    }
   }
 
   List<Playlist> _filterPlaylists(List<Playlist> playlists, String query) {

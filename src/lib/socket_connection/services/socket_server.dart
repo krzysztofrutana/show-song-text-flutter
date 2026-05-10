@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:encoder/encoder.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:pomocnik_wokalisty/socket_connection/services/socket_constants.dart';
@@ -34,7 +35,9 @@ class Server {
       serverStarted = true;
     } catch (e) {
       serverStarted = false;
-      _connectionController.add('error:Could not start server on $ip:${SocketConstants.defaultPort} - $e');
+      _connectionController.add(
+        'error:Could not start server on $ip:${SocketConstants.defaultPort} - $e',
+      );
     }
   }
 
@@ -42,17 +45,25 @@ class Server {
     _activeClients.add(client);
     _connectionController.add('connected:${client.remoteAddress.address}');
 
-    client.listen((event) {}, onDone: () {
-      _activeClients.remove(client);
-      if (!_connectionController.isClosed) {
-        _connectionController.add('disconnected:${client.remoteAddress.address}');
-      }
-    }, onError: (error) {
-      _activeClients.remove(client);
-      if (!_connectionController.isClosed) {
-        _connectionController.add('disconnected:${client.remoteAddress.address}');
-      }
-    });
+    client.listen(
+      (event) {},
+      onDone: () {
+        _activeClients.remove(client);
+        if (!_connectionController.isClosed) {
+          _connectionController.add(
+            'disconnected:${client.remoteAddress.address}',
+          );
+        }
+      },
+      onError: (error) {
+        _activeClients.remove(client);
+        if (!_connectionController.isClosed) {
+          _connectionController.add(
+            'disconnected:${client.remoteAddress.address}',
+          );
+        }
+      },
+    );
   }
 
   void send(String message) {
@@ -64,9 +75,13 @@ class Server {
   Future<void> stop() async {
     await _server?.close();
     _server = null;
+
+    final closeFutures = <Future>[];
     for (var client in _activeClients) {
-      await client.close();
+      closeFutures.add(client.close());
     }
+    await Future.wait(closeFutures);
+
     _activeClients.clear();
     serverStarted = false;
   }

@@ -43,16 +43,18 @@ class SongsAddCubit extends Cubit<SongsAddState> {
     emit(SongsAddInitial());
   }
 
-  Future<void> save() async {
+  Future<String> save() async {
+    final songId = state.uuid;
     await _songsRepository.addSong(
       Song(
-        uuid: state.uuid,
+        uuid: songId,
         title: state.title,
         author: state.author,
         text: state.text,
       ),
     );
     emit(SongsAddInitial());
+    return songId;
   }
 
   bool get isModified =>

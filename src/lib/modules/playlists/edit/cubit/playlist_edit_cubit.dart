@@ -69,7 +69,7 @@ class PlaylistEditCubit extends Cubit<PlaylistEditState> {
     if (_initialPlaylist == null) return true;
     if (state.name != _initialPlaylist!.name) return true;
     if (state.songsIds.length != _initialPlaylist!.songsIds.length) return true;
-    for (int i = 0; i < state.songsIds.length; i++) {
+    for (var i = 0; i < state.songsIds.length; i++) {
       if (state.songsIds[i] != _initialPlaylist!.songsIds[i]) return true;
     }
     return false;

@@ -89,9 +89,10 @@ class SongSelectionDialog extends StatelessWidget {
                                   },
                                   title: Text(
                                     songTitle,
-                                    style: const TextStyle(
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16,
                                       color: Colors.black,
                                     ),
                                   ),

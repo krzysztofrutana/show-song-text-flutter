@@ -5,17 +5,19 @@ import 'package:pomocnik_wokalisty/ads/ads_mixin.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/bloc_text_form_field.dart';
 import 'package:pomocnik_wokalisty/helpers/connection_helper.dart';
+import 'package:pomocnik_wokalisty/helpers/ui_helper.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/cubit/songs_add_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/helpers/song_add_validator.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/cubit/song_search_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/models/search_dialog_result_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/common/views/dialogs/search_dialog.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/edit/songs_edit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/list/partials/list/bloc/songs_list_component_bloc.dart';
 import 'package:pomocnik_wokalisty/webscraping/models/song_to_find_model.dart';
 
-class SongsAdd extends StatefulWidget with SongAddValidator {
-  SongsAdd({super.key, this.cubit});
+class SongsAdd extends StatefulWidget {
+  const SongsAdd({super.key, this.cubit});
 
   final SongsAddCubit? cubit;
 
@@ -70,10 +72,17 @@ class _SongsAddState extends State<SongsAdd>
                 return;
               }
 
-              final shouldPop =
-                  await _showExitConfirmationDialog(context) ?? false;
-              if (shouldPop && context.mounted) {
-                Navigator.of(context).pop();
+              final action = await UIHelper.showExitConfirmationDialog(context);
+
+              if (action == ExitAction.cancel) return;
+
+              if (context.mounted) {
+                if (action == ExitAction.saveAndExit) {
+                  await cubit.save();
+                }
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               }
             },
             child: Scaffold(
@@ -84,7 +93,7 @@ class _SongsAddState extends State<SongsAdd>
                 ),
                 title: Text(
                   localizations.addSong,
-                  style: const TextStyle(fontSize: 18),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
               body: SafeArea(
@@ -130,9 +139,10 @@ class _SongsAddState extends State<SongsAdd>
                                             FittedBox(
                                               child: Text(
                                                 localizations.search,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
+                                                style:
+                                                    Theme.of(
+                                                      context,
+                                                    ).textTheme.labelMedium,
                                               ),
                                             ),
                                           ],
@@ -171,9 +181,10 @@ class _SongsAddState extends State<SongsAdd>
                                             FittedBox(
                                               child: Text(
                                                 localizations.save,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
+                                                style:
+                                                    Theme.of(
+                                                      context,
+                                                    ).textTheme.labelMedium,
                                               ),
                                             ),
                                           ],
@@ -207,9 +218,10 @@ class _SongsAddState extends State<SongsAdd>
                                             FittedBox(
                                               child: Text(
                                                 localizations.delete,
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                ),
+                                                style:
+                                                    Theme.of(
+                                                      context,
+                                                    ).textTheme.labelMedium,
                                               ),
                                             ),
                                           ],
@@ -303,12 +315,19 @@ class _SongsAddState extends State<SongsAdd>
     );
   }
 
-  void _saveSong(BuildContext context, SongsAddCubit songAddCubit) {
-    songAddCubit.save();
+  Future<void> _saveSong(
+    BuildContext context,
+    SongsAddCubit songAddCubit,
+  ) async {
+    final songId = await songAddCubit.save();
 
-    context.read<SongsListComponentBloc>().add(ReloadListEvent());
+    if (context.mounted) {
+      context.read<SongsListComponentBloc>().add(ReloadListEvent());
 
-    return Navigator.of(context).pop();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => SongsEdit(songId: songId)),
+      );
+    }
   }
 
   Future<void> _onSearchClick(
@@ -317,12 +336,19 @@ class _SongsAddState extends State<SongsAdd>
     AppLocalizations localizations,
   ) async {
     if (!await ConnectionHelper.checkIfDeviceIsConnectedToInternet()) {
-      _showNotConnectedInfo(localizations);
+      if (builderContext.mounted) {
+        _showNotConnectedInfo(localizations);
+      }
       return;
     }
 
+    if (!builderContext.mounted) return;
+
     if (songAddCubit.state.author.isEmpty && songAddCubit.state.title.isEmpty) {
-      return _showInvalidSearchData(localizations);
+      if (builderContext.mounted) {
+        _showInvalidSearchData(localizations);
+      }
+      return;
     }
 
     final songToFind = SongToFindModel(
@@ -349,13 +375,15 @@ class _SongsAddState extends State<SongsAdd>
 
         songAddCubit.updateText(searchResult.text);
 
-        if (songAddCubit.state.author.isEmpty &&
-            (searchResult.author != null && searchResult.author!.isNotEmpty)) {
+        if (searchResult.author != null &&
+            searchResult.author!.isNotEmpty &&
+            searchResult.author != songAddCubit.state.author) {
           songAddCubit.updateAuthor(searchResult.author);
         }
 
-        if (songAddCubit.state.title.isEmpty &&
-            (searchResult.title != null && searchResult.title!.isNotEmpty)) {
+        if (searchResult.title != null &&
+            searchResult.title!.isNotEmpty &&
+            searchResult.title != songAddCubit.state.title) {
           songAddCubit.updateTitle(searchResult.title);
         }
       }
@@ -373,27 +401,6 @@ class _SongsAddState extends State<SongsAdd>
       SnackBar(
         content: Text(localizations.toSearchForTextYouNeedAtLeastTitleOrAuthor),
       ),
-    );
-  }
-
-  Future<bool?> _showExitConfirmationDialog(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return showDialog<bool>(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(localizations.areYouSureYouWantToLeaveTheApplication),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(localizations.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(localizations.leave),
-              ),
-            ],
-          ),
     );
   }
 }

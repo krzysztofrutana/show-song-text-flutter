@@ -9,22 +9,42 @@ class PlaylistsRepository {
   final Box<Playlist> _box;
 
   List<Playlist> getAllPlaylists() {
-    return _box.values.toList();
+    try {
+      return _box.values.toList();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> addPlaylist(Playlist playlist) async {
-    await _box.put(playlist.uuid, playlist);
+    try {
+      await _box.put(playlist.uuid, playlist);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> deletePlaylist(String uuid) async {
-    await _box.delete(uuid);
+    try {
+      await _box.delete(uuid);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> updatePlaylist(Playlist playlist) async {
-    await _box.put(playlist.uuid, playlist);
+    try {
+      await _box.put(playlist.uuid, playlist);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Playlist? getPlaylist(String uuid) {
-    return _box.get(uuid);
+    try {
+      return _box.get(uuid);
+    } catch (e) {
+      rethrow;
+    }
   }
 }
