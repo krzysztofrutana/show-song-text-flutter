@@ -404,7 +404,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterAuthor.
   ///
   /// In pl, this message translates to:
-  /// **'Wprowadz wykonawcę'**
+  /// **'Wprowadź wykonawcę'**
   String get enterAuthor;
 
   /// No description provided for @enterName.
@@ -812,7 +812,7 @@ abstract class AppLocalizations {
   /// No description provided for @songMustHaveTextDividedIntoLines.
   ///
   /// In pl, this message translates to:
-  /// **'Utwór {title} musi miec tekst podzielony na linie. Wstrzymano tworzenie prezentacji.'**
+  /// **'Utwór {title} musi mieć tekst podzielony na linie. Wstrzymano tworzenie prezentacji.'**
   String songMustHaveTextDividedIntoLines(Object title);
 
   /// No description provided for @songSelection.
@@ -971,6 +971,24 @@ abstract class AppLocalizations {
   /// **'Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty'**
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName;
 
+  /// No description provided for @textScrollMode.
+  ///
+  /// In pl, this message translates to:
+  /// **'Tryb przewijania tekstu'**
+  String get textScrollMode;
+
+  /// No description provided for @textScrollModeHorizontal.
+  ///
+  /// In pl, this message translates to:
+  /// **'W poziomie'**
+  String get textScrollModeHorizontal;
+
+  /// No description provided for @textScrollModeVertical.
+  ///
+  /// In pl, this message translates to:
+  /// **'W pionie'**
+  String get textScrollModeVertical;
+
   /// Label for theme selection
   ///
   /// In pl, this message translates to:
@@ -1037,11 +1055,11 @@ abstract class AppLocalizations {
   /// **'Należy zaznaczyć listy do usunięcia'**
   String get youShouldMarkThePlaylistsToBeDeleted;
 
-  /// No description provided for @yourPrivacyChoisesHasBeenUpdated.
+  /// No description provided for @yourPrivacyChoicesHaveBeenUpdated.
   ///
   /// In pl, this message translates to:
-  /// **'Twoje ustawienia prywatności zostały zaktualizowane'**
-  String get yourPrivacyChoisesHasBeenUpdated;
+  /// **'Twoje wybory prywatności zostały zaktualizowane'**
+  String get yourPrivacyChoicesHaveBeenUpdated;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

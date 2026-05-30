@@ -26,11 +26,15 @@ class ClientScreenMode extends StatefulWidget {
 class _ClientScreenModeState extends State<ClientScreenMode>
     with InterstitialAds {
   String _title = "";
+  String _clientTextScrollMode = 'horizontal';
   StreamSubscription? _dataSubscription;
 
   @override
   void initState() {
     super.initState();
+
+    _clientTextScrollMode =
+        sl<SharedPreferences>().getString('textScrollMode') ?? 'horizontal';
 
     FullScreen.setFullScreen(true);
 
@@ -114,16 +118,33 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                   child: SizedBox.expand(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: AutoSizeText(
-                        state.text.isEmpty
-                            ? localizations.noTextToDisplay
-                            : state.text,
-                        style: TextStyle(
-                          fontSize: fontSize.toDouble(),
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
+                      child: _clientTextScrollMode == 'vertical'
+                          ? SingleChildScrollView(
+                              child: Text(
+                                state.text.isEmpty
+                                    ? localizations.noTextToDisplay
+                                    : state.text,
+                                style: TextStyle(
+                                  fontSize: fontSize.toDouble(),
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color,
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            )
+                          : AutoSizeText(
+                              state.text.isEmpty
+                                  ? localizations.noTextToDisplay
+                                  : state.text,
+                              style: TextStyle(
+                                fontSize: fontSize.toDouble(),
+                                color:
+                                    Theme.of(context).textTheme.bodyLarge?.color,
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
                     ),
                   ),
                 ),
@@ -253,6 +274,31 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                       onChanged:
                           (value) =>
                               parentContext.read<ClientCubit>().setIp(value),
+                    ),
+                    const SizedBox(height: 10.0),
+                    DropdownButtonFormField<String>(
+                      value: _clientTextScrollMode,
+                      decoration: InputDecoration(
+                        labelText: localizations.textScrollMode,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'horizontal',
+                          child: Text(localizations.textScrollModeHorizontal),
+                        ),
+                        DropdownMenuItem(
+                          value: 'vertical',
+                          child: Text(localizations.textScrollModeVertical),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _clientTextScrollMode = value;
+                          });
+                        }
+                      },
                     ),
                     const SizedBox(height: 10.0),
                     Visibility(

@@ -51,7 +51,7 @@
     "deletingSongs": "Usuwanie utworów",
     "editPlaylist": "Edytuj listę odtwarzania",
     "editSong": "Edytuj utwór",
-    "enterAuthor": "Wprowadz wykonawcę",
+    "enterAuthor": "Wprowadź wykonawcę",
     "enterName": "Wprowadź nazwę",
     "enterTheIpFromTheServerSettings": "Wprowadź IP z ustawień serwera",
     "enterTitle": "Wprowadź tytuł",
@@ -119,7 +119,7 @@
     "settingsHaveBeenSaved": "Ustawienia zostały zapisane",
     "showText": "Wyświetl tekst",
     "singersAssistant": "Pomocnik wokalisty",
-    "songMustHaveTextDividedIntoLines": "Utwór {title} musi miec tekst podzielony na linie. Wstrzymano tworzenie prezentacji.",
+    "songMustHaveTextDividedIntoLines": "Utwór {title} musi mieć tekst podzielony na linie. Wstrzymano tworzenie prezentacji.",
     "songSelection": "Wybór utworu",
     "songsAddedToPlaylist": "Utwory dodane do listy odtwarzania",
     "songsList": "Lista utworów",
@@ -146,6 +146,9 @@
     "toRunPresentationSelectSongs": "Aby uruchomić prezentację wybierz utwory",
     "toSearchForTextYouNeedAtLeastTitleOrAuthor": "Aby wyszukać tekst potrzebujesz co najmniej tytułu lub autora",
     "tooManyMatchingArtistsFoundPleaseSpecifyArtistName": "Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty",
+    "textScrollMode": "Tryb przewijania tekstu",
+    "textScrollModeHorizontal": "W poziomie",
+    "textScrollModeVertical": "W pionie",
     "theme": "Motyw:",
     "@theme": {
       "description": "Label for theme selection"
@@ -169,5 +172,5 @@
     "yes": "Tak",
     "youMustMarkSongsToBeDeleted": "Musisz oznaczyć utwory do usunięcia",
     "youShouldMarkThePlaylistsToBeDeleted": "Należy zaznaczyć listy do usunięcia",
-    "yourPrivacyChoisesHasBeenUpdated": "Twoje ustawienia prywatności zostały zaktualizowane"
+    "yourPrivacyChoicesHaveBeenUpdated": "Twoje wybory prywatności zostały zaktualizowane"
 }

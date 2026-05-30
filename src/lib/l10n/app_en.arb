@@ -8,7 +8,7 @@
     "addingPlaylist": "Adding a playlist",
     "addingToPlaylist": "Adding to playlist",
     "anErrorOccurredWhileRetrievingListInformation": "An error occurred while retrieving list information.",
-    "anErrorOccurredWhileTryingToChangeYourPrivacyPreferences": "An error ocurred while trying to change your privacy preferences",
+    "anErrorOccurredWhileTryingToChangeYourPrivacyPreferences": "An error occurred while trying to change your privacy preferences",
     "and": "and",
     "areYouSureYouWantDeletSelectedLists": "Are you sure you want to delete the selected lists?",
     "areYouSureYouWantDeleteSelectedSongs": "Are you sure you want to delete the selected songs?",
@@ -40,7 +40,7 @@
     "couldntFindMatchingSong": "Couldn't find a matching song",
     "create": "Create",
     "createPlaylist": "Create playlist",
-    "createPresentationError": "Presentation lunch error",
+    "createPresentationError": "Presentation launch error",
     "createdPlaylist": "Created new playlist",
     "currentIP": "Current IP:",
     "delete": "Delete",
@@ -108,7 +108,7 @@
     "save": "Save",
     "saveAndContinue": "Save and continue",
     "saveAndExit": "Save and exit",
-    "saveAndLunchPresentation": "Save and present",
+    "saveAndLunchPresentation": "Save and launch presentation",
     "savedSuccessfully": "Saved successfully",
     "search": "Search",
     "searchInProgress": "Search in progress",
@@ -146,6 +146,9 @@
     "toRunPresentationSelectSongs": "To start presentation you need to select songs.",
     "toSearchForTextYouNeedAtLeastTitleOrAuthor": "To search for a text you need at least the title or author",
     "tooManyMatchingArtistsFoundPleaseSpecifyArtistName": "Too many matching artists found, please specify the artist name",
+    "textScrollMode": "Text scroll mode",
+    "textScrollModeHorizontal": "Horizontal",
+    "textScrollModeVertical": "Vertical",
     "theme": "Theme:",
     "@theme": {
       "description": "Label for theme selection"
@@ -169,5 +172,5 @@
     "yes": "Yes",
     "youMustMarkSongsToBeDeleted": "You must mark the songs to be deleted",
     "youShouldMarkThePlaylistsToBeDeleted": "You should mark the playlists to be deleted",
-    "yourPrivacyChoisesHasBeenUpdated": "Your privacy choises has been updated"
+    "yourPrivacyChoicesHaveBeenUpdated": "Your privacy choices have been updated"
 }

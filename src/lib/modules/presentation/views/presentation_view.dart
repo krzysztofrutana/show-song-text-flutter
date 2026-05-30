@@ -33,6 +33,7 @@ class _PresentationViewState extends State<PresentationView>
   );
   PresentationSongInfo? _currentPageInfo;
   int _fontSize = 12;
+  String _textScrollMode = 'horizontal';
   late List<Song> songs;
   int _allSongsCount = 0;
 
@@ -46,6 +47,8 @@ class _PresentationViewState extends State<PresentationView>
     FullScreenHelper.instance.addListener(this);
     FullScreenHelper.instance.setFullScreen(true);
     _fontSize = sl<SharedPreferences>().getInt('fontSize') ?? 15;
+    _textScrollMode =
+        sl<SharedPreferences>().getString('textScrollMode') ?? 'horizontal';
 
     super.initState();
   }
@@ -193,39 +196,42 @@ class _PresentationViewState extends State<PresentationView>
                           ? () => _handlePreviousSong(context, true)
                           : null,
                 ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.first_page),
-                      onPressed: () {
-                        _handleFirstPage(context);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.navigate_before),
-                      onPressed: () {
-                        _handlePreviousPage(context);
-                      },
-                    ),
-                    Text(
-                      _currentPageInfo != null
-                          ? '${_currentPageInfo!.pageNumberInSongContext}/${_currentPageInfo!.totalPagesCountForSong}'
-                          : '',
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.navigate_next),
-                      onPressed: () {
-                        _handleNextPage(context);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.last_page),
-                      onPressed: () {
-                        _handleLastPage(context);
-                      },
-                    ),
-                  ],
+                Visibility(
+                  visible: _textScrollMode == 'horizontal',
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.first_page),
+                        onPressed: () {
+                          _handleFirstPage(context);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.navigate_before),
+                        onPressed: () {
+                          _handlePreviousPage(context);
+                        },
+                      ),
+                      Text(
+                        _currentPageInfo != null
+                            ? '${_currentPageInfo!.pageNumberInSongContext}/${_currentPageInfo!.totalPagesCountForSong}'
+                            : '',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.navigate_next),
+                        onPressed: () {
+                          _handleNextPage(context);
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.last_page),
+                        onPressed: () {
+                          _handleLastPage(context);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.last_page_sharp),
@@ -331,6 +337,21 @@ class _PresentationViewState extends State<PresentationView>
     _presentationPages.clear();
     final totalSongsCount = songs.length;
 
+    if (_textScrollMode == 'vertical') {
+      _buildVerticalPages(context, totalSongsCount);
+    } else {
+      _buildHorizontalPages(context, totalSongsCount, constraints);
+    }
+
+    _currentPageInfo = _presentationPages.firstOrNull;
+    _sendTextToClients(context);
+  }
+
+  void _buildHorizontalPages(
+    BuildContext context,
+    int totalSongsCount,
+    BoxConstraints constraints,
+  ) {
     for (var i = 0; i < songs.length; i++) {
       final song = songs[i];
       final title = song.title;
@@ -509,10 +530,53 @@ class _PresentationViewState extends State<PresentationView>
               .where((x) => x.songNumber == songInfo.songNumber)
               .length;
     }
+  }
 
-    _currentPageInfo = _presentationPages.firstOrNull;
+  void _buildVerticalPages(BuildContext context, int totalSongsCount) {
+    for (var i = 0; i < songs.length; i++) {
+      final song = songs[i];
+      final title = song.title;
+      final songNumber = i + 1;
 
-    _sendTextToClients(context);
+      final text = song.text.trim();
+
+      final scaledFontSize = MediaQuery.textScalerOf(
+        context,
+      ).scale(_fontSize.toDouble());
+
+      final defaultTextStyle = DefaultTextStyle.of(context);
+
+      final style = defaultTextStyle.style.merge(
+        TextStyle(fontSize: scaledFontSize),
+      );
+
+      final span = TextSpan(text: text, style: style);
+
+      final newPage = SingleChildScrollView(
+        child: Text.rich(
+          span,
+          style: style,
+          textAlign: TextAlign.left,
+          locale: Locale(Platform.localeName),
+          textScaler: TextScaler.linear(scaledFontSize / _fontSize),
+        ),
+      );
+
+      _presentationPages.add(
+        PresentationSongInfo(
+          title: title,
+          songNumber: songNumber,
+          totalSongsCount: totalSongsCount,
+          pageIndex:
+              _presentationPages.isNotEmpty ? _presentationPages.length : 0,
+          pageIndexInSongContext: 0,
+          totalPagesCountForSong: 1,
+          pageWidget: newPage,
+          pageText: text,
+          song: song,
+        ),
+      );
+    }
   }
 
   List<String> removeFirstLineIfEmpty(List<String> textLines) {

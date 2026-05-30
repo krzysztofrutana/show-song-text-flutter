@@ -352,7 +352,6 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                                   vertical: 8,
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Flexible(
                                       child: Text(
@@ -479,7 +478,7 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
                                             didChangePreferences
                                                 ? Text(
                                                   localizations
-                                                      .yourPrivacyChoisesHasBeenUpdated,
+                                                      .yourPrivacyChoicesHaveBeenUpdated,
                                                 )
                                                 : Text(
                                                   localizations

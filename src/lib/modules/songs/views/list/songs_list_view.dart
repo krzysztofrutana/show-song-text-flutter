@@ -28,6 +28,7 @@ class SongsList extends StatefulWidget {
 
 class _SongsListState extends State<SongsList> with InterstitialAds {
   final _quickSearchFormKey = GlobalKey<FormState>();
+  bool _isAtEnd = false;
 
   @override
   void initState() {
@@ -46,12 +47,14 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
     return Scaffold(
       body: SongsListComponent(
         onAddPressed: () => _redirectToSongsAdd(context),
+        onQuickSearchPressed: () => _showQuickAddModal(context),
+        onIsAtEndChanged: (isAtEnd) => setState(() => _isAtEnd = isAtEnd),
       ),
       floatingActionButton:
           BlocBuilder<SongsListComponentBloc, SongsListComponentState>(
             builder:
                 (context, state) => Visibility(
-                  visible: state.chooseSongs == false,
+                  visible: state.chooseSongs == false && !_isAtEnd,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     spacing: 10,
@@ -112,7 +115,6 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           const Icon(Icons.cancel_outlined, size: iconSize),
                           const SizedBox(height: 5),
@@ -137,10 +139,9 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ImageIcon(
-                            const AssetImage('assets/images/icons/delete.png'),
+                          const ImageIcon(
+                            AssetImage('assets/images/icons/delete.png'),
                             size: iconSize,
                           ),
                           const SizedBox(height: 5),
@@ -183,12 +184,9 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ImageIcon(
-                            const AssetImage(
-                              'assets/images/icons/playlist.png',
-                            ),
+                          const ImageIcon(
+                            AssetImage('assets/images/icons/playlist.png'),
                             size: iconSize,
                           ),
                           const SizedBox(height: 5),
@@ -215,12 +213,9 @@ class _SongsListState extends State<SongsList> with InterstitialAds {
                         padding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          ImageIcon(
-                            const AssetImage(
-                              'assets/images/icons/presentation.png',
-                            ),
+                          const ImageIcon(
+                            AssetImage('assets/images/icons/presentation.png'),
                             size: iconSize,
                           ),
                           const SizedBox(height: 5),

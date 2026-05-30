@@ -1,0 +1,176 @@
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fullscreen/flutter_fullscreen.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
+import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
+import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
+import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
+import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'helpers/songs_helper.dart';
+
+class MockPresentationBloc
+    extends MockBloc<PresentationEvent, PresentationState>
+    implements PresentationBloc {}
+
+class MockServerCubit extends MockCubit<ServerState> implements ServerCubit {}
+
+class SharedPreferencesMock extends Mock implements SharedPreferences {}
+
+class FullScreenHelperMock extends Mock implements FullScreenHelper {}
+
+class FullScreenListenerFake extends Fake implements FullScreenListener {}
+
+main() {
+  setUpAll(() async {
+    registerFallbackValue(FullScreenListenerFake());
+    LocalStorage.instance = SharedPreferencesMock();
+    sl.registerLazySingleton<SharedPreferences>(() => LocalStorage.instance);
+    FullScreenHelper.instance = FullScreenHelperMock();
+  });
+
+  tearDownAll(() {
+    sl.reset();
+  });
+
+  group("PresentationVerticalMode single song", () {
+    late PresentationBloc presentationBlock;
+    late ServerCubit serverCubit;
+
+    setUp(() {
+      final mockPrefs = sl<SharedPreferences>();
+      when(() => mockPrefs.getInt(any())).thenReturn(15);
+      when(() => mockPrefs.getString(any())).thenReturn('vertical');
+
+      presentationBlock = MockPresentationBloc();
+      serverCubit = MockServerCubit();
+      final song = SongsHelper.songHappysad30Raz;
+      when(
+        () => presentationBlock.state,
+      ).thenReturn(PresentationActive(songs: [song]));
+      when(() => serverCubit.state).thenReturn(const ServerState());
+
+      when(() => FullScreenHelper.instance.addListener(any())).thenAnswer((
+        invocation,
+      ) {
+        final listener =
+            invocation.positionalArguments[0] as FullScreenListener;
+        Future.delayed(
+          Duration.zero,
+          () =>
+              listener.onFullScreenChanged(true, SystemUiMode.immersiveSticky),
+        );
+      });
+      when(
+        () => FullScreenHelper.instance.setFullScreen(any()),
+      ).thenAnswer((_) async {});
+      when(
+        () => FullScreenHelper.instance.removeListener(any()),
+      ).thenReturn(null);
+    });
+
+    testWidgets('shows PageView with full song text', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      tester.view.physicalSize = const Size(1080, 1920);
+
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: presentationBlock),
+            BlocProvider.value(value: serverCubit),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: [],
+            home: PresentationView(),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(PageView), findsOneWidget);
+      expect(find.textContaining('30 raz'), findsWidgets);
+      expect(find.textContaining('trzydziesty raz'), findsWidgets);
+
+      tester.view.resetPhysicalSize();
+      debugDefaultTargetPlatformOverride = null;
+    });
+  });
+
+  group("PresentationVerticalMode multiple songs", () {
+    late PresentationBloc presentationBlock;
+    late ServerCubit serverCubit;
+
+    setUp(() {
+      final mockPrefs = sl<SharedPreferences>();
+      when(() => mockPrefs.getInt(any())).thenReturn(15);
+      when(() => mockPrefs.getString(any())).thenReturn('vertical');
+
+      presentationBlock = MockPresentationBloc();
+      serverCubit = MockServerCubit();
+      final songs = [
+        SongsHelper.songHappysad30Raz,
+        SongsHelper.songHappysadDlugaDrogaWDol,
+      ];
+      when(
+        () => presentationBlock.state,
+      ).thenReturn(PresentationActive(songs: songs));
+      when(() => serverCubit.state).thenReturn(const ServerState());
+
+      when(() => FullScreenHelper.instance.addListener(any())).thenAnswer((
+        invocation,
+      ) {
+        final listener =
+            invocation.positionalArguments[0] as FullScreenListener;
+        Future.delayed(
+          Duration.zero,
+          () =>
+              listener.onFullScreenChanged(true, SystemUiMode.immersiveSticky),
+        );
+      });
+      when(
+        () => FullScreenHelper.instance.setFullScreen(any()),
+      ).thenAnswer((_) async {});
+      when(
+        () => FullScreenHelper.instance.removeListener(any()),
+      ).thenReturn(null);
+    });
+
+    testWidgets('shows PageView with first song visible', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      tester.view.physicalSize = const Size(1080, 1920);
+
+      await tester.pumpWidget(
+        MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: presentationBlock),
+            BlocProvider.value(value: serverCubit),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: [],
+            home: PresentationView(),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(PageView), findsOneWidget);
+      expect(find.textContaining('30 raz'), findsWidgets);
+
+      tester.view.resetPhysicalSize();
+      debugDefaultTargetPlatformOverride = null;
+    });
+  });
+}

@@ -42,6 +42,9 @@ main() {
       LocalStorage.instance = SharedPreferencesMock();
       await di.init();
       when(() => sl<SharedPreferences>().getInt(any())).thenReturn(15);
+      when(() => sl<SharedPreferences>().getString(any())).thenReturn(
+        'horizontal',
+      );
       FullScreenHelper.instance = FullScreenHelperMock();
       presentationBlock = MockPresentationBloc();
       serverCubit = MockServerCubit();

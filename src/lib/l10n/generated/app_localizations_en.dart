@@ -33,7 +33,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get anErrorOccurredWhileRetrievingListInformation => 'An error occurred while retrieving list information.';
 
   @override
-  String get anErrorOccurredWhileTryingToChangeYourPrivacyPreferences => 'An error ocurred while trying to change your privacy preferences';
+  String get anErrorOccurredWhileTryingToChangeYourPrivacyPreferences => 'An error occurred while trying to change your privacy preferences';
 
   @override
   String get and => 'and';
@@ -135,7 +135,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createPlaylist => 'Create playlist';
 
   @override
-  String get createPresentationError => 'Presentation lunch error';
+  String get createPresentationError => 'Presentation launch error';
 
   @override
   String get createdPlaylist => 'Created new playlist';
@@ -349,7 +349,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveAndExit => 'Save and exit';
 
   @override
-  String get saveAndLunchPresentation => 'Save and present';
+  String get saveAndLunchPresentation => 'Save and launch presentation';
 
   @override
   String get savedSuccessfully => 'Saved successfully';
@@ -465,6 +465,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Too many matching artists found, please specify the artist name';
 
   @override
+  String get textScrollMode => 'Text scroll mode';
+
+  @override
+  String get textScrollModeHorizontal => 'Horizontal';
+
+  @override
+  String get textScrollModeVertical => 'Vertical';
+
+  @override
   String get theme => 'Theme:';
 
   @override
@@ -498,5 +507,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get youShouldMarkThePlaylistsToBeDeleted => 'You should mark the playlists to be deleted';
 
   @override
-  String get yourPrivacyChoisesHasBeenUpdated => 'Your privacy choises has been updated';
+  String get yourPrivacyChoicesHaveBeenUpdated => 'Your privacy choices have been updated';
 }

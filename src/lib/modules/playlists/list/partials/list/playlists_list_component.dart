@@ -8,17 +8,46 @@ import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.d
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
 
 class PlaylistsListComponent extends StatefulWidget {
-  const PlaylistsListComponent({super.key});
+  const PlaylistsListComponent({
+    super.key,
+    this.onAddPressed,
+    this.onIsAtEndChanged,
+  });
+  final VoidCallback? onAddPressed;
+  final ValueChanged<bool>? onIsAtEndChanged;
 
   @override
   State<PlaylistsListComponent> createState() => _PlaylistsListComponentState();
 }
 
 class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isAtEnd = false;
+
   @override
   void initState() {
     super.initState();
     context.read<PlaylistsListComponentBloc>().add(LoadPlaylistsEvent());
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    final isAtEnd = currentScroll >= maxScroll - 50;
+
+    if (isAtEnd != _isAtEnd) {
+      setState(() => _isAtEnd = isAtEnd);
+      widget.onIsAtEndChanged?.call(isAtEnd);
+    }
   }
 
   @override
@@ -81,9 +110,36 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
                       : Container(
                         padding: const EdgeInsets.all(16),
                         child: ListView.separated(
+                          controller: _scrollController,
                           separatorBuilder: (context, index) => const Divider(),
-                          itemCount: list.length,
+                          itemCount: list.length + 1,
                           itemBuilder: (context, index) {
+                            if (index == list.length) {
+                              return AnimatedOpacity(
+                                opacity: _isAtEnd ? 1.0 : 0.0,
+                                duration: const Duration(milliseconds: 200),
+                                child: Align(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 16,
+                                      bottom: 16,
+                                    ),
+                                    child: SizedBox(
+                                      width: 56,
+                                      height: 56,
+                                      child: FloatingActionButton(
+                                        heroTag: "addEnd",
+                                        backgroundColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                        onPressed: widget.onAddPressed,
+                                        child: const Icon(Icons.add, size: 30),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
                             final playlist = list[index];
 
                             if (state.choosePlaylists) {

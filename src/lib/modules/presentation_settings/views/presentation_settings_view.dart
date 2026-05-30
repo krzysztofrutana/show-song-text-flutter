@@ -69,6 +69,23 @@ class _PresentationSettingsState extends State<PresentationSettings>
             autovalidateMode: autovalidateMode,
             child: Column(
               children: [
+                BlocBuilder<
+                  PresentationSettingsCubit,
+                  PresentationSettingsStateBase
+                >(
+                  bloc: _presentationSettingsCubit,
+                  buildWhen:
+                      (previous, current) =>
+                          double.tryParse(current.fontSize) != null,
+                  builder:
+                      (context, state) => Text(
+                        localizations.thisWillBeTheFontSize,
+                        style: TextStyle(
+                          fontSize: double.tryParse(state.fontSize) ?? 15.0,
+                        ),
+                      ),
+                ),
+                const SizedBox(height: 20.0),
                 TextFormField(
                   initialValue: _presentationSettingsCubit.state.fontSize,
                   keyboardType: TextInputType.number,
@@ -86,16 +103,31 @@ class _PresentationSettingsState extends State<PresentationSettings>
                   PresentationSettingsStateBase
                 >(
                   bloc: _presentationSettingsCubit,
-                  buildWhen:
-                      (previous, current) =>
-                          double.tryParse(current.fontSize) != null,
-                  builder:
-                      (context, state) => Text(
-                        localizations.thisWillBeTheFontSize,
-                        style: TextStyle(
-                          fontSize: double.tryParse(state.fontSize) ?? 15.0,
-                        ),
+                  builder: (context, state) {
+                    return DropdownButtonFormField<String>(
+                      value: state.textScrollMode,
+                      decoration: InputDecoration(
+                        labelText: localizations.textScrollMode,
+                        border: const OutlineInputBorder(),
                       ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'horizontal',
+                          child: Text(localizations.textScrollModeHorizontal),
+                        ),
+                        DropdownMenuItem(
+                          value: 'vertical',
+                          child: Text(localizations.textScrollModeVertical),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          _presentationSettingsCubit.setTextScrollMode(value);
+                          _showConfirmSaveToast(context);
+                        }
+                      },
+                    );
+                  },
                 ),
               ],
             ),
@@ -129,14 +161,6 @@ class _PresentationSettingsState extends State<PresentationSettings>
                     data: state.ip!,
                     size: 200.0,
                     backgroundColor: Colors.white,
-                    eyeStyle: const QrEyeStyle(
-                      eyeShape: QrEyeShape.square,
-                      color: Colors.black,
-                    ),
-                    dataModuleStyle: const QrDataModuleStyle(
-                      dataModuleShape: QrDataModuleShape.square,
-                      color: Colors.black,
-                    ),
                   ),
                   const SizedBox(height: 10.0),
                   Text(localizations.currentIP),

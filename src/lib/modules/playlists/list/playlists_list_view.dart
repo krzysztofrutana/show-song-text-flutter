@@ -20,6 +20,8 @@ class PlaylistsList extends StatefulWidget {
 }
 
 class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
+  bool _isAtEnd = false;
+
   @override
   void initState() {
     super.initState();
@@ -35,13 +37,19 @@ class _PlaylistsListState extends State<PlaylistsList> with InterstitialAds {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const PlaylistsListComponent(),
-      floatingActionButton: FloatingActionButton(
-        heroTag: "add",
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.add, size: 30),
-        onPressed: () => _showCreatePlaylistModal(context),
+      body: PlaylistsListComponent(
+        onAddPressed: () => _showCreatePlaylistModal(context),
+        onIsAtEndChanged: (isAtEnd) => setState(() => _isAtEnd = isAtEnd),
+      ),
+      floatingActionButton: Visibility(
+        visible: !_isAtEnd,
+        child: FloatingActionButton(
+          heroTag: "add",
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+          child: const Icon(Icons.add, size: 30),
+          onPressed: () => _showCreatePlaylistModal(context),
+        ),
       ),
       bottomNavigationBar: BlocBuilder<
         PlaylistsListComponentBloc,

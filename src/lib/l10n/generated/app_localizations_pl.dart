@@ -168,7 +168,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get editSong => 'Edytuj utwór';
 
   @override
-  String get enterAuthor => 'Wprowadz wykonawcę';
+  String get enterAuthor => 'Wprowadź wykonawcę';
 
   @override
   String get enterName => 'Wprowadź nazwę';
@@ -383,7 +383,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String songMustHaveTextDividedIntoLines(Object title) {
-    return 'Utwór $title musi miec tekst podzielony na linie. Wstrzymano tworzenie prezentacji.';
+    return 'Utwór $title musi mieć tekst podzielony na linie. Wstrzymano tworzenie prezentacji.';
   }
 
   @override
@@ -465,6 +465,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName => 'Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty';
 
   @override
+  String get textScrollMode => 'Tryb przewijania tekstu';
+
+  @override
+  String get textScrollModeHorizontal => 'W poziomie';
+
+  @override
+  String get textScrollModeVertical => 'W pionie';
+
+  @override
   String get theme => 'Motyw:';
 
   @override
@@ -498,5 +507,5 @@ class AppLocalizationsPl extends AppLocalizations {
   String get youShouldMarkThePlaylistsToBeDeleted => 'Należy zaznaczyć listy do usunięcia';
 
   @override
-  String get yourPrivacyChoisesHasBeenUpdated => 'Twoje ustawienia prywatności zostały zaktualizowane';
+  String get yourPrivacyChoicesHaveBeenUpdated => 'Twoje wybory prywatności zostały zaktualizowane';
 }

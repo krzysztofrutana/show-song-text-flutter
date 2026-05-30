@@ -10,8 +10,13 @@ class PresentationSettingsCubit extends Cubit<PresentationSettingsStateBase> {
 
   void initSettings() async {
     final fontSize = sl<SharedPreferences>().getInt('fontSize') ?? 15;
+    final textScrollMode =
+        sl<SharedPreferences>().getString('textScrollMode') ?? 'horizontal';
 
-    emit(state.copyWith(fontSize: fontSize.toString()));
+    emit(state.copyWith(
+      fontSize: fontSize.toString(),
+      textScrollMode: textScrollMode,
+    ));
   }
 
   Future<void> setFontSize(String fontSize) async {
@@ -20,6 +25,14 @@ class PresentationSettingsCubit extends Cubit<PresentationSettingsStateBase> {
     await persistSettings.setInt('fontSize', int.parse(fontSize));
 
     emit(state.copyWith(fontSize: fontSize));
+  }
+
+  Future<void> setTextScrollMode(String textScrollMode) async {
+    final persistSettings = sl<SharedPreferences>();
+
+    await persistSettings.setString('textScrollMode', textScrollMode);
+
+    emit(state.copyWith(textScrollMode: textScrollMode));
   }
 
   void updateAutovalidateMode(AutovalidateMode? autovalidateMode) {
