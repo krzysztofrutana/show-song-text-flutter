@@ -5,8 +5,13 @@ import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repo
 import 'package:pomocnik_wokalisty/modules/songs/views/edit/partials/playlistsList/models/playlist_include_song_model.dart';
 
 class SongPlaylistsListComponent extends StatefulWidget {
-  const SongPlaylistsListComponent({super.key, required this.songId});
+  const SongPlaylistsListComponent({
+    super.key,
+    required this.songId,
+    this.onAddToPlaylist,
+  });
   final String songId;
+  final VoidCallback? onAddToPlaylist;
 
   @override
   State<SongPlaylistsListComponent> createState() =>
@@ -15,17 +20,10 @@ class SongPlaylistsListComponent extends StatefulWidget {
 
 class _SongPlaylistsListComponentState
     extends State<SongPlaylistsListComponent> {
-  List<PlaylistIncludeSongModel> playlists = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    initPlaylistsList();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final playlists = sl<PlaylistsRepository>().getBySongId(widget.songId);
+
     return InputDecorator(
       decoration: InputDecoration(
         labelText:
@@ -34,13 +32,28 @@ class _SongPlaylistsListComponentState
       ),
       child:
           playlists.isEmpty
-              ? Center(
-                heightFactor: 2,
+              ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: SizedBox(
                   width: double.infinity,
-                  child: Text(
-                    AppLocalizations.of(context)!.noPlaylists,
-                    textAlign: TextAlign.center,
+                  child: ElevatedButton(
+                    onPressed: widget.onAddToPlaylist,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      foregroundColor:
+                          Theme.of(context).colorScheme.onSurface,
+                      elevation: 0,
+                      shape: const RoundedRectangleBorder(),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.playlist_add),
+                        const SizedBox(height: 4),
+                        Text(AppLocalizations.of(context)!.addToFirstPlaylist),
+                      ],
+                    ),
                   ),
                 ),
               )
@@ -81,35 +94,10 @@ class _SongPlaylistsListComponentState
     );
   }
 
-  void initPlaylistsList() {
-    setState(() {
-      playlists = [];
-      final repository = sl<PlaylistsRepository>();
-      final playlistsIncludeSong =
-          repository
-              .getAllPlaylists()
-              .where(
-                (playlist) =>
-                    playlist.songsIds.any((songId) => songId == widget.songId),
-              )
-              .toList();
-
-      for (final playlist in playlistsIncludeSong) {
-        for (var i = 0; i < playlist.songsIds.length; i++) {
-          if (playlist.songsIds[i] == widget.songId) {
-            playlists.add(
-              PlaylistIncludeSongModel(playlist: playlist, position: i),
-            );
-          }
-        }
-      }
-    });
-  }
-
-  _removeSongFromPlaylis(
+  Future<void> _removeSongFromPlaylis(
     PlaylistIncludeSongModel playlistModel,
     BuildContext parentContext,
-  ) {
+  ) async {
     final localizations = AppLocalizations.of(parentContext)!;
     return showDialog<void>(
       context: parentContext,
@@ -145,7 +133,7 @@ class _SongPlaylistsListComponentState
                 );
                 await repository.updatePlaylist(updated);
 
-                initPlaylistsList();
+                if (mounted) setState(() {});
 
                 if (context.mounted) {
                   Navigator.of(context).pop();

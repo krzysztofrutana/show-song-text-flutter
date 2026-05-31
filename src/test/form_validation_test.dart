@@ -11,7 +11,9 @@ import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/pla
     as playlists_bloc;
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
+
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
+import 'package:pomocnik_wokalisty/modules/songs/repositories/recordings_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/cubit/songs_add_cubit.dart';
 import 'package:pomocnik_wokalisty/modules/songs/views/add/songs_add.dart';
@@ -49,6 +51,8 @@ class MockSongsRepository extends Mock implements SongsRepository {}
 
 class MockPlaylistsRepository extends Mock implements PlaylistsRepository {}
 
+class MockRecordingsRepository extends Mock implements RecordingsRepository {}
+
 class SongFake extends Fake implements Song {}
 
 class PlaylistFake extends Fake implements Playlist {}
@@ -60,14 +64,20 @@ void main() {
     final mockSongsRepository = MockSongsRepository();
     final mockPlaylistsRepository = MockPlaylistsRepository();
     final mockSongsEditCubit = MockSongsEditCubit();
+    final mockRecordingsRepository = MockRecordingsRepository();
 
     sl.registerLazySingleton<SongsRepository>(() => mockSongsRepository);
     sl.registerLazySingleton<PlaylistsRepository>(
       () => mockPlaylistsRepository,
     );
+    sl.registerLazySingleton<RecordingsRepository>(
+      () => mockRecordingsRepository,
+    );
     sl.registerFactory<SongsEditCubit>(() => mockSongsEditCubit);
 
     when(() => mockPlaylistsRepository.getAllPlaylists()).thenReturn([]);
+    when(() => mockPlaylistsRepository.getBySongId(any())).thenReturn([]);
+    when(() => mockRecordingsRepository.getBySongUuid(any())).thenReturn([]);
     when(() => mockSongsRepository.getAllSongs()).thenReturn([]);
     when(() => mockSongsEditCubit.state).thenReturn(
       const SongsEditState(

@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
+import 'package:pomocnik_wokalisty/modules/songs/repositories/recordings_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
 
 part 'songs_edit_state.dart';
@@ -27,6 +31,8 @@ class SongsEditCubit extends Cubit<SongsEditState> {
         title: song.title,
         author: song.author,
         text: song.text,
+        audioUrl: song.audioUrl,
+        audioFilePath: song.audioFilePath,
       ),
     );
   }
@@ -43,6 +49,14 @@ class SongsEditCubit extends Cubit<SongsEditState> {
     emit(state.copyWith(text: text));
   }
 
+  void updateAudioUrl(String? audioUrl) {
+    emit(state.copyWith(audioUrl: audioUrl));
+  }
+
+  void updateAudioFilePath(String? audioFilePath) {
+    emit(state.copyWith(audioFilePath: audioFilePath));
+  }
+
   void updateAutovalidateMode(AutovalidateMode? autovalidateMode) {
     emit(state.copyWith(autovalidateMode: autovalidateMode));
   }
@@ -52,17 +66,34 @@ class SongsEditCubit extends Cubit<SongsEditState> {
   }
 
   Future<void> save() async {
+    final existingSong = _songsRepository.getSong(state.uuid);
     final song = Song(
       uuid: state.uuid,
       title: state.title,
       author: state.author,
       text: state.text,
+      audioUrl: state.audioUrl,
+      audioFilePath: state.audioFilePath,
+      audioCachePath: existingSong?.audioCachePath,
+      audioCachedUrl: existingSong?.audioCachedUrl,
     );
     await _songsRepository.updateSong(song);
     _initialSong = song;
   }
 
   Future<void> delete() async {
+    final repo = sl<RecordingsRepository>();
+    final recordings = repo.getBySongUuid(state.uuid);
+    for (final r in recordings) {
+      File(r.filePath).delete();
+    }
+    await repo.deleteBySongUuid(state.uuid);
+
+    final currentSong = _songsRepository.getSong(state.uuid);
+    if (currentSong?.audioCachePath != null) {
+      File(currentSong!.audioCachePath!).delete();
+    }
+
     await _songsRepository.deleteSong(state.uuid);
   }
 
@@ -70,5 +101,7 @@ class SongsEditCubit extends Cubit<SongsEditState> {
       _initialSong == null ||
       state.author != _initialSong!.author ||
       state.title != _initialSong!.title ||
-      state.text != _initialSong!.text;
+      state.text != _initialSong!.text ||
+      state.audioUrl != _initialSong!.audioUrl ||
+      state.audioFilePath != _initialSong!.audioFilePath;
 }

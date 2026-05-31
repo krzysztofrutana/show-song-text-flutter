@@ -38,7 +38,7 @@ mixin Ads {
   }
 
   void _loadAd(int Function() getWidth, Function setStateBaner) async {
-    final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+    final size = await AdSize.getLargeAnchoredAdaptiveBannerAdSize(
       getWidth(),
     );
 

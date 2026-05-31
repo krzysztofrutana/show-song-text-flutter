@@ -2,13 +2,15 @@
 // Do not modify
 // Check in to version control
 
-import 'package:hive_ce/hive.dart';
+import 'package:hive_ce/hive_ce.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
+import 'package:pomocnik_wokalisty/modules/songs/models/recording_model.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
     registerAdapter(PlaylistAdapter());
+    registerAdapter(RecordingAdapter());
     registerAdapter(SongAdapter());
   }
 }
@@ -16,6 +18,7 @@ extension HiveRegistrar on HiveInterface {
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
     registerAdapter(PlaylistAdapter());
+    registerAdapter(RecordingAdapter());
     registerAdapter(SongAdapter());
   }
 }

@@ -1,6 +1,7 @@
 import 'package:hive_ce_flutter/adapters.dart';
 import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/models/playlist_model.dart';
+import 'package:pomocnik_wokalisty/modules/songs/views/edit/partials/playlistsList/models/playlist_include_song_model.dart';
 
 class PlaylistsRepository {
   PlaylistsRepository({Box<Playlist>? box})
@@ -14,6 +15,18 @@ class PlaylistsRepository {
     } catch (e) {
       rethrow;
     }
+  }
+
+  List<PlaylistIncludeSongModel> getBySongId(String songId) {
+    final result = <PlaylistIncludeSongModel>[];
+    for (final playlist in _box.values) {
+      for (var i = 0; i < playlist.songsIds.length; i++) {
+        if (playlist.songsIds[i] == songId) {
+          result.add(PlaylistIncludeSongModel(playlist: playlist, position: i));
+        }
+      }
+    }
+    return result;
   }
 
   Future<void> addPlaylist(Playlist playlist) async {

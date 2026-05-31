@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/repositories/playlists_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/models/song_model.dart';
+import 'package:pomocnik_wokalisty/modules/songs/repositories/recordings_repository.dart';
 import 'package:pomocnik_wokalisty/modules/songs/repositories/songs_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -173,6 +176,7 @@ class SongsListComponentBloc
     RemoveSelectedSongsEvent event,
     Emitter<SongsListComponentState> emit,
   ) async {
+    final recordingsRepo = sl<RecordingsRepository>();
     for (final songUuid in state.selectedSongs) {
       final playlistsWithSong = _playlistsRepository.getAllPlaylists().where(
         (playlist) => playlist.songsIds.contains(songUuid),
@@ -185,6 +189,18 @@ class SongsListComponentBloc
           playlist.copyWith(songsIds: updatedSongsIds),
         );
       }
+
+      final recordings = recordingsRepo.getBySongUuid(songUuid);
+      for (final r in recordings) {
+        File(r.filePath).delete();
+      }
+      await recordingsRepo.deleteBySongUuid(songUuid);
+
+      final song = _songsRepository.getSong(songUuid);
+      if (song?.audioCachePath != null) {
+        File(song!.audioCachePath!).delete();
+      }
+
       await _songsRepository.deleteSong(songUuid);
     }
     add(LoadSongsEvent());

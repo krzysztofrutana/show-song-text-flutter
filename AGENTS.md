@@ -3,7 +3,7 @@
 ## Project Overview
 Flutter mobile app "Pomocnik Wokalisty" (Singer Assistant). Source code lives in `src/`.
 - **Version:** 0.9.3+6
-- **SDK:** `dart: ^3.7.2` per `src/pubspec.yaml`
+- **SDK:** `dart: ^3.12.0` per `src/pubspec.yaml`
 
 ## Commands (all from src/ directory)
 ```bash
@@ -67,4 +67,4 @@ Generates: Hive adapters (`src/lib/hive_registrar.g.dart`), l10n files (`src/lib
 
 ## LAN Networking
 - `src/lib/socket_connection/` has socket server (`Server`) & client (`Client`) services for presentation mode
-- Uses `lan_scanner`, `network_info_plus`, `connectivity_plus` for device discovery
+- Uses `network_info_plus`, `connectivity_plus` for device discovery

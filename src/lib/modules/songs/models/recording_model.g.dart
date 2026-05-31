@@ -1,53 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'song_model.dart';
+part of 'recording_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class SongAdapter extends TypeAdapter<Song> {
+class RecordingAdapter extends TypeAdapter<Recording> {
   @override
-  final typeId = 1;
+  final typeId = 3;
 
   @override
-  Song read(BinaryReader reader) {
+  Recording read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Song(
+    return Recording(
       uuid: fields[0] as String,
-      title: fields[1] as String,
-      author: fields[2] as String,
-      text: fields[3] as String,
-      audioUrl: fields[4] as String?,
-      audioFilePath: fields[5] as String?,
-      audioCachePath: fields[6] as String?,
-      audioCachedUrl: fields[7] as String?,
+      songUuid: fields[1] as String,
+      filePath: fields[2] as String,
+      durationMs: (fields[3] as num).toInt(),
+      createdAt: fields[4] as DateTime,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Song obj) {
+  void write(BinaryWriter writer, Recording obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.uuid)
       ..writeByte(1)
-      ..write(obj.title)
+      ..write(obj.songUuid)
       ..writeByte(2)
-      ..write(obj.author)
+      ..write(obj.filePath)
       ..writeByte(3)
-      ..write(obj.text)
+      ..write(obj.durationMs)
       ..writeByte(4)
-      ..write(obj.audioUrl)
-      ..writeByte(5)
-      ..write(obj.audioFilePath)
-      ..writeByte(6)
-      ..write(obj.audioCachePath)
-      ..writeByte(7)
-      ..write(obj.audioCachedUrl);
+      ..write(obj.createdAt);
   }
 
   @override
@@ -56,7 +47,7 @@ class SongAdapter extends TypeAdapter<Song> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SongAdapter &&
+      other is RecordingAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

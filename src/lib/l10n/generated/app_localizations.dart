@@ -62,7 +62,8 @@ import 'app_localizations_pl.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,7 +71,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,18 +84,25 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
-    delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-  ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('pl')
+    Locale('pl'),
   ];
+
+  /// No description provided for @addFirstRecording.
+  ///
+  /// In pl, this message translates to:
+  /// **'Dodaj pierwsze nagranie'**
+  String get addFirstRecording;
 
   /// No description provided for @addSong.
   ///
@@ -107,23 +116,29 @@ abstract class AppLocalizations {
   /// **'Dodaj do'**
   String get addTo;
 
+  /// No description provided for @addToFirstPlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Dodaj do pierwszej playlisty'**
+  String get addToFirstPlaylist;
+
   /// No description provided for @addToPlaylistSentence.
   ///
   /// In pl, this message translates to:
   /// **'Dodaj do playlisty'**
   String get addToPlaylistSentence;
 
-  /// No description provided for @addedToPlaylist.
-  ///
-  /// In pl, this message translates to:
-  /// **'Dodano utwór do playlisty'**
-  String get addedToPlaylist;
-
   /// No description provided for @addedSelectedToPlaylist.
   ///
   /// In pl, this message translates to:
   /// **'Dodano zaznaczone utwory do playlisty'**
   String get addedSelectedToPlaylist;
+
+  /// No description provided for @addedToPlaylist.
+  ///
+  /// In pl, this message translates to:
+  /// **'Dodano utwór do playlisty'**
+  String get addedToPlaylist;
 
   /// No description provided for @addingPlaylist.
   ///
@@ -171,13 +186,20 @@ abstract class AppLocalizations {
   ///
   /// In pl, this message translates to:
   /// **'Czy na pewno chcesz usunąć utwór z listy odtwarzania {name} z pozycji {position}?'**
-  String areYouSureYouWantRemoveCurrentSongFromPlaylistAtPosition(Object name, Object position);
+  String areYouSureYouWantRemoveCurrentSongFromPlaylistAtPosition(
+    Object name,
+    Object position,
+  );
 
   /// No description provided for @areYouSureYouWantRemoveSongFromPlaylistAtPosition.
   ///
   /// In pl, this message translates to:
   /// **'Czy na pewno chcesz usunąć utwór {author} - {title} z listy odtwarzania z pozycji {index}?'**
-  String areYouSureYouWantRemoveSongFromPlaylistAtPosition(Object author, Object index, Object title);
+  String areYouSureYouWantRemoveSongFromPlaylistAtPosition(
+    Object author,
+    Object index,
+    Object title,
+  );
 
   /// No description provided for @areYouSureYouWantToDeleteThisPlaylist.
   ///
@@ -202,6 +224,42 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Czy na pewno chcesz opuścić aplikację?'**
   String get areYouSureYouWantToLeaveTheApplication;
+
+  /// No description provided for @audioDownloadedToCache.
+  ///
+  /// In pl, this message translates to:
+  /// **'Pobrano utwór do pamięci podręcznej urządzenia'**
+  String get audioDownloadedToCache;
+
+  /// No description provided for @audioFile.
+  ///
+  /// In pl, this message translates to:
+  /// **'Plik audio'**
+  String get audioFile;
+
+  /// No description provided for @audioFileSelected.
+  ///
+  /// In pl, this message translates to:
+  /// **'Wybrano plik: {path}'**
+  String audioFileSelected(Object path);
+
+  /// No description provided for @audioNoFile.
+  ///
+  /// In pl, this message translates to:
+  /// **'Nie wybrano pliku'**
+  String get audioNoFile;
+
+  /// No description provided for @audioUrl.
+  ///
+  /// In pl, this message translates to:
+  /// **'Link do utworu'**
+  String get audioUrl;
+
+  /// No description provided for @audioYouTubeHint.
+  ///
+  /// In pl, this message translates to:
+  /// **'Link do utworu (YouTube lub plik mp3)'**
+  String get audioYouTubeHint;
 
   /// No description provided for @author.
   ///
@@ -238,6 +296,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Anuluj'**
   String get cancel;
+
+  /// No description provided for @cannotPlayAudioFromSavedLink.
+  ///
+  /// In pl, this message translates to:
+  /// **'Nie można odtworzyć audio z zapisanego linku'**
+  String get cannotPlayAudioFromSavedLink;
 
   /// No description provided for @changePrivacyPolicy.
   ///
@@ -353,6 +417,12 @@ abstract class AppLocalizations {
   /// **'Aktualne IP:'**
   String get currentIP;
 
+  /// Label for dark theme
+  ///
+  /// In pl, this message translates to:
+  /// **'Ciemny'**
+  String get darkTheme;
+
   /// No description provided for @delete.
   ///
   /// In pl, this message translates to:
@@ -388,6 +458,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Usuwanie utworów'**
   String get deletingSongs;
+
+  /// No description provided for @downloadingAudio.
+  ///
+  /// In pl, this message translates to:
+  /// **'Pobieranie audio...'**
+  String get downloadingAudio;
 
   /// No description provided for @editPlaylist.
   ///
@@ -479,6 +555,18 @@ abstract class AppLocalizations {
   /// **'Pomoc'**
   String get help;
 
+  /// No description provided for @helpAudioPlaybackDescription.
+  ///
+  /// In pl, this message translates to:
+  /// **'Do utworu można dodać link do pliku audio w postaci bezpośredniego adresu URL pliku mp3 lub linku do YouTube. W przypadku linków YouTube, aplikacja próbuje pobrać strumień audio z serwerów Google. Jest to funkcja eksperymentalna i niezalecana, ponieważ działa poprawnie tylko z aktualną wersją rozwiązań YouTube, które mogą się dynamicznie zmieniać — autor aplikacji nie ponosi odpowiedzialności za jej działanie. Zalecanym rozwiązaniem jest wybór pliku audio bezpośrednio z pamięci urządzenia. Pamiętaj, że pobieranie utworów z YouTube, do których nie posiadasz praw autorskich, może naruszać prawa autorskie oraz regulamin YouTube. Jeśli link lub plik został dodany, podczas prezentacji utworu będzie możliwy jego odsłuch.'**
+  String get helpAudioPlaybackDescription;
+
+  /// No description provided for @helpAudioPlaybackTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Odsłuch utworów'**
+  String get helpAudioPlaybackTitle;
+
   /// No description provided for @helpClientDescription.
   ///
   /// In pl, this message translates to:
@@ -515,6 +603,18 @@ abstract class AppLocalizations {
   /// **'Tryb prezentacji'**
   String get helpPresentationTitle;
 
+  /// No description provided for @helpRecordingsDescription.
+  ///
+  /// In pl, this message translates to:
+  /// **'Nagrania można dodawać z poziomu edycji utworu (sekcja Nagrania w formularzu) lub z widoku prezentacji. W obu widokach możliwe jest przeglądanie listy nagrań, odsłuchanie wybranego nagrania oraz jego usunięcie.'**
+  String get helpRecordingsDescription;
+
+  /// No description provided for @helpRecordingsTitle.
+  ///
+  /// In pl, this message translates to:
+  /// **'Nagrania'**
+  String get helpRecordingsTitle;
+
   /// No description provided for @helpSongsDescription.
   ///
   /// In pl, this message translates to:
@@ -550,6 +650,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Wyjdź'**
   String get leave;
+
+  /// Label for light theme
+  ///
+  /// In pl, this message translates to:
+  /// **'Jasny'**
+  String get lightTheme;
 
   /// No description provided for @loading.
   ///
@@ -592,6 +698,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Brak zaznaczonych list odtwarzania'**
   String get noPlaylistsSelected;
+
+  /// No description provided for @noRecordings.
+  ///
+  /// In pl, this message translates to:
+  /// **'Brak dostępnych nagrań'**
+  String get noRecordings;
 
   /// No description provided for @noSongs.
   ///
@@ -692,7 +804,7 @@ abstract class AppLocalizations {
   /// No description provided for @presentationScreen.
   ///
   /// In pl, this message translates to:
-  /// **'Prezentuj'**
+  /// **'Prezentacja'**
   String get presentationScreen;
 
   /// No description provided for @presentationSettings.
@@ -712,6 +824,30 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Szybkie wyszukiwanie'**
   String get quickSearch;
+
+  /// No description provided for @record.
+  ///
+  /// In pl, this message translates to:
+  /// **'Nagraj'**
+  String get record;
+
+  /// No description provided for @recordingSaveError.
+  ///
+  /// In pl, this message translates to:
+  /// **'Nie udało się zapisać nagrania'**
+  String get recordingSaveError;
+
+  /// No description provided for @recordings.
+  ///
+  /// In pl, this message translates to:
+  /// **'Nagrania'**
+  String get recordings;
+
+  /// No description provided for @recordingsList.
+  ///
+  /// In pl, this message translates to:
+  /// **'Lista nagrań'**
+  String get recordingsList;
 
   /// No description provided for @removingSongFromPlaylist.
   ///
@@ -845,11 +981,23 @@ abstract class AppLocalizations {
   /// **'Uruchom serwer'**
   String get startServer;
 
+  /// No description provided for @stopRecording.
+  ///
+  /// In pl, this message translates to:
+  /// **'Zatrzymaj nagrywanie'**
+  String get stopRecording;
+
   /// No description provided for @stopServer.
   ///
   /// In pl, this message translates to:
   /// **'Zatrzymaj serwer'**
   String get stopServer;
+
+  /// Label for system theme
+  ///
+  /// In pl, this message translates to:
+  /// **'Systemowy'**
+  String get systemTheme;
 
   /// No description provided for @termsAndConditions.
   ///
@@ -875,6 +1023,24 @@ abstract class AppLocalizations {
   /// **'Tekst jest wymagany'**
   String get textIsRequired;
 
+  /// No description provided for @textScrollMode.
+  ///
+  /// In pl, this message translates to:
+  /// **'Tryb przewijania tekstu'**
+  String get textScrollMode;
+
+  /// No description provided for @textScrollModeHorizontal.
+  ///
+  /// In pl, this message translates to:
+  /// **'W poziomie'**
+  String get textScrollModeHorizontal;
+
+  /// No description provided for @textScrollModeVertical.
+  ///
+  /// In pl, this message translates to:
+  /// **'W pionie'**
+  String get textScrollModeVertical;
+
   /// No description provided for @theAddressOfTheLastServerUsedIs.
   ///
   /// In pl, this message translates to:
@@ -892,6 +1058,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Wprowadzona wartość nie jest liczbą'**
   String get theValueEnteredIsNotNumber;
+
+  /// Label for theme selection
+  ///
+  /// In pl, this message translates to:
+  /// **'Motyw:'**
+  String get theme;
 
   /// No description provided for @thereIsAlreadyPlaylistWithThisName.
   ///
@@ -971,48 +1143,6 @@ abstract class AppLocalizations {
   /// **'Znaleziono zbyt wielu pasujących artystów, proszę podać dokładniejszą nazwę artysty'**
   String get tooManyMatchingArtistsFoundPleaseSpecifyArtistName;
 
-  /// No description provided for @textScrollMode.
-  ///
-  /// In pl, this message translates to:
-  /// **'Tryb przewijania tekstu'**
-  String get textScrollMode;
-
-  /// No description provided for @textScrollModeHorizontal.
-  ///
-  /// In pl, this message translates to:
-  /// **'W poziomie'**
-  String get textScrollModeHorizontal;
-
-  /// No description provided for @textScrollModeVertical.
-  ///
-  /// In pl, this message translates to:
-  /// **'W pionie'**
-  String get textScrollModeVertical;
-
-  /// Label for theme selection
-  ///
-  /// In pl, this message translates to:
-  /// **'Motyw:'**
-  String get theme;
-
-  /// Label for light theme
-  ///
-  /// In pl, this message translates to:
-  /// **'Jasny'**
-  String get lightTheme;
-
-  /// Label for dark theme
-  ///
-  /// In pl, this message translates to:
-  /// **'Ciemny'**
-  String get darkTheme;
-
-  /// Label for system theme
-  ///
-  /// In pl, this message translates to:
-  /// **'Systemowy'**
-  String get systemTheme;
-
   /// No description provided for @tryAgain.
   ///
   /// In pl, this message translates to:
@@ -1062,7 +1192,8 @@ abstract class AppLocalizations {
   String get yourPrivacyChoicesHaveBeenUpdated;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -1071,25 +1202,26 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'pl'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['en', 'pl'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en': return AppLocalizationsEn();
-    case 'pl': return AppLocalizationsPl();
+    case 'en':
+      return AppLocalizationsEn();
+    case 'pl':
+      return AppLocalizationsPl();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
+    'that was used.',
   );
 }

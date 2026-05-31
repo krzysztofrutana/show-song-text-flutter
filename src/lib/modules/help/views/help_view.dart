@@ -33,6 +33,20 @@ class HelpView extends StatelessWidget {
         const SizedBox(height: 16),
         _buildSection(
           context,
+          localizations.helpAudioPlaybackTitle,
+          localizations.helpAudioPlaybackDescription,
+          Icon(Icons.volume_up, color: color),
+        ),
+        const SizedBox(height: 16),
+        _buildSection(
+          context,
+          localizations.helpRecordingsTitle,
+          localizations.helpRecordingsDescription,
+          Icon(Icons.mic, color: color),
+        ),
+        const SizedBox(height: 16),
+        _buildSection(
+          context,
           localizations.helpPresentationTitle,
           localizations.helpPresentationDescription,
           ImageIcon(

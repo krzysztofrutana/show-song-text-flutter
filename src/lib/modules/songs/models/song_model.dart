@@ -10,6 +10,10 @@ class Song extends Equatable {
     required this.title,
     required this.author,
     required this.text,
+    this.audioUrl,
+    this.audioFilePath,
+    this.audioCachePath,
+    this.audioCachedUrl,
   });
 
   @HiveField(0)
@@ -24,15 +28,49 @@ class Song extends Equatable {
   @HiveField(3)
   final String text;
 
-  Song copyWith({String? uuid, String? title, String? author, String? text}) {
+  @HiveField(4)
+  final String? audioUrl;
+
+  @HiveField(5)
+  final String? audioFilePath;
+
+  @HiveField(6)
+  final String? audioCachePath;
+
+  @HiveField(7)
+  final String? audioCachedUrl;
+
+  Song copyWith({
+    String? uuid,
+    String? title,
+    String? author,
+    String? text,
+    String? audioUrl,
+    String? audioFilePath,
+    String? audioCachePath,
+    String? audioCachedUrl,
+  }) {
     return Song(
       uuid: uuid ?? this.uuid,
       title: title ?? this.title,
       author: author ?? this.author,
       text: text ?? this.text,
+      audioUrl: audioUrl ?? this.audioUrl,
+      audioFilePath: audioFilePath ?? this.audioFilePath,
+      audioCachePath: audioCachePath ?? this.audioCachePath,
+      audioCachedUrl: audioCachedUrl ?? this.audioCachedUrl,
     );
   }
 
   @override
-  List<Object?> get props => [uuid, title, author, text];
+  List<Object?> get props => [
+    uuid,
+    title,
+    author,
+    text,
+    audioUrl,
+    audioFilePath,
+    audioCachePath,
+    audioCachedUrl,
+  ];
 }

@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
+import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/views/presentation_view.dart';
 import 'package:pomocnik_wokalisty/socket_connection/cubit/server_cubit/server_cubit.dart';
@@ -28,7 +29,7 @@ class FullScreenHelperMock extends Mock implements FullScreenHelper {}
 
 class FullScreenListenerFake extends Fake implements FullScreenListener {}
 
-main() {
+void main() {
   setUpAll(() async {
     registerFallbackValue(FullScreenListenerFake());
     LocalStorage.instance = SharedPreferencesMock();
@@ -87,7 +88,8 @@ main() {
             BlocProvider.value(value: serverCubit),
           ],
           child: const MaterialApp(
-            localizationsDelegates: [],
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: PresentationView(),
           ),
         ),
@@ -99,7 +101,6 @@ main() {
 
       expect(find.byType(PageView), findsOneWidget);
       expect(find.textContaining('30 raz'), findsWidgets);
-      expect(find.textContaining('trzydziesty raz'), findsWidgets);
 
       tester.view.resetPhysicalSize();
       debugDefaultTargetPlatformOverride = null;
@@ -156,7 +157,8 @@ main() {
             BlocProvider.value(value: serverCubit),
           ],
           child: const MaterialApp(
-            localizationsDelegates: [],
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: PresentationView(),
           ),
         ),

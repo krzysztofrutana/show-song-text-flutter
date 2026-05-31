@@ -164,8 +164,8 @@ class _SearchDialogState extends State<SearchDialog> {
     }
   }
 
-  _getChooseDialog(BuildContext parentContext, Future<bool> future) {
-    return future.then(
+  void _getChooseDialog(BuildContext parentContext, Future<bool> future) {
+    future.then(
       (data) async =>
           parentContext.mounted
               ? data == true
@@ -175,7 +175,7 @@ class _SearchDialogState extends State<SearchDialog> {
     );
   }
 
-  _showChooseDialog(BuildContext parentContext) async {
+  Future<void> _showChooseDialog(BuildContext parentContext) async {
     final localizations = AppLocalizations.of(parentContext)!;
     final result = await showDialog<FindedSongModel>(
       context: parentContext,
@@ -223,7 +223,7 @@ class _SearchDialogState extends State<SearchDialog> {
     return result;
   }
 
-  _getSearchByChoosenSongDialog(BuildContext parentContext) async {
+  Future<void> _getSearchByChoosenSongDialog(BuildContext parentContext) async {
     final localizations = AppLocalizations.of(parentContext)!;
     final searchFuture =
         parentContext.read<SongSearchCubit>().searchByChoosenSong();

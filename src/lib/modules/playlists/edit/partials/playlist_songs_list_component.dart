@@ -125,11 +125,8 @@ class _PlaylistSongsListComponentState
                             ),
                           ),
                       ],
-                      onReorder: (int oldIndex, int newIndex) {
+                      onReorderItem: (int oldIndex, int newIndex) {
                         setState(() {
-                          if (oldIndex < newIndex) {
-                            newIndex -= 1;
-                          }
                           final item = songs.removeAt(oldIndex);
                           songs.insert(newIndex, item);
 
@@ -170,8 +167,8 @@ class _PlaylistSongsListComponentState
     });
   }
 
-  _removeSongFromPlaylist(Song song, int index, BuildContext parentContext) {
-    return showDialog<void>(
+  Future<void> _removeSongFromPlaylist(Song song, int index, BuildContext parentContext) async {
+    showDialog<void>(
       context: parentContext,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {

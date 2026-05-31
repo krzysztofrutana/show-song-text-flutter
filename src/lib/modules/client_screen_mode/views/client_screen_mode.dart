@@ -277,7 +277,7 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                     ),
                     const SizedBox(height: 10.0),
                     DropdownButtonFormField<String>(
-                      value: _clientTextScrollMode,
+                      initialValue: _clientTextScrollMode,
                       decoration: InputDecoration(
                         labelText: localizations.textScrollMode,
                         border: const OutlineInputBorder(),

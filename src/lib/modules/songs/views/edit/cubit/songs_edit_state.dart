@@ -8,6 +8,8 @@ class SongsEditState extends Equatable {
     required this.title,
     required this.text,
     required this.key,
+    this.audioUrl,
+    this.audioFilePath,
   });
 
   final AutovalidateMode autovalidateMode;
@@ -16,6 +18,8 @@ class SongsEditState extends Equatable {
   final String title;
   final String text;
   final String key;
+  final String? audioUrl;
+  final String? audioFilePath;
 
   SongsEditState copyWith({
     AutovalidateMode? autovalidateMode,
@@ -24,18 +28,32 @@ class SongsEditState extends Equatable {
     String? title,
     String? text,
     String? key,
+    String? audioUrl,
+    String? audioFilePath,
   }) {
     return SongsEditState(
-        autovalidateMode: autovalidateMode ?? this.autovalidateMode,
-        uuid: uuid ?? this.uuid,
-        author: author ?? this.author,
-        title: title ?? this.title,
-        text: text ?? this.text,
-        key: key ?? this.key);
+      autovalidateMode: autovalidateMode ?? this.autovalidateMode,
+      uuid: uuid ?? this.uuid,
+      author: author ?? this.author,
+      title: title ?? this.title,
+      text: text ?? this.text,
+      key: key ?? this.key,
+      audioUrl: audioUrl ?? this.audioUrl,
+      audioFilePath: audioFilePath ?? this.audioFilePath,
+    );
   }
 
   @override
-  List<Object?> get props => [autovalidateMode, uuid, author, title, text, key];
+  List<Object?> get props => [
+    autovalidateMode,
+    uuid,
+    author,
+    title,
+    text,
+    key,
+    audioUrl,
+    audioFilePath,
+  ];
 }
 
 final class SongsEditInitial extends SongsEditState {
@@ -46,5 +64,7 @@ final class SongsEditInitial extends SongsEditState {
             author: '',
             title: '',
             text: '',
-            key: '');
+            key: '',
+            audioUrl: null,
+            audioFilePath: null);
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/edit/playlist_edit.dart';
 import 'package:pomocnik_wokalisty/modules/playlists/list/partials/list/bloc/playlists_list_component_bloc.dart';
@@ -20,7 +21,8 @@ class PlaylistsListComponent extends StatefulWidget {
   State<PlaylistsListComponent> createState() => _PlaylistsListComponentState();
 }
 
-class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
+class _PlaylistsListComponentState extends State<PlaylistsListComponent>
+    with InterstitialAds {
   final ScrollController _scrollController = ScrollController();
   bool _isAtEnd = false;
 
@@ -29,12 +31,14 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
     super.initState();
     context.read<PlaylistsListComponentBloc>().add(LoadPlaylistsEvent());
     _scrollController.addListener(_onScroll);
+    initializeInterstitialMobileAdsSDK();
   }
 
   @override
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    interstitialAd?.dispose();
     super.dispose();
   }
 
@@ -94,126 +98,120 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
           children: [
             const SearchAppBar(),
             Flexible(
-              child:
-                  list.isEmpty
-                      ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              localizations.noPlaylists,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      )
-                      : Container(
-                        padding: const EdgeInsets.all(16),
-                        child: ListView.separated(
-                          controller: _scrollController,
-                          separatorBuilder: (context, index) => const Divider(),
-                          itemCount: list.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == list.length) {
-                              return AnimatedOpacity(
-                                opacity: _isAtEnd ? 1.0 : 0.0,
-                                duration: const Duration(milliseconds: 200),
-                                child: Align(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 16,
-                                      bottom: 16,
-                                    ),
-                                    child: SizedBox(
-                                      width: 56,
-                                      height: 56,
-                                      child: FloatingActionButton(
-                                        heroTag: "addEnd",
-                                        backgroundColor: Colors.red,
-                                        foregroundColor: Colors.white,
-                                        onPressed: widget.onAddPressed,
-                                        child: const Icon(Icons.add, size: 30),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-
-                            final playlist = list[index];
-
-                            if (state.choosePlaylists) {
-                              return CheckboxListTile(
-                                activeColor: Colors.red,
-                                value: state.selectedPlaylists.contains(
-                                  playlist.uuid,
-                                ),
-                                onChanged:
-                                    (newValue) => _onPlaylistCheckboxClick(
-                                      playlist,
-                                      newValue,
-                                    ),
-                                contentPadding: const EdgeInsets.only(
-                                  left: 12,
-                                  right: 10,
-                                ),
-                                title: Text(
-                                  playlist.name,
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return ListTile(
-                                title: Text(playlist.name),
-                                titleTextStyle: Theme.of(
-                                  context,
-                                ).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
-                                onTap:
-                                    () => _redirectToPlaylistEdit(
-                                      context,
-                                      playlist,
-                                    ),
-                                onLongPress: () {
-                                  final bloc =
-                                      context
-                                          .read<PlaylistsListComponentBloc>();
-                                  bloc.add(
-                                    ChoosePlaylistChangeEvent(value: true),
-                                  );
-                                  bloc.add(
-                                    SelectPlaylistEvent(playlist: playlist),
-                                  );
-                                },
-                                contentPadding: const EdgeInsets.only(
-                                  left: 12,
-                                  right: 10,
-                                ),
-                                trailing: IconButton(
-                                  tooltip: localizations.presentationScreen,
-                                  icon: const ImageIcon(
-                                    AssetImage(
-                                      'assets/images/icons/presentation.png',
-                                    ),
-                                    size: 24,
-                                  ),
-                                  onPressed:
-                                      () => _runPresentation(context, playlist),
-                                ),
-                              );
-                            }
-                          },
-                        ),
+              child: list.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            localizations.noPlaylists,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
+                    )
+                  : Container(
+                      padding: const EdgeInsets.all(16),
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        separatorBuilder: (context, index) => const Divider(),
+                        itemCount: list.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == list.length) {
+                            return AnimatedOpacity(
+                              opacity: _isAtEnd ? 1.0 : 0.0,
+                              duration: const Duration(milliseconds: 200),
+                              child: Align(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 16,
+                                    bottom: 16,
+                                  ),
+                                  child: SizedBox(
+                                    width: 56,
+                                    height: 56,
+                                    child: FloatingActionButton(
+                                      heroTag: "addEnd",
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      onPressed: widget.onAddPressed,
+                                      child: const Icon(Icons.add, size: 30),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          final playlist = list[index];
+
+                          if (state.choosePlaylists) {
+                            return CheckboxListTile(
+                              activeColor: Colors.red,
+                              value: state.selectedPlaylists.contains(
+                                playlist.uuid,
+                              ),
+                              onChanged: (newValue) =>
+                                  _onPlaylistCheckboxClick(playlist, newValue),
+                              contentPadding: const EdgeInsets.only(
+                                left: 12,
+                                right: 10,
+                              ),
+                              title: Text(
+                                playlist.name,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                    ),
+                              ),
+                            );
+                          } else {
+                            return ListTile(
+                              title: Text(playlist.name),
+                              titleTextStyle: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                              onTap: () =>
+                                  _redirectToPlaylistEdit(context, playlist),
+                              onLongPress: () {
+                                final bloc = context
+                                    .read<PlaylistsListComponentBloc>();
+                                bloc.add(
+                                  ChoosePlaylistChangeEvent(value: true),
+                                );
+                                bloc.add(
+                                  SelectPlaylistEvent(playlist: playlist),
+                                );
+                              },
+                              contentPadding: const EdgeInsets.only(
+                                left: 12,
+                                right: 10,
+                              ),
+                              trailing: IconButton(
+                                tooltip: localizations.presentationScreen,
+                                icon: const ImageIcon(
+                                  AssetImage(
+                                    'assets/images/icons/presentation.png',
+                                  ),
+                                  size: 24,
+                                ),
+                                onPressed: () =>
+                                    _runPresentation(context, playlist),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
             ),
           ],
         );
@@ -254,17 +252,16 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
       final localizations = AppLocalizations.of(context)!;
       showDialog<void>(
         context: context,
-        builder:
-            (context) => AlertDialog(
-              title: Text(localizations.noSongsAssigned),
-              content: Text(localizations.thePlaylistDoesNotContainAnySongs),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(localizations.cancel),
-                ),
-              ],
+        builder: (context) => AlertDialog(
+          title: Text(localizations.noSongsAssigned),
+          content: Text(localizations.thePlaylistDoesNotContainAnySongs),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(localizations.cancel),
             ),
+          ],
+        ),
       );
       return;
     }
@@ -272,6 +269,8 @@ class _PlaylistsListComponentState extends State<PlaylistsListComponent> {
     context.read<PresentationBloc>().add(
       PlaylistPresentation(playlist: playlist),
     );
+
+    showInterstitialAds();
 
     Navigator.of(
       context,
@@ -289,10 +288,9 @@ class SearchAppBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       child: TextField(
-        onChanged:
-            (value) => context.read<PlaylistsListComponentBloc>().add(
-              SearchPlaylistsEvent(value),
-            ),
+        onChanged: (value) => context.read<PlaylistsListComponentBloc>().add(
+          SearchPlaylistsEvent(value),
+        ),
         decoration: InputDecoration(
           labelText: localizations.search,
           border: const OutlineInputBorder(
