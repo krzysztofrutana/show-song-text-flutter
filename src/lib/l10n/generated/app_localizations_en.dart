@@ -65,10 +65,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String areYouSureYouWantRemoveSongFromPlaylistAtPosition(
     Object author,
-    Object index,
     Object title,
   ) {
-    return 'Are you sure you want to remove the song $author - $title from the playlist at position $index?';
+    return 'AAre you sure you want to remove the song $title by the artist $author from the playlist?';
   }
 
   @override
@@ -257,6 +256,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exitApplication => 'Exit the application';
 
   @override
+  String get fitToScreen => 'Fit to the screen';
+
+  @override
   String get fontSize => 'Font size';
 
   @override
@@ -393,6 +395,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pleaseSelectOnlyOneListForPresentation =>
       'Please select only one list for presentation';
+
+  @override
+  String get playerLoading => 'Loading player...';
 
   @override
   String get pleaseSelectPlaylistForPresentation =>
@@ -599,6 +604,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get unsavedChangesInPlaylist =>
       'There are unsaved changes in the playlist. Do you want to save them before starting the presentation?';
+
+  @override
+  String get verticalScrolling => 'Vertical scrolling';
 
   @override
   String get wifiHotspotDisabled => 'Wifi hotspot disabled';

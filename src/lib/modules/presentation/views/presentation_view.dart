@@ -48,6 +48,7 @@ class _PresentationViewState extends State<PresentationView>
 
   AudioPlayer? _audioPlayer;
   String? _lastSongId;
+  bool _isPlayerLoading = false;
   bool _showRecordingPanel = false;
 
   @override
@@ -275,6 +276,9 @@ class _PresentationViewState extends State<PresentationView>
 
     if (sourceUrl == null && sourceFile == null) return;
 
+    _isPlayerLoading = true;
+    if (mounted) setState(() {});
+
     if (song.audioCachePath != null) {
       final cachedFile = File(song.audioCachePath!);
       if (await cachedFile.exists()) {
@@ -282,6 +286,7 @@ class _PresentationViewState extends State<PresentationView>
         await player.setAudioSource(AudioSource.file(song.audioCachePath!));
         _audioPlayer?.dispose();
         _audioPlayer = player;
+        _isPlayerLoading = false;
         if (mounted) setState(() {});
         return;
       }
@@ -295,6 +300,7 @@ class _PresentationViewState extends State<PresentationView>
       await player.setAudioSource(AudioSource.uri(fileUri));
       _audioPlayer?.dispose();
       _audioPlayer = player;
+      _isPlayerLoading = false;
       if (mounted) setState(() {});
       return;
     }
@@ -312,12 +318,14 @@ class _PresentationViewState extends State<PresentationView>
           await player.setAudioSource(AudioSource.uri(audio.url));
           _audioPlayer?.dispose();
           _audioPlayer = player;
+          _isPlayerLoading = false;
           if (mounted) setState(() {});
           return;
         } finally {
           yt.close();
         }
       } catch (e) {
+        _isPlayerLoading = false;
         if (mounted) {
           UIHelper.showErrorSnackBar(
             context,
@@ -335,6 +343,7 @@ class _PresentationViewState extends State<PresentationView>
       await player.setAudioSource(AudioSource.uri(Uri.parse(sourceUrl)));
       _audioPlayer?.dispose();
       _audioPlayer = player;
+      _isPlayerLoading = false;
       if (mounted) setState(() {});
     }
   }
@@ -343,6 +352,7 @@ class _PresentationViewState extends State<PresentationView>
     _audioPlayer?.stop();
     _audioPlayer?.dispose();
     _audioPlayer = null;
+    _isPlayerLoading = false;
   }
 
   bool _isYoutubeUrl(String url) {
@@ -359,11 +369,30 @@ class _PresentationViewState extends State<PresentationView>
     final loc = AppLocalizations.of(context)!;
 
     return Row(
+      mainAxisAlignment: hasAudio
+          ? MainAxisAlignment.start
+          : MainAxisAlignment.end,
       children: [
         if (hasAudio)
           Expanded(
             child: _audioPlayer != null
                 ? AudioPlayerBar(player: _audioPlayer!)
+                : _isPlayerLoading
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(loc.playerLoading),
+                      ],
+                    ),
+                  )
                 : const SizedBox.shrink(),
           ),
         IconButton(

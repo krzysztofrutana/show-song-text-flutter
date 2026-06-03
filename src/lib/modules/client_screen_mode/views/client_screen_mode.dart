@@ -80,28 +80,27 @@ class _ClientScreenModeState extends State<ClientScreenMode>
         }
       },
       child: BlocBuilder<ClientCubit, ClientState>(
-        builder:
-            (context, state) => Scaffold(
-              key: key,
-              appBar: AppBar(
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                title: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _title,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              body: _getBody(state, localizations),
+        builder: (context, state) => Scaffold(
+          key: key,
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.of(context).pop(),
             ),
+            title: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _title,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          body: _getBody(state, localizations),
+        ),
       ),
     );
   }
@@ -111,52 +110,48 @@ class _ClientScreenModeState extends State<ClientScreenMode>
       final fontSize = sl<SharedPreferences>().getInt('fontSize') ?? 15;
 
       return BlocBuilder<ClientScreenModeCubit, ClientScreenModeState>(
-        builder:
-            (context, state) => Column(
-              children: [
-                Expanded(
-                  child: SizedBox.expand(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                      child: _clientTextScrollMode == 'vertical'
-                          ? SingleChildScrollView(
-                              child: Text(
-                                state.text.isEmpty
-                                    ? localizations.noTextToDisplay
-                                    : state.text,
-                                style: TextStyle(
-                                  fontSize: fontSize.toDouble(),
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.color,
-                                  decoration: TextDecoration.none,
-                                ),
-                              ),
-                            )
-                          : AutoSizeText(
-                              state.text.isEmpty
-                                  ? localizations.noTextToDisplay
-                                  : state.text,
-                              style: TextStyle(
-                                fontSize: fontSize.toDouble(),
-                                color:
-                                    Theme.of(context).textTheme.bodyLarge?.color,
-                                decoration: TextDecoration.none,
-                              ),
+        builder: (context, state) => Column(
+          children: [
+            Expanded(
+              child: SizedBox.expand(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                  child: _clientTextScrollMode == 'vertical'
+                      ? SingleChildScrollView(
+                          child: Text(
+                            state.text.isEmpty
+                                ? localizations.noTextToDisplay
+                                : state.text,
+                            style: TextStyle(
+                              fontSize: fontSize.toDouble(),
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge?.color,
+                              decoration: TextDecoration.none,
                             ),
-                    ),
-                  ),
+                          ),
+                        )
+                      : AutoSizeText(
+                          state.text.isEmpty
+                              ? localizations.noTextToDisplay
+                              : state.text,
+                          style: TextStyle(
+                            fontSize: fontSize.toDouble(),
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
                 ),
-              ],
+              ),
             ),
+          ],
+        ),
       );
     } else {
       return Center(
-        child:
-            state.connectionStarted
-                ? Text(localizations.connecting)
-                : Text(localizations.noConnection),
+        child: state.connectionStarted
+            ? Text(localizations.connecting)
+            : Text(localizations.noConnection),
       );
     }
   }
@@ -271,25 +266,24 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                         }
                         return null;
                       },
-                      onChanged:
-                          (value) =>
-                              parentContext.read<ClientCubit>().setIp(value),
+                      onChanged: (value) =>
+                          parentContext.read<ClientCubit>().setIp(value),
                     ),
-                    const SizedBox(height: 10.0),
+                    const SizedBox(height: 20.0),
                     DropdownButtonFormField<String>(
                       initialValue: _clientTextScrollMode,
                       decoration: InputDecoration(
-                        labelText: localizations.textScrollMode,
+                        labelText: localizations.helpPresentationTitle,
                         border: const OutlineInputBorder(),
                       ),
                       items: [
                         DropdownMenuItem(
-                          value: 'horizontal',
-                          child: Text(localizations.textScrollModeHorizontal),
+                          value: 'vertical',
+                          child: Text(localizations.verticalScrolling),
                         ),
                         DropdownMenuItem(
-                          value: 'vertical',
-                          child: Text(localizations.textScrollModeVertical),
+                          value: 'horizontal',
+                          child: Text(localizations.fitToScreen),
                         ),
                       ],
                       onChanged: (value) {
@@ -351,44 +345,39 @@ class _ClientScreenModeState extends State<ClientScreenMode>
   void _showScannerDialog(BuildContext ipDialogContext) {
     showDialog(
       context: ipDialogContext,
-      builder:
-          (scannerDialogContext) => AlertDialog(
-            content: SizedBox(
-              width: 300,
-              height: 300,
-              child: MobileScanner(
-                onDetect: (capture) {
-                  final barcodes = capture.barcodes;
-                  for (final barcode in barcodes) {
-                    final code = barcode.rawValue;
-                    if (code != null) {
-                      context.read<ClientCubit>().setIp(code);
-                      Navigator.of(
-                        scannerDialogContext,
-                      ).pop(); // Zamknij skaner
-                      Navigator.of(
-                        ipDialogContext,
-                      ).pop(); // Zamknij dialog z IP
+      builder: (scannerDialogContext) => AlertDialog(
+        content: SizedBox(
+          width: 300,
+          height: 300,
+          child: MobileScanner(
+            onDetect: (capture) {
+              final barcodes = capture.barcodes;
+              for (final barcode in barcodes) {
+                final code = barcode.rawValue;
+                if (code != null) {
+                  context.read<ClientCubit>().setIp(code);
+                  Navigator.of(scannerDialogContext).pop(); // Zamknij skaner
+                  Navigator.of(ipDialogContext).pop(); // Zamknij dialog z IP
 
-                      // Automatyczne zatwierdzenie
-                      try {
-                        showInterstitialAds();
-                        context.read<ClientCubit>().startConnection();
-                        FullScreen.setFullScreen(true);
-                      } catch (e) {
-                        _showSetIpDialog(
-                          context,
-                          AppLocalizations.of(context)!.connectionFailedCheckIp,
-                          code,
-                        );
-                      }
-                      break;
-                    }
+                  // Automatyczne zatwierdzenie
+                  try {
+                    showInterstitialAds();
+                    context.read<ClientCubit>().startConnection();
+                    FullScreen.setFullScreen(true);
+                  } catch (e) {
+                    _showSetIpDialog(
+                      context,
+                      AppLocalizations.of(context)!.connectionFailedCheckIp,
+                      code,
+                    );
                   }
-                },
-              ),
-            ),
+                  break;
+                }
+              }
+            },
           ),
+        ),
+      ),
     );
   }
 

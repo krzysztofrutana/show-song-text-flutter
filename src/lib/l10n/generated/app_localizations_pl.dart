@@ -65,10 +65,9 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String areYouSureYouWantRemoveSongFromPlaylistAtPosition(
     Object author,
-    Object index,
     Object title,
   ) {
-    return 'Czy na pewno chcesz usunąć utwór $author - $title z listy odtwarzania z pozycji $index?';
+    return 'Czy na pewno chcesz usunąć utwór $title, artysty $author z listy odtwarzania?';
   }
 
   @override
@@ -260,6 +259,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get exitApplication => 'Wyjście z aplikacji';
 
   @override
+  String get fitToScreen => 'Dopasuj do ekranu';
+
+  @override
   String get fontSize => 'Wielkość czcionki';
 
   @override
@@ -393,11 +395,14 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get playlistsToWhichSongHasBeenAdded =>
-      'Listy odtwarzania do których dodano utwór';
+      'Listy odtwarzania, do których dodano utwór';
 
   @override
   String get pleaseSelectOnlyOneListForPresentation =>
       'Należy zaznaczyć tylko jedną listę do prezentacji';
+
+  @override
+  String get playerLoading => 'Ładowanie odtwarzacza...';
 
   @override
   String get pleaseSelectPlaylistForPresentation =>
@@ -604,6 +609,9 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get unsavedChangesInPlaylist =>
       'W liście odtwarzania znajdują się niezapisane zmiany. Czy chcesz je zapisać przed uruchomieniem prezentacji?';
+
+  @override
+  String get verticalScrolling => 'Przewijanie w pionie';
 
   @override
   String get wifiHotspotDisabled => 'Hotspot Wifi wyłączony';

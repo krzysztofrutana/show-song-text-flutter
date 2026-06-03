@@ -194,10 +194,9 @@ abstract class AppLocalizations {
   /// No description provided for @areYouSureYouWantRemoveSongFromPlaylistAtPosition.
   ///
   /// In pl, this message translates to:
-  /// **'Czy na pewno chcesz usunąć utwór {author} - {title} z listy odtwarzania z pozycji {index}?'**
+  /// **'Czy na pewno chcesz usunąć utwór {title}, artysty {author} z listy odtwarzania?'**
   String areYouSureYouWantRemoveSongFromPlaylistAtPosition(
     Object author,
-    Object index,
     Object title,
   );
 
@@ -537,6 +536,12 @@ abstract class AppLocalizations {
   /// **'Wyjście z aplikacji'**
   String get exitApplication;
 
+  /// No description provided for @fitToScreen.
+  ///
+  /// In pl, this message translates to:
+  /// **'Dopasuj do ekranu'**
+  String get fitToScreen;
+
   /// No description provided for @fontSize.
   ///
   /// In pl, this message translates to:
@@ -774,7 +779,7 @@ abstract class AppLocalizations {
   /// No description provided for @playlistsToWhichSongHasBeenAdded.
   ///
   /// In pl, this message translates to:
-  /// **'Listy odtwarzania do których dodano utwór'**
+  /// **'Listy odtwarzania, do których dodano utwór'**
   String get playlistsToWhichSongHasBeenAdded;
 
   /// No description provided for @pleaseSelectOnlyOneListForPresentation.
@@ -782,6 +787,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'Należy zaznaczyć tylko jedną listę do prezentacji'**
   String get pleaseSelectOnlyOneListForPresentation;
+
+  /// No description provided for @playerLoading.
+  ///
+  /// In pl, this message translates to:
+  /// **'Ładowanie odtwarzacza...'**
+  String get playerLoading;
 
   /// No description provided for @pleaseSelectPlaylistForPresentation.
   ///
@@ -1160,6 +1171,12 @@ abstract class AppLocalizations {
   /// In pl, this message translates to:
   /// **'W liście odtwarzania znajdują się niezapisane zmiany. Czy chcesz je zapisać przed uruchomieniem prezentacji?'**
   String get unsavedChangesInPlaylist;
+
+  /// No description provided for @verticalScrolling.
+  ///
+  /// In pl, this message translates to:
+  /// **'Przewijanie w pionie'**
+  String get verticalScrolling;
 
   /// No description provided for @wifiHotspotDisabled.
   ///

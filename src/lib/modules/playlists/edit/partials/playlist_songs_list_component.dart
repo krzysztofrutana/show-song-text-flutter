@@ -51,91 +51,93 @@ class _PlaylistSongsListComponentState
                 borderRadius: BorderRadius.circular(0),
               ),
             ),
-            child:
-                songs.isEmpty
-                    ? Center(
-                      heightFactor: 1,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () => _showSongSelectionDialog(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onSurface,
-                            elevation: 0,
-                            shape: const RoundedRectangleBorder(),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.add),
-                              const SizedBox(height: 4),
-                              Text(
-                                localizations.noSongs,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.labelMedium,
-                              ),
-                            ],
-                          ),
+            child: songs.isEmpty
+                ? Center(
+                    heightFactor: 1,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () => _showSongSelectionDialog(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).scaffoldBackgroundColor,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onSurface,
+                          elevation: 0,
+                          shape: const RoundedRectangleBorder(),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.add),
+                            const SizedBox(height: 4),
+                            Text(
+                              localizations.noSongs,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.labelMedium,
+                            ),
+                          ],
                         ),
                       ),
-                    )
-                    : ReorderableListView(
-                      buildDefaultDragHandles: false,
-                      shrinkWrap: true,
-                      physics: const ScrollPhysics(),
-                      children: <Widget>[
-                        for (int index = 0; index < songs.length; index += 1)
-                          ReorderableDelayedDragStartListener(
-                            key: Key('$index'),
-                            index: index,
-                            child: ListTile(
-                              leading: ReorderableDragStartListener(
-                                index: index,
-                                child: const Icon(Icons.drag_indicator),
-                              ),
-                              title: Text(
-                                "${index + 1}. ${songs[index].title}",
-                              ),
-                              subtitle: Text(songs[index].author),
-                              titleTextStyle: Theme.of(
-                                context,
-                              ).textTheme.titleMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              contentPadding: const EdgeInsets.only(),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  _removeSongFromPlaylist(
-                                    songs[index],
-                                    index,
+                    ),
+                  )
+                : ReorderableListView(
+                    buildDefaultDragHandles: false,
+                    shrinkWrap: true,
+                    physics: const ScrollPhysics(),
+                    children: <Widget>[
+                      for (int index = 0; index < songs.length; index += 1)
+                        ReorderableDelayedDragStartListener(
+                          key: Key('$index'),
+                          index: index,
+                          child: ListTile(
+                            leading: ReorderableDragStartListener(
+                              index: index,
+                              child: const Icon(Icons.drag_indicator),
+                            ),
+                            title: Text("${index + 1}. ${songs[index].title}"),
+                            subtitle: Text(songs[index].author),
+                            titleTextStyle: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: Theme.of(
                                     context,
-                                  );
-                                },
-                                color: Colors.red,
-                                icon: const Icon(
-                                  Icons.highlight_remove_outlined,
-                                  size: 20,
+                                  ).colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
                                 ),
+                            contentPadding: const EdgeInsets.only(),
+                            trailing: IconButton(
+                              onPressed: () {
+                                _removeSongFromPlaylist(
+                                  songs[index],
+                                  index,
+                                  context,
+                                );
+                              },
+                              color: Colors.red,
+                              icon: const Icon(
+                                Icons.highlight_remove_outlined,
+                                size: 20,
                               ),
                             ),
                           ),
-                      ],
-                      onReorderItem: (int oldIndex, int newIndex) {
-                        setState(() {
-                          final item = songs.removeAt(oldIndex);
-                          songs.insert(newIndex, item);
+                        ),
+                    ],
+                    onReorderItem: (int oldIndex, int newIndex) {
+                      setState(() {
+                        final item = songs.removeAt(oldIndex);
+                        songs.insert(newIndex, item);
 
-                          final songsIds = songs.map((x) => x.uuid).toList();
+                        final songsIds = songs.map((x) => x.uuid).toList();
 
-                          widget.playlistEditCubit.updateSongs(songsIds);
-                        });
-                      },
-                    ),
+                        widget.playlistEditCubit.updateSongs(songsIds);
+                      });
+                    },
+                  ),
           ),
         ],
       ),
@@ -155,19 +157,20 @@ class _PlaylistSongsListComponentState
         }
       }
 
-      availableSongs =
-          allSongs
-              .where(
-                (song) =>
-                    !widget.playlistEditCubit.state.songsIds.contains(
-                      song.uuid,
-                    ),
-              )
-              .toList();
+      availableSongs = allSongs
+          .where(
+            (song) =>
+                !widget.playlistEditCubit.state.songsIds.contains(song.uuid),
+          )
+          .toList();
     });
   }
 
-  Future<void> _removeSongFromPlaylist(Song song, int index, BuildContext parentContext) async {
+  Future<void> _removeSongFromPlaylist(
+    Song song,
+    int index,
+    BuildContext parentContext,
+  ) async {
     showDialog<void>(
       context: parentContext,
       barrierDismissible: false, // user must tap button!
@@ -183,7 +186,6 @@ class _PlaylistSongsListComponentState
                   )!.areYouSureYouWantRemoveSongFromPlaylistAtPosition(
                     song.author,
                     song.title,
-                    index + 1,
                   ),
                 ),
                 Text(

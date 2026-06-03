@@ -2,7 +2,7 @@ name: pomocnik_wokalisty
 description: "Pomocnik wokalisty"
 publish_to: 'none'
 
-version: 0.9.4+8
+version: 0.9.4+9
 
 environment:
   sdk: ^3.12.0
