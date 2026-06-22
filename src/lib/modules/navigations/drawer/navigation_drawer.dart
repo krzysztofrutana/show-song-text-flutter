@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:async_preferences/async_preferences.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -196,20 +197,24 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
           const SizedBox(height: 10),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Text(
+            child: AutoSizeText(
               localizations.singersAssistant,
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              maxLines: 1,
+              minFontSize: 10,
             ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Text(
+            child: AutoSizeText(
               "by Krzysztof Rutana",
               style: Theme.of(
                 context,
               ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
+              maxLines: 1,
+              minFontSize: 8,
             ),
           ),
           Align(
@@ -217,9 +222,11 @@ class _MyNavigationDrawerState extends State<MyNavigationDrawer> {
             child: FutureBuilder<String>(
               future: _versionFuture,
               builder: (context, snapshot) {
-                return Text(
+                return AutoSizeText(
                   snapshot.hasData ? "${snapshot.data}" : "",
                   style: Theme.of(context).textTheme.labelSmall,
+                  maxLines: 1,
+                  minFontSize: 8,
                 );
               },
             ),

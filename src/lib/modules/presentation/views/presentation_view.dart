@@ -11,6 +11,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/recording_mixin.dart';
 import 'package:pomocnik_wokalisty/helpers/ui_helper.dart';
+import 'package:pomocnik_wokalisty/helpers/wakelock_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/presentation/bloc/presentation_bloc.dart';
@@ -58,6 +59,7 @@ class _PresentationViewState extends State<PresentationView>
     _pageViewController = PageController();
     FullScreenHelper.instance.addListener(this);
     FullScreenHelper.instance.setFullScreen(true);
+    WakelockHelper.instance.enable();
     _fontSize = sl<SharedPreferences>().getInt('fontSize') ?? 15;
     _textScrollMode =
         sl<SharedPreferences>().getString('textScrollMode') ?? 'vertical';
@@ -81,6 +83,7 @@ class _PresentationViewState extends State<PresentationView>
     cancelRecording();
     FullScreenHelper.instance.removeListener(this);
     FullScreenHelper.instance.setFullScreen(false);
+    WakelockHelper.instance.disable();
     _pageViewController.dispose();
     super.dispose();
   }

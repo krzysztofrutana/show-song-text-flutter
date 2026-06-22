@@ -9,6 +9,7 @@ import 'package:pomocnik_wokalisty/helpers/data_collections.dart';
 import 'package:pomocnik_wokalisty/helpers/events_hub.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/helpers/wakelock_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart' as di;
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubit/client_screen_mode_cubit.dart';
@@ -36,6 +37,7 @@ void main() async {
   await di.init();
 
   await FullScreenHelper.init();
+  WakelockHelper.init();
   if (Platform.isAndroid) MobileAds.instance.initialize();
 
   runApp(const MyApp());

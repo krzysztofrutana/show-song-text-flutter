@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/local_storage.dart';
+import 'package:pomocnik_wokalisty/helpers/wakelock_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart' as di;
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubit/client_screen_mode_cubit.dart';
@@ -17,6 +18,8 @@ class MockClientCubit extends MockCubit<ClientState> implements ClientCubit {}
 
 class MockClientScreenModeCubit extends MockCubit<ClientScreenModeState>
     implements ClientScreenModeCubit {}
+
+class WakelockHelperMock extends Mock implements WakelockHelper {}
 
 void main() {
   group('ClientScreenMode', () {
@@ -42,6 +45,7 @@ void main() {
       await di.init();
 
       await FullScreenHelper.init();
+      WakelockHelper.instance = WakelockHelperMock();
     });
 
     setUp(() {

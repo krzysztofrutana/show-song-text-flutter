@@ -2,7 +2,7 @@ name: pomocnik_wokalisty
 description: "Pomocnik wokalisty"
 publish_to: 'none'
 
-version: 0.9.4+9
+version: 0.9.5+11
 
 environment:
   sdk: ^3.12.0
@@ -48,6 +48,7 @@ dependencies:
   standard_searchbar: ^2.1.1
   stream_transform: ^2.1.0
   uuid: ^4.5.1
+  wakelock_plus: ^1.2.8
   youtube_explode_dart: ^3.1.0
   http: ^1.4.0
   hive_ce: ^2.19.3

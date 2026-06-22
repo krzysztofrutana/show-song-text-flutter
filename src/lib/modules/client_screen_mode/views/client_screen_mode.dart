@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
+import 'package:pomocnik_wokalisty/helpers/wakelock_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
 import 'package:pomocnik_wokalisty/modules/client_screen_mode/cubit/client_screen_mode_cubit.dart';
@@ -60,6 +61,7 @@ class _ClientScreenModeState extends State<ClientScreenMode>
   void dispose() {
     _dataSubscription?.cancel();
     FullScreen.setFullScreen(false);
+    WakelockHelper.instance.disable();
     interstitialAd?.dispose();
     super.dispose();
   }
@@ -363,7 +365,8 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                   try {
                     showInterstitialAds();
                     context.read<ClientCubit>().startConnection();
-                    FullScreen.setFullScreen(true);
+    FullScreen.setFullScreen(true);
+    WakelockHelper.instance.enable();
                   } catch (e) {
                     _showSetIpDialog(
                       context,
