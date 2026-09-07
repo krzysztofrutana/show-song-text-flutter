@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:pomocnik_wokalisty/ads/interstitial_ads_mixin.dart';
+import 'package:pomocnik_wokalisty/helpers/text_scroll_mode_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/wakelock_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
@@ -27,15 +28,16 @@ class ClientScreenMode extends StatefulWidget {
 class _ClientScreenModeState extends State<ClientScreenMode>
     with InterstitialAds {
   String _title = "";
-  String _clientTextScrollMode = 'horizontal';
+  String _clientTextScrollMode = 'vertical';
   StreamSubscription? _dataSubscription;
 
   @override
   void initState() {
     super.initState();
 
-    _clientTextScrollMode =
-        sl<SharedPreferences>().getString('textScrollMode') ?? 'horizontal';
+    _clientTextScrollMode = TextScrollModeHelper.effectiveMode(
+      sl<SharedPreferences>().getString('textScrollMode'),
+    );
 
     FullScreen.setFullScreen(true);
 
@@ -85,6 +87,14 @@ class _ClientScreenModeState extends State<ClientScreenMode>
         builder: (context, state) => Scaffold(
           key: key,
           appBar: AppBar(
+            actions: [
+              if (!state.isConnected && !state.connectionStarted)
+                IconButton(
+                  icon: const Icon(Icons.link),
+                  tooltip: localizations.connectionToTheServer,
+                  onPressed: () => _showSetIpDialog(context, null, state.ip),
+                ),
+            ],
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () => Navigator.of(context).pop(),
@@ -271,31 +281,33 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                       onChanged: (value) =>
                           parentContext.read<ClientCubit>().setIp(value),
                     ),
-                    const SizedBox(height: 20.0),
-                    DropdownButtonFormField<String>(
-                      initialValue: _clientTextScrollMode,
-                      decoration: InputDecoration(
-                        labelText: localizations.helpPresentationTitle,
-                        border: const OutlineInputBorder(),
+                    if (TextScrollModeHelper.allowHorizontal) ...[
+                      const SizedBox(height: 20.0),
+                      DropdownButtonFormField<String>(
+                        initialValue: _clientTextScrollMode,
+                        decoration: InputDecoration(
+                          labelText: localizations.helpPresentationTitle,
+                          border: const OutlineInputBorder(),
+                        ),
+                        items: [
+                          DropdownMenuItem(
+                            value: 'vertical',
+                            child: Text(localizations.verticalScrolling),
+                          ),
+                          DropdownMenuItem(
+                            value: 'horizontal',
+                            child: Text(localizations.fitToScreen),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _clientTextScrollMode = value;
+                            });
+                          }
+                        },
                       ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'vertical',
-                          child: Text(localizations.verticalScrolling),
-                        ),
-                        DropdownMenuItem(
-                          value: 'horizontal',
-                          child: Text(localizations.fitToScreen),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _clientTextScrollMode = value;
-                          });
-                        }
-                      },
-                    ),
+                    ],
                     const SizedBox(height: 10.0),
                     Visibility(
                       visible: previousError != null,
@@ -326,6 +338,7 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                   parentContext.read<ClientCubit>().startConnection();
 
                   FullScreen.setFullScreen(true);
+                  WakelockHelper.instance.enable();
 
                   Navigator.of(context).pop();
                 } catch (e) {
@@ -365,8 +378,8 @@ class _ClientScreenModeState extends State<ClientScreenMode>
                   try {
                     showInterstitialAds();
                     context.read<ClientCubit>().startConnection();
-    FullScreen.setFullScreen(true);
-    WakelockHelper.instance.enable();
+                    FullScreen.setFullScreen(true);
+                    WakelockHelper.instance.enable();
                   } catch (e) {
                     _showSetIpDialog(
                       context,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomocnik_wokalisty/helpers/text_scroll_mode_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/ui_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
 import 'package:pomocnik_wokalisty/l10n/generated/app_localizations.dart';
@@ -97,42 +98,44 @@ class _PresentationSettingsState extends State<PresentationSettings>
                         border: const OutlineInputBorder(),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
-                    BlocBuilder<
-                      PresentationSettingsCubit,
-                      PresentationSettingsStateBase
-                    >(
-                      bloc: _presentationSettingsCubit,
-                      builder: (context, state) {
-                        return DropdownButtonFormField<String>(
-                          initialValue: state.textScrollMode,
-                          decoration: InputDecoration(
-                            labelText: localizations.textScrollMode,
-                            border: const OutlineInputBorder(),
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: 'vertical',
-                              child: Text(localizations.textScrollModeVertical),
+                    if (TextScrollModeHelper.allowHorizontal) ...[
+                      const SizedBox(height: 20.0),
+                      BlocBuilder<
+                        PresentationSettingsCubit,
+                        PresentationSettingsStateBase
+                      >(
+                        bloc: _presentationSettingsCubit,
+                        builder: (context, state) {
+                          return DropdownButtonFormField<String>(
+                            initialValue: state.textScrollMode,
+                            decoration: InputDecoration(
+                              labelText: localizations.textScrollMode,
+                              border: const OutlineInputBorder(),
                             ),
-                            DropdownMenuItem(
-                              value: 'horizontal',
-                              child: Text(
-                                localizations.textScrollModeHorizontal,
+                            items: [
+                              DropdownMenuItem(
+                                value: 'vertical',
+                                child: Text(localizations.textScrollModeVertical),
                               ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              _presentationSettingsCubit.setTextScrollMode(
-                                value,
-                              );
-                              _showConfirmSaveToast(context);
-                            }
-                          },
-                        );
-                      },
-                    ),
+                              DropdownMenuItem(
+                                value: 'horizontal',
+                                child: Text(
+                                  localizations.textScrollModeHorizontal,
+                                ),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              if (value != null) {
+                                _presentationSettingsCubit.setTextScrollMode(
+                                  value,
+                                );
+                                _showConfirmSaveToast(context);
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ],
                   ],
                 ),
               );

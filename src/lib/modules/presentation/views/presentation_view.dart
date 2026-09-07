@@ -10,6 +10,7 @@ import 'package:flutter_fullscreen/flutter_fullscreen.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:pomocnik_wokalisty/helpers/full_screen_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/recording_mixin.dart';
+import 'package:pomocnik_wokalisty/helpers/text_scroll_mode_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/ui_helper.dart';
 import 'package:pomocnik_wokalisty/helpers/wakelock_helper.dart';
 import 'package:pomocnik_wokalisty/injection_container.dart';
@@ -61,8 +62,9 @@ class _PresentationViewState extends State<PresentationView>
     FullScreenHelper.instance.setFullScreen(true);
     WakelockHelper.instance.enable();
     _fontSize = sl<SharedPreferences>().getInt('fontSize') ?? 15;
-    _textScrollMode =
-        sl<SharedPreferences>().getString('textScrollMode') ?? 'vertical';
+    _textScrollMode = TextScrollModeHelper.effectiveMode(
+      sl<SharedPreferences>().getString('textScrollMode'),
+    );
 
     super.initState();
   }
